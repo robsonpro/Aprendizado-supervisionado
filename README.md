@@ -3,7 +3,7 @@ Repositório para a disciplina "Aprendizado supervisionado" oferecida no curso d
 
 ## Introdução
 
-https://robsonpro.github.io/Aprendizado-supervisionado/AS_Intro.html.html
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_Intro.html
 
 ### Laboratório 1
 
