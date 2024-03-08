@@ -1,5 +1,8 @@
 # Aprendizado-supervisionado
+
 Repositório para a disciplina "Aprendizado supervisionado" oferecida no curso de graduação em Engenharia de Produção da UFSJ.
+
+A seguir são disponibilizados breves notas de aulas teóricas e notebooks das aulas práticas em R. Os notebooks das aulas práticas em python são disponibilizados acima em *.ipynb.
 
 ## Introdução
 
