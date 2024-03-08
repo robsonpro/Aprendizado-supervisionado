@@ -1,0 +1,267 @@
+---
+title: "Aprendizado supervisionado - Introdução"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Aprendizado
+
+No contexto da ciência de dados (*data science*) o **Aprendizado** consiste em aprender um determinado comportamento a partir dos dados disponíveis.
+
+Inicialmente o aprendizado pode ser classificado em:
+
+-   Estatístico (*statistical learning*);
+-   de Máquina (*machine learning*).
+
+Alguns métodos surgiram no subcampo da **Estatística** denominado **Aprendizado estatístico**, tais como as árvores de decisão, aprendizado por reforço e máquinas de vetores de suporte, enquanto outros surgiram no subcampo da **Ciências da computação** e **Inteligência Artificial**, como as redes neurais e aprendizado profundo. Hoje é difícil separar ambos campos, apesar do aprendizado de máquina ser mais popular.
+
+## Um pouco de história
+
+Inicialmente serão citados alguns teóricos mais importantes para a estatística frequentista e paramétrica. Porém alguns métodos propostos, por exemplo a análise discriminante linear de Fisher é considerado um método iportante de aprendizado supervisionado para classificação.
+
+-   Willian Gosset (Student), 1908-1909: criou o teste t e a distribuição t de Student quando trabalhava na cervejaria Guiness. Sua intenção era criar uma aproximação da distribuição normal para amostras de tamanhos limitados.
+
+-   Ronald Fisher, 1920-1940: Criou vários testes e conceitos estatísticos importantes, como a ANOVA, análise discriminante linear, p-valor, entre outros. Seus principais desenvolvimentos foram realizados especialmente enquanto trabalhava na estação agrícola Rothamsted Research no Reino Unido.
+
+-   George Box, 1948-1992: Considerado uma dos maiores pesquisadores em estatística do século XX, desenvolveu trabalhos e métodos em controle de qualidade, planejamento de experimentos, séries temporais e inferência Bayesiana. Cunhou a famosa frase: "*All models are wrong, some are usefull*".
+
+```{r}
+#| label: gossetfisherbox
+#| fig-cap: "Gosset, Fisher e Box"
+#| message: false
+#| warning: false
+#| echo: false
+knitr::include_graphics("figs/gossetfisherbox.png")
+```
+
+Alguns estatísticos foram importantes para definir termos que hoje são importantes e englobam a teoria do Aprendizado supervisionado.
+
+-   John Tukey (1962, 1977): Cunhou o termo Análise exploratória de dados, com o objetivo de incentivar a ênfase em gráficos, tabelas e limpeza de dados para resumir dados e apontar suas tendencias.
+
+-   Jeff Wu (1980): Formulou o termo *data science* e inclusive recomendou que a área de conhecimento **Estatística** fosse renomeada para **Ciência de dados**.
+
+```{r}
+#| label: tukey_wu
+#| fig-cap: "Tukey e wu"
+#| message: false
+#| warning: false
+#| echo: false
+knitr::include_graphics("figs/tukeyjeff.png")
+```
+
+### Um brasileiro importante
+
+Existem muitos teóricos importantes recentes os quais serão apresentados durante o curso. Para motivar a todos vamos apresentar um brasileiro que tem feito um excelente trabalho na área de aprendizado por reforço.
+
+Carlos Guestrin é professor da Universidade de Stanford, foi diretor sênior de Machine Learning da **Apple** (2016-2021). Criador do método de **reforço por gradiente extremo** (*extreme gradient boosting*).
+
+```{r}
+#| label: guestrin
+#| fig-cap: "Carlos Guestrin"
+#| message: false
+#| warning: false
+#| echo: false
+knitr::include_graphics("figs/guestrin.png")
+```
+
+## Aprendizado Supervisionado *versus* não supervisionado
+
+### Aprendizado Supervisionado
+
+Seja um conjunto de variáveis de entrada, independentes ou preditores $x_1, x_2, ..., x_k$ e uma variável dependente ou supervisora $y$. Dado uma amostra de observações para tais variáveis, o aprendizado supervisionado visa prever o comportamento ou resultado de $y$, considerando valores futuros de $x_j$, $\forall j=i, ..., k$. O aprendizado supervisionado pode ser classificado em dois tipos:
+
+-   Regressão, $y \in \mathbb{R}$, ou seja, quando a resposta ou supervisor pode ser medida em uma escala real (há casos para variáveis numéricas do conjunto dos números inteiros);
+-   Classificação, $y \in \{A, B, C, ...\}$, ou seja, quando a resposta pertence a conjunto finito de categorias.
+
+A seguir um exemplo de aplicação de regressão linear simples para prever consumo em função da renda. O modelo foi treinado com um conjunto de dados de 33 observações e aplicado em 11 observações de teste.
+
+```{r}
+#| label: consumorenda
+#| fig-cap: "Consumo e renda nos EUA de 1950-1993"
+#| message: false
+#| warning: false
+#| echo: false
+library(AER)
+library(ggplot2)
+
+set.seed(9)
+data(USConsump1993)
+
+Consumo <- data.frame(USConsump1993)
+
+tr <- round(0.75*nrow(Consumo))
+
+treino <- sample(nrow(Consumo), tr, replace = F)
+
+Consumo.tr <- Consumo[treino,]
+
+lm1 <- lm(expenditure ~ income, data = Consumo.tr)
+
+# ggplot(data = Consumo.tr, aes(x = income, y = expenditure)) + 
+#   geom_point(color = 'indianred', lwd = 2) +
+#   geom_smooth(method = "lm", formula = y ~ x, col = "palegreen3") +
+#   xlab("renda") + 
+#   ylab("consumo") + theme_bw()
+
+Consumo.te <- Consumo[-treino,]
+
+res.test <- predict(lm1, newdata = data.frame(income = Consumo.te$income))
+
+ggplot() + 
+  geom_point(aes(x = Consumo.te$income, y = Consumo.te$expenditure),
+             lwd = 2) +
+  geom_smooth(method = "lm", formula = y ~ x, 
+              aes(x = Consumo.tr$income, y = Consumo.tr$expenditure)) +
+  xlab("renda") + 
+  ylab("consumo") + theme_bw()
+
+```
+
+A seguir um exemplo do resultado gráfico de um modelo de regressão logística para classificação de pessoas com diabetes em relação a glicose, onde 1 = diabético e 0 = não diabético.
+
+```{r}
+#| label: diabetes_glicose
+#| fig-cap: "Regressão logística para diabetes em função do nível de glicose"
+#| message: false
+#| warning: false
+#| echo: false
+
+library(mlbench)
+library(GGally)
+
+data(PimaIndiansDiabetes2)
+
+PimaIndiansDiabetes2 <- na.omit(PimaIndiansDiabetes2)
+PimaIndiansDiabetes2$diabetes <- ifelse(PimaIndiansDiabetes2$diabetes=="neg",0,1)
+
+dados <- PimaIndiansDiabetes2
+
+set.seed(7)
+treino <- sample(nrow(dados), 0.75*nrow(dados))
+dados_treino <- dados[treino,]
+dados_test <- dados[-treino,]
+
+model1 <- glm( diabetes ~ glucose, data = dados_treino, family = binomial)
+# summary(model1)
+
+library(ggplot2)
+
+ggplot(dados_treino, aes(glucose, diabetes)) +
+  geom_point(aes(col = as.factor(diabetes)), alpha = 0.5) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), fill = "grey", col = "black") +
+  labs(x = "Concentracao de glicose", y = "Probabilidade de ter diabetes", col = "diabetes") +
+  theme_bw()
+```
+
+Neste segundo exemplo considera-se além da glicose a idade do paciente para obter um modelo de regressão logística de forma a classificar pacientes com diabetes. Foram consideradas 294 observações para treinamento e 98 para teste do modelo.
+
+```{r}
+#| label: diabetes_glicose2
+#| fig-cap: "Regressão logística para diabetes em função do nível de glicose e idade"
+#| message: false
+#| warning: false
+#| echo: false
+dados2 <- dados[,c(2,8,9)]
+
+set.seed(7)
+treino2 <- sample(nrow(dados2), 0.75*nrow(dados2))
+dados_treino2 <- dados2[treino2,]
+dados_test2 <- dados2[-treino2,]
+
+dados2$diabetes <- as.factor(dados2$diabetes)
+
+model2 <- glm( diabetes ~ glucose + age, data = dados_treino2, family = binomial)
+# summary(model2)
+
+prob_pred2 <- predict(model2, type = 'response', newdata = dados_treino2[,-3])
+y_pred2 <- ifelse(prob_pred2 > 0.5, 1, 0)
+
+prob_pred2_teste <- predict(model2, type = 'response', newdata = dados_test2[,-3])
+y_pred2_teste <- ifelse(prob_pred2_teste > 0.5, 1, 0)
+
+grid <- expand.grid(glucose = seq(min(dados_treino2$glucose), 
+                                  max(dados_treino2$glucose), by = 1),
+                    age = seq(min(dados_treino2$age), 
+                                  max(dados_treino2$age), by = .5))
+
+prob_grid <- predict(model2, type = 'response', newdata = grid)
+y_pred_grid <- ifelse(prob_grid > 0.5, 1, 0)
+
+grid$diabetes <- as.factor(y_pred_grid)
+
+# # treino
+# ggplot() + 
+#   geom_raster(aes(x = grid$glucose, y = grid$age, fill = grid$diabetes), alpha = 0.5) +
+#   geom_point(aes(x = dados_treino2$glucose, y = dados_treino2$age, 
+#                  color = as.factor(dados_treino2$diabetes)), size = 2) + 
+#   labs(x = "Nivel de glicose", y = "Idade", col = "Diabetes") + theme_bw()
+
+# teste
+ggplot() + 
+  geom_raster(aes(x = grid$glucose, y = grid$age, fill = grid$diabetes), alpha = 0.25) +
+  geom_point(aes(x = dados_test2$glucose, y = dados_test2$age, 
+                 color = as.factor(dados_test2$diabetes)), size = 2) + 
+  labs(x = "Nivel de glicose", y = "Idade", col = "Diabetes", fill = "Diabetes") + theme_bw()
+```
+
+### Aprendizado Não-supervisionado
+
+Seja um conjunto de variáveis de entrada, independentes ou preditores $x_1, x_2, ..., x_k$. O aprendizado não-supervisionado visa obter informações a partir dos próprios dados de entrada, sem a necessidade de um supervisor ou variável dependente. Consitiu-se de técnicas de agrupamento e redução de dimensionalidade.
+
+A seguir expõe-se um gráfico do resultado de um agrupamento por k-médias considerando assassinatos, assaltos, estupro e outros índices de criminalidade e demográficos nos EUA. São plotados os dois índices mais importantes.
+
+```{r}
+#| label: kmeans
+#| fig-cap: "Algoritmo k-means para agrupar estados americanos segundo índices de criminalidade"
+#| message: false
+#| warning: false
+#| echo: false
+data("USArrests")
+df <- scale(USArrests)
+
+library(factoextra)
+
+set.seed(123)
+km.res <- kmeans(df, 4, nstart = 25)
+
+dd <- cbind(USArrests, cluster = km.res$cluster)
+
+fviz_cluster(km.res, data = df) + theme_bw()
+```
+
+A seguir expõe-se um gráfico de dispersão para idade e peso de órgãos retirados de 30 focas do Cabo que morreram como consequência não intencional da pesca comercial. Devido a alta correção entre as variáveis, $R = 0.95$, foi realizada uma análise de componentes principais para obter uma nova variável ou componente principal que represente ambas as variáveis, reduzindo a dimensionalidade do problema. A nova variável obtida, plotada em azul escuro, representa 98% da variabilidade das variáveis originais.
+
+```{r}
+#| label: pca
+#| fig-cap: "Análise de componentes principais para encontrar uma nova variável que represente o peso e a altura"
+#| message: false
+#| warning: false
+#| echo: false
+library(DAAG)
+
+data(cfseal)
+
+dados <- cfseal
+
+dados <- na.omit(dados)
+
+tr <- round(0.8*nrow(dados))
+treino <- sample(nrow(dados), tr, replace = F)
+
+dados.treino <- dados[treino,]
+dados.teste <- dados[-treino,]
+
+plot(scale(age)~scale(weight), asp=1, dados, pch = 20, cex = 1.5, col = "mediumseagreen")
+d <- dados[,1:2]
+cm <- cor(d)
+
+e <- eigen(cm)
+
+
+s1 <- e$vectors[1,1]/e$vectors[2,1] # PC1
+s2 <- e$vectors[1,2]/e$vectors[2,2] # PC2
+
+abline(a=0, b=s1, col='blue', lwd = 2)
+abline(a=0, b=s2, col='lightblue', lwd = 2)
+```

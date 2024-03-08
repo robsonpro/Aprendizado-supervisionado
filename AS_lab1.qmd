@@ -1,0 +1,203 @@
+---
+title: "Aprendizado supervisionado - Laboratório 1 de R"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+# Aprendizado supervisionado
+
+## Visão geral das aulas de laboratório
+
+### Exemplo de problema de regressão
+
+Carregando as bibliotecas (pacotes) para análise.
+
+```{r warning=F, message=F}
+library(AER) # para base de dados
+library(ggplot2) # para gráficos
+```
+
+Carregando base de dados.
+
+```{r}
+data(USConsump1993)
+# ?USConsump1993
+```
+
+```{r warning=F, message=F}
+Consumo <- data.frame(USConsump1993)
+head(Consumo)
+```
+
+Separando 75% dos dados para treino do modelo e 25% para teste.
+
+```{r}
+tr <- round(0.75*nrow(Consumo))
+
+set.seed(9)
+treino <- sample(nrow(Consumo), tr, replace = F)
+
+Consumo.tr <- Consumo[treino,]
+Consumo.te <- Consumo[-treino,]
+```
+
+```{r}
+head(Consumo.tr)
+```
+
+```{r}
+head(Consumo.te)
+```
+
+Treinando um modelo de regressão linear simples.
+
+```{r}
+lm1 <- lm(expenditure ~ income, data = Consumo.tr)
+summary(lm1)
+```
+
+Plotando o modelo com dados de treino.
+
+```{r}
+ggplot(data = Consumo.tr, aes(x = income, y = expenditure)) + 
+   geom_point(color = 'red', size = 2) +
+   geom_smooth(method = "lm", formula = y ~ x) +
+   xlab("renda") + 
+   ylab("consumo") + theme_bw()
+```
+
+Realizando previsão com o modelo.
+
+```{r}
+predict(lm1, newdata = data.frame(income = 9000))
+```
+
+Previsão para todos dados de teste.
+
+```{r}
+Consumo.te$exp_pred <- predict(lm1, newdata = data.frame(income = Consumo.te$income))
+
+head(Consumo.te)
+```
+
+Plotando o modelo com os dados de teste.
+
+```{r}
+ggplot() + 
+  geom_point(data = Consumo.te, aes(x = income, y = expenditure), size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x, 
+              data = Consumo.tr,
+              aes(x = income, y = expenditure)) +
+  xlab("renda") + 
+  ylab("consumo") + theme_bw()
+```
+
+Criando uma função de métricas de desempenho.
+
+```{r}
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Desempenho do modelo para dados de teste.
+
+```{r}
+metrics(Consumo.te$expenditure, Consumo.te$exp_pred)
+```
+
+### Exemplo de problema de classificação
+
+```{r warning=F, message=F}
+library(mlbench)
+```
+
+```{r}
+data(PimaIndiansDiabetes2)
+# ?PimaIndiansDiabetes2
+```
+
+```{r}
+PimaIndiansDiabetes2 <- na.omit(PimaIndiansDiabetes2)
+PimaIndiansDiabetes2$diabetes <- ifelse(PimaIndiansDiabetes2$diabetes=="neg",0,1)
+
+dados <- PimaIndiansDiabetes2
+
+head(dados)
+```
+
+```{r}
+set.seed(7)
+treino <- sample(nrow(dados), 0.75*nrow(dados))
+dados_treino <- dados[treino,]
+dados_test <- dados[-treino,]
+```
+
+Obtendo um modelo de regressão logística simples a partir dos dados de treino considerando apenas uma variável regressora, o nível de glicose.
+
+```{r}
+model1 <- glm( diabetes ~ glucose, data = dados_treino, family = binomial)
+summary(model1)
+```
+
+Plotando o modelo com os dados de treino.
+
+```{r message=F}
+ggplot(dados_treino, aes(glucose, diabetes)) +
+  geom_point(aes(col = as.factor(diabetes)), alpha = 0.5) +
+  geom_smooth(method = "glm", method.args = list(family = "binomial"), fill = "grey", col = "black") +
+  labs(x = "Concentracao de glicose", y = "Probabilidade de ter diabetes", col = "diabetes") +
+  theme_bw()
+```
+
+Plotando o modelo com os dados de teste.
+
+```{r message=F}
+ggplot() +
+  geom_point(data = dados_test, 
+             mapping = aes(glucose, diabetes, col = as.factor(diabetes)), 
+             alpha = 0.5) +
+  geom_smooth(data = dados_treino, 
+              mapping = aes(glucose, diabetes), 
+              method = "glm", 
+              method.args = list(family = "binomial"), 
+              col = "black") +
+  labs(x = "Concentracao de glicose", y = "Probabilidade de ter diabetes", col = "diabetes") + theme_bw()
+```
+
+Previsão com os dados de teste.
+
+```{r}
+dados_test$prob <- predict(model1, 
+                           newdata = data.frame(glucose = dados_test$glucose), 
+                           type = 'response')
+dados_test$y_pred <- ifelse(dados_test$prob > 0.5, 1, 0)
+
+head(dados_test)
+```
+
+Matriz de confusão para dados de teste.
+
+```{r}
+cm1 <- table(data = dados_test$diabetes, model = dados_test$y_pred)
+cm1
+```
+
+Proporção de observações de teste classificadas corretamente.
+
+```{r}
+mean(dados_test$diabetes == dados_test$y_pred)
+```
