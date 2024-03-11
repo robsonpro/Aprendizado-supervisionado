@@ -12,7 +12,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_Intro.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab1.html
 
-##Conflito entre vício e variância
+## Conflito entre vício e variância
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_vicio_var.html
 
