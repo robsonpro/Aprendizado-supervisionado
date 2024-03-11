@@ -1,0 +1,292 @@
+---
+title: "Conflito entre vício e variância no Aprendizado supervisionado"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Conflito entre vício e variância
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(ggplot2)
+library(dplyr)
+```
+
+Seja uma variável regressora ou independente $x \in \mathbb{R}$ e uma resposta ou variável dependente igualmente medida em uma escala contínua, $y \in \mathbb{R}$.
+
+Deseja-se aproximar uma função desconhecida, $f(x)$, que relaciona $y$ e $x$. Tal aproximação pode ser feita considerando uma função perda, $L(y,f(x))$, que mede os erros de previsão.
+
+A função perda mais comum para problemas de regressão é a função perda quadrática, conforme segue.
+
+$$
+L(y,f(x)) = (y-f(x))^2
+$$
+
+Seja um conjunto de dados disponível, $D = {(x_1,y_1), (x_2,y_2), ..., (x_n,y_n)}$, conforme o observado graficamente a seguir. As observações da variável independente podem ser descritas em relação à função desconhecida adicionada de um termo de erro, $y = f(x) + \varepsilon$, $E(\varepsilon)=0$, $Var(\varepsilon) = \sigma^2_\varepsilon$.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+f_sin <- function(x) {
+  f <- sin(2*pi*x)
+  return(f)
+}
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+set.seed(7)
+x <- runif(100,0,1)
+data <- data.frame(x = x,
+                   y = f_sin(x) + rnorm(100, 0, .2))
+```
+
+```{r}
+#| echo: false
+ggplot(data, aes(x,y)) + 
+  geom_point(col="red") +
+  theme_bw()
+```
+
+É possível decompor a esperança da função perda considerando um modelo estimado, $\hat f(x)$, conforme segue.
+
+$$
+E[(y-\hat f(x))^2] = Var[\hat f(x)] + Vicio[\hat f(x)] + Var[\varepsilon]
+$$
+
+Para um conjunto de dados disponíveis, $D$, tem-se para o vício:
+
+$$
+\begin{aligned}
+Vicio_D[\hat f(x)] &= E_D[\hat f(x) - f(x)] = E_D[\hat f(x) - y + \varepsilon] \\
+Vicio_D[\hat f(x)] &= E_D[\hat f(x)] - E_D[y]
+\end{aligned}
+$$
+
+E para a variância:
+
+$$
+\begin{aligned}
+Var_D[\hat f(x)] &= E_D[(\hat f(x) - \hat f(x))^2] 
+\end{aligned}
+$$
+
+O erro associado às medições, $Var(\varepsilon) = \sigma^2_\varepsilon$, consiste no erro irredutível. Este erro está associado à qualidade dos dados. Portanto sua variabilidade terá implicação no erro do modelo estimado.
+
+Seja o ajuste aos dados disponíveis de três modelos de regressão com distintas complexidades, um linear, um cúbico e um modelo polinomial de décima ordem.
+
+Tais modelos são da forma que segue:
+
+$$y_1 = \beta_0 + \beta_1x$$
+$$y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3$$
+
+$$y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta_{10}x^{10} $$
+
+Os modelos são estimados por mínimos quadrados e plotados com os dados a seguir:
+
+```{r}
+#| echo: false
+
+colors <- c("y" = "red3", "linear" = "grey", "cúbico" = "green2", "poly-10" = "purple")
+
+ggplot(data, aes(x,y)) + 
+  geom_point(aes(color = "y")) +
+  geom_smooth(method = lm, formula = y ~ x, se = F, aes(color = "linear")) +
+  geom_smooth(method = lm, formula = y ~ poly(x, degree = 3, raw = TRUE), 
+              se = F, aes(color = "cúbico")) +
+  geom_smooth(method = lm, formula = y ~ poly(x, degree = 10, raw = TRUE), 
+              se = F, aes(color = "poly-10")) +
+  labs(color = "Legend") +
+    scale_color_manual(values = colors) +
+  theme_bw()
+```
+
+Tomando um valor arbitrário de $x = x_0$, e $K$ conjuntos distintos de observações futuras, $d_k = (x_1,y_1)_k, ..., (x_n,y_n)_k$, $k=1, ..., K$, é possível medir o vício e a variância das estimativas obtidas por $\hat f(x)$ para um $x=x_0$ específico.
+
+```{r}
+#| echo: false
+
+set.seed(7)
+
+pred <- data.frame(model = numeric(3000),
+                   pred = numeric(3000),
+                   vicio = numeric(3000))
+
+x0=0.75
+
+i<-1
+
+E_y <- f_sin(x0)
+
+for (k in 1:1000) {
+
+x_ <- runif(20,0,1)
+
+data_ <- data.frame(x = x,
+                    y = f_sin(x) + rnorm(100, 0, 2))
+
+lm1 <- lm(y ~ x, data_)
+lm3 <- lm(y ~ poly(x, degree = 3, raw = TRUE), data_)
+lm10 <- lm(y ~ poly(x, degree = 10, raw = TRUE), data_)
+                    
+pred1 <- predict(lm1, newdata = data.frame(x=x0)) 
+pred3 <- predict(lm3, newdata = data.frame(x=x0)) 
+pred10 <- predict(lm10, newdata = data.frame(x=x0))  
+
+vicio1 <- pred1 - E_y
+vicio3 <- pred3 - E_y
+vicio10 <- pred10 - E_y
+
+pred$model[i] <- 1
+pred$model[i+1] <- 3
+pred$model[i+2] <- 10
+
+pred$pred[i] <- pred1
+pred$pred[i+1] <- pred3
+pred$pred[i+2] <- pred10
+
+pred$vicio[i]   <- vicio1
+pred$vicio[i+1] <- vicio3
+pred$vicio[i+2] <- vicio10
+
+i <- i + 3
+
+} 
+```
+
+```{r}
+#| echo: false
+ggplot(pred, aes(x=as.factor(model),y=vicio, col = as.factor(model))) +
+  geom_boxplot() + 
+  geom_jitter(alpha = .1) +
+  geom_hline(yintercept = 0, linetype=2) +
+  labs(x = "ordem", y = "erro") +
+  theme_bw() +
+  theme(legend.position="none")
+```
+
+```{r}
+#| echo: false
+ggplot(pred, aes(x=vicio, fill = as.factor(model))) +
+  geom_density(alpha = .3, col = "white") + 
+  geom_vline(xintercept = 0, linetype=2) +
+  labs(y="densidade", x = "erro", fill = "ordem") +
+  theme_bw()
+```
+
+Pelos gráficos pode-se observar que o modelo linear apresenta maior vício e menor variância, enquanto o modelo polinomial de décima ordem apresenta menor vício, porém maior variância. Este exemplo ilustra o conflito entre vício e variância. Deve-se buscar um modelo que apresente equilíbrio entre ambas medidas.
+
+A seguir também são tabelados valores de vício e variância dos modelos segundo a ordem ou complexidade entre os mesmos. Observa-se que o modelo de menor grau e, portanto menor complexidade, apresenta alto vício, porém baixa variância. Já o modelo de maior grau, ou maior complexidade, apresenta baixo vício, porém alta variância.
+
+```{r}
+#| echo: false
+#| tbl-cap: Vício versus complexidade dos modelos
+knitr::kable(pred |>
+  group_by(ordem = model) |>
+  summarise(vicio2 = format(mean(vicio)^2, scientific=F)))
+```
+
+```{r}
+#| echo: false
+#| tbl-cap: Variância versus complexidade dos modelos
+
+knitr::kable(pred |>
+  group_by(ordem = model) |>
+  summarise(var = format(var(pred), scientific = F)))
+```
+
+Em casos onde o número de observações é baixo o conflito entre vício e variância fica mais claro. Considerando o exemplo plotado a seguir, pode-se observar que enquanto o modelo linear apresenta um baixo ajuste, o modelo polinomial de décima ordem apresenta um sobreajuste, uma vez que praticamente interpola os dados disponíveis. Este último apresentará um ajuste muito além do real, uma vez que sua capacidade não se confirmará para dados futuros.
+
+```{r}
+#| echo: false
+
+set.seed(7)
+xa <- runif(15,0,1)
+dataa <- data.frame(x = xa,
+                    y = f_sin(xa) + rnorm(15, 0, .2))
+
+colors <- c("y" = "red3", "linear" = "grey", "cúbico" = "green2", "poly-10" = "purple")
+
+ggplot(dataa, aes(x,y)) + 
+  geom_point(aes(color = "y")) +
+  geom_smooth(method = lm, formula = y ~ x, se = F, aes(color = "linear")) +
+  geom_smooth(method = lm, formula = y ~ poly(x, degree = 3, raw = TRUE), 
+              se = F, aes(color = "cúbico")) +
+  geom_smooth(method = lm, formula = y ~ poly(x, degree = 10, raw = TRUE), 
+              se = F, aes(color = "poly-10")) +
+  labs(color = "Legend") +
+    scale_color_manual(values = colors) +
+  theme_bw()
+```
+
+A seguir apresenta-se o erro ou valor da função perda de tais modelos para dados de treino e dados futuros.
+
+```{r}
+#| echo: false
+#| 
+set.seed(7)
+xa <- runif(20,0,1)
+dataa <- data.frame(x = xa,
+                    y = f_sin(xa) + rnorm(20, 0, .2))
+
+lm1a <- lm(y ~ x, dataa)
+lm2a <- lm(y ~ poly(x, degree = 2, raw = TRUE), dataa)
+lm3a <- lm(y ~ poly(x, degree = 3, raw = TRUE), dataa)
+lm5a <- lm(y ~ poly(x, degree = 5, raw = TRUE), dataa)
+lm10a <- lm(y ~ poly(x, degree = 10, raw = TRUE), dataa)
+
+set.seed(27)
+xb <- runif(20,0,1)
+datab <- data.frame(x = xb,
+                    y = f_sin(xb) + rnorm(20, 0, .2))
+
+MSE <- function(obs, pred) {
+  MSE <- mean((obs - pred)^2)
+  return(MSE)
+}
+
+MSE1_T <- MSE(dataa$y, lm1a$fitted.values)
+MSE2_T <- MSE(dataa$y, lm2a$fitted.values)
+MSE3_T <- MSE(dataa$y, lm3a$fitted.values)
+MSE5_T <- MSE(dataa$y, lm5a$fitted.values)
+MSE10_T <- MSE(dataa$y, lm10a$fitted.values)
+
+yhat1 <- predict(lm1a, newdata = datab)
+yhat2 <- predict(lm2a, newdata = datab)
+yhat3 <- predict(lm3a, newdata = datab)
+yhat5 <- predict(lm5a, newdata = datab)
+yhat10 <- predict(lm10a, newdata = datab)
+
+MSE1_t <- MSE(datab$y, yhat1)
+MSE2_t <- MSE(datab$y, yhat2)
+MSE3_t <- MSE(datab$y, yhat3)
+MSE5_t <- MSE(datab$y, yhat5)
+MSE10_t <- MSE(datab$y, yhat10)
+
+data_MSE <- data.frame(model = rep(c(1,2,3,5,10),2),
+                       dados = c(rep("treino",5),rep("teste",5)),
+                       MSE = c(MSE1_T, MSE2_T, MSE3_T, MSE5_T, MSE10_T, 
+                               MSE1_t, MSE2_t, MSE3_t, MSE5_t, MSE10_t))
+
+ggplot(data_MSE, aes(x=model, y = MSE, 
+                     col = dados,
+                     linetype = dados,
+                     pch = dados)) + 
+  geom_point(size=2) +
+  geom_line() +
+  labs(x = "ordem") +
+  scale_x_continuous(breaks = 1:10) +
+  theme_bw()
+```
+
+Pode-se observar que para os dados de treino, à medida que se aumenta a complexidade do modelo ajustado o erro diminui. Entretanto, o mesmo não acontece para os dados futuros ou de teste do modelo.
+
+Quando um modelo apresenta  alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.
+
+O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que no exemplo dado seria o de terceira ordem.
