@@ -72,7 +72,7 @@ ul.task-list li input[type="checkbox"] {
 <section id="conflito-entre-vício-e-variância" class="level2">
 <h2 class="anchored" data-anchor-id="conflito-entre-vício-e-variância">Conflito entre vício e variância</h2>
 <p>Seja uma variável regressora ou independente <span class="math inline">\(x \in \mathbb{R}\)</span> e uma resposta ou variável dependente igualmente medida em uma escala contínua, <span class="math inline">\(y \in \mathbb{R}\)</span>.</p>
-<p>Deseja-se aproximar uma função desconhecida, <span class="math inline">\(f(x)\)</span>, que relaciona <span class="math inline">\(y\)</span> e <span class="math inline">\(x\)</span>. Tal aproximação pode ser feita considerando uma função perda, <span class="math inline">\(L(y,f(x))\)</span>, que mede os erros de previsão.</p>
+<p>Deseja-se aproximar uma função desconhecida, <span class="math inline">\(f(x)\)</span>, que relaciona <span class="math inline">\(y\)</span> e <span class="math inline">\(x\)</span>. Tal aproximação pode ser feita minimizando uma função perda, <span class="math inline">\(L(y,f(x))\)</span>, que mede os erros de previsão.</p>
 <p>A função perda mais comum para problemas de regressão é a função perda quadrática, conforme segue.</p>
 <p><span class="math display">\[
 L(y,f(x)) = (y-f(x))^2
@@ -85,7 +85,7 @@ L(y,f(x)) = (y-f(x))^2
 </div>
 <p>É possível decompor a esperança da função perda considerando um modelo estimado, <span class="math inline">\(\hat f(x)\)</span>, conforme segue.</p>
 <p><span class="math display">\[
-E[(y-\hat f(x))^2] = Var[\hat f(x)] + Vicio[\hat f(x)] + Var[\varepsilon]
+E[(y-\hat f(x))^2] = Var[\hat f(x)] + Vicio^2[\hat f(x)] + Var[\varepsilon]
 \]</span></p>
 <p>Para um conjunto de dados disponíveis, <span class="math inline">\(D\)</span>, tem-se para o vício:</p>
 <p><span class="math display">\[

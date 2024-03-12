@@ -17,7 +17,7 @@ library(dplyr)
 
 Seja uma variável regressora ou independente $x \in \mathbb{R}$ e uma resposta ou variável dependente igualmente medida em uma escala contínua, $y \in \mathbb{R}$.
 
-Deseja-se aproximar uma função desconhecida, $f(x)$, que relaciona $y$ e $x$. Tal aproximação pode ser feita considerando uma função perda, $L(y,f(x))$, que mede os erros de previsão.
+Deseja-se aproximar uma função desconhecida, $f(x)$, que relaciona $y$ e $x$. Tal aproximação pode ser feita minimizando uma função perda, $L(y,f(x))$, que mede os erros de previsão.
 
 A função perda mais comum para problemas de regressão é a função perda quadrática, conforme segue.
 
@@ -57,7 +57,7 @@ ggplot(data, aes(x,y)) +
 É possível decompor a esperança da função perda considerando um modelo estimado, $\hat f(x)$, conforme segue.
 
 $$
-E[(y-\hat f(x))^2] = Var[\hat f(x)] + Vicio[\hat f(x)] + Var[\varepsilon]
+E[(y-\hat f(x))^2] = Var[\hat f(x)] + Vicio^2[\hat f(x)] + Var[\varepsilon]
 $$
 
 Para um conjunto de dados disponíveis, $D$, tem-se para o vício:
@@ -83,8 +83,7 @@ Seja o ajuste aos dados disponíveis de três modelos de regressão com distinta
 
 Tais modelos são da forma que segue:
 
-$$y_1 = \beta_0 + \beta_1x$$
-$$y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3$$
+$$y_1 = \beta_0 + \beta_1x$$ $$y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3$$
 
 $$y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta_{10}x^{10} $$
 
@@ -287,6 +286,6 @@ ggplot(data_MSE, aes(x=model, y = MSE,
 
 Pode-se observar que para os dados de treino, à medida que se aumenta a complexidade do modelo ajustado o erro diminui. Entretanto, o mesmo não acontece para os dados futuros ou de teste do modelo.
 
-Quando um modelo apresenta  alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.
+Quando um modelo apresenta alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.
 
 O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que no exemplo dado seria o de terceira ordem.
