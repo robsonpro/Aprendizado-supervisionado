@@ -16,3 +16,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab1.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_vicio_var.html
 
+### Laboratório 2
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab2.html
+
