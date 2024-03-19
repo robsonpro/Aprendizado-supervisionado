@@ -1,0 +1,464 @@
+---
+title: "Regressão linear simples, múltipla e polinomial"
+author: "Robson Bruno Dutra Perreira"
+format: html
+editor: visual
+---
+
+## Regressão linear simples, múltipla e polinomial
+
+### Regressão linear simples
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(ggplot2)
+library(dplyr)
+```
+
+Seja um problema onde deseja-se prever uma resposta contínua, $y \in \mathbb{R}$, em função de uma única variável independente também contínua, $x \in \mathbb{R}$. Conforme observado graficamente abaixo, pode-se considerar em diversos casos a aproximação de uma função linear para tal relação.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+set.seed(13)
+x <-  runif(15,0,100)
+data <- data.frame(x = x,
+                   y = 3*x + rnorm(15, 0, 20))
+
+data <- data |> arrange(x) 
+
+ggplot(data, aes(x,y)) + 
+  geom_point(col="navy", size = 2) +
+  theme_bw()
+```
+
+Tal aproximação pode ser descrita pela Equação à seguir, onde $\hat{y}$ consiste no valor predito de $y$, $\beta_0$ e $\beta_1$ são coeficientes chamados de intercepto ou constante e coeficiente linear ou inclinação, respectivamente. Enquanto $\beta_0$ mede o valor da resposta prevista para $x=0$, $\beta_1$ consiste na mudança média da resposta para o incremento de uma unidade de $x$.
+
+$$
+\hat{y} = \beta_0 + \beta_1x
+$$
+
+A seguir pode-se observar para os dados plotados anteriormente a linha azual do modelo de regressão linear simples obtido.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+lm1 <- lm(y~x, data)
+
+pred <- lm1$fitted.values
+
+ggplot(data, aes(x,y)) + 
+  geom_point(col="navy", size = 2) +
+  geom_smooth(formula = y~x, method = "lm", se = F) +
+  theme_bw()
+
+data <- data |> 
+  mutate(y_hat = pred) |> 
+  mutate(erro = y - y_hat)
+```
+
+Para este caso inicial os coeficientes de regressão estimados são:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+lm1$coefficients
+```
+
+A primeira pergunta a ser feita seria como estimar tais coeficientes de regressão. Pode-se pensar em estimativas que minimizem o erro de previsão. Conforme, plotado a seguir, o erro de previsão seria a diferença entre o valor experimental e o previsto, $\varepsilon_i = y_i - \hat{y}_i$, $i = 1, ...., N$.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+ggplot(data, aes(x,y)) + 
+  geom_point(col="navy", size = 2) +
+  geom_smooth(formula = y~x, method = "lm", se = F) +
+  geom_linerange(mapping=aes(ymin=pmin(y,pred),ymax=pmax(y,pred)),
+                 color = "red") +
+  theme_bw()
+```
+
+Neste sentido, as observações da variável dependente ou resposta podem ser descritos conforme segue.
+
+$$
+\begin{aligned}
+y_i = \hat{y}_i + \varepsilon_i \\
+y_i = \beta_0 + \beta_1x_i + \varepsilon_i \\
+\end{aligned}
+$$
+
+Tomando $N$ observações retiradas da população de interesse, $(x_1, y_1), (x_2, y_2), ..., (x_N, y_N)$, pode-se pensar em um modelo que minimize os erros de previsão para a amostra disponível. Uma vez que o erro é normalmente distribuído, com média nula e variância $\sigma_\varepsilon^2$, $\varepsilon \sim N(0,\sigma_\varepsilon^2)$, pode-se trabalhar a minimização da soma dos quadrados dos erros de previsão, $\sum_{i=1}^{N}\varepsilon_i^2$.
+
+A seguir observam-se algumas das observações para os dados plotados anteriormente, bem como os valores preditos e erros associados.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+data <- data |> 
+  mutate(y_hat = pred) |> 
+  mutate(erro = y - y_hat)
+
+knitr::kable(head(data))
+```
+
+A sintaxe anteriormente apresentada pode ser escrita de forma matricial, conforme segue, onde $\mathbf{x}_{[2 \times N]}$ consiste em uma matriz relacionada às observações independentes, com uma coluna de valores unitários associada à $\beta_0$ e outra com as observações de $x$, portanto associada a $\beta_1$. $\mathbf{y}_{[N\times1]}$ consiste no vetor de observações da resposta, $\mathbf{\varepsilon}_{[N\times1]}$ consiste no vetor de erros ou resíduos de previsão e $\mathbf{\beta}_{[2\times1]}$ consiste em um vetor de coeficientes.
+
+$$
+\begin{aligned}
+\mathbf{y} = \mathbf{X}\mathbf{\beta} + \mathbf{\varepsilon}
+\end{aligned}
+$$
+
+Tais elementos matriciais podem ser escritos de forma genérica conforme segue.
+
+$$
+\mathbf{X} = 
+\begin{bmatrix}
+1 & x_{1}\\
+1 & x_{2}\\
+\vdots & \vdots \\
+1 & x_{N}\\
+\end{bmatrix} \\
+$$
+
+$$
+\mathbf{y} = 
+\begin{bmatrix}
+y_{11}\\
+y_{11}\\
+\vdots \\
+y_{1N}\\
+\end{bmatrix} \\
+$$
+
+$$
+\mathbf{\varepsilon} = 
+\begin{bmatrix}
+\varepsilon_{11}\\
+\varepsilon_{11}\\
+\vdots \\
+\varepsilon_{1N}\\
+\end{bmatrix}, e \\
+$$
+
+$$
+\mathbf{\beta}^T = 
+\begin{bmatrix}
+\beta_0 & \beta_1\\
+\end{bmatrix} \\
+$$
+
+Tomando tal notação, a soma dos quadrados dos erros pode ser descrita como $\sum_{i=1}^{N}\varepsilon_i^2 = \mathbf{\varepsilon}^T\mathbf{\varepsilon}$. Desenvolvendo tal expressão tem-se:
+
+$$
+\begin{aligned}
+L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \mathbf{X}\mathbf{\beta})^T(\mathbf{y} - \mathbf{X}\mathbf{\beta}) \\
+\mathbf{y}^T\mathbf{y} - 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{y} + \mathbf{\beta}^T\mathbf{X}^T\mathbf{X}\mathbf{\beta} 
+\end{aligned}
+$$ Para minimizar $L$ em relação à estimativa de $\mathbf{\beta}$, pode-se diferenciar tal quantidade em relação à $\mathbf{\beta}$ e igualar a zero:
+
+$$
+\begin{aligned}
+\frac{\partial L}{\partial \mathbf{\beta}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{X} = 0 \\
+\hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{y})
+\end{aligned}
+$$
+
+Tal solução constitui as chamadas equações normais de mínimos quadrados.
+
+Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+par(mfrow=c(2,2))
+plot(lm1)
+```
+
+### Regressão linear múltipla
+
+No caso de onde há múltiplas variáveis independentes ou regressoras de interesse, $x_1, x_2, ..., x_k$ pode-se considerar o modelo com um coeficiente linear associado a cada variável, isto é:
+
+$$
+\hat{y}_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \cdots + \beta_kx_{ik} = \beta_0 + \sum_{j=1}^{k}\beta_jx_{ij},  
+$$
+
+ou de forma matricial com $\mathbf{X}_{[N\times k+1]}$ e $\mathbf{\beta}_{[k+1 \times 1]}$:
+
+$$
+\begin{aligned}
+\hat{\mathbf{y}} = \mathbf{X}\mathbf{\beta}
+\end{aligned},
+$$ 
+com:
+
+$$
+\mathbf{X} = 
+\begin{bmatrix}
+1 & x_{11} & x_{21} & \cdots & x_{k1}\\
+1 & x_{12} & x_{22} & \cdots & x_{k2} \\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+1 & x_{1N} & x_{2N} & \cdots & x_{kN} \\
+\end{bmatrix} e\\ 
+$$
+
+$$
+\mathbf{\beta}^T = 
+\begin{bmatrix}
+\beta_0 & \beta_1 & \cdots & \beta_k\\
+\end{bmatrix}. \\
+$$
+
+As estimativas de mínimos quadrados, deduzidas para o caso simples, $\hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{y})$, também atendem ao caso múltiplo. Uma forma de medir o ajuste do modelo obtido aos dados seria a partir do cálculo do coeficiente de determinação múltipla, $R^2$, conforme segue,
+
+$$
+\begin{align}
+R^2 = 1- SS_{E}/SS_T \\
+R^2 = 1- \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{\sum_{i=1}^{N}(y_i-\overline{y}_i)^2},
+\end{align}
+$$
+
+ou utilizando a média dos quadrados dos erros, $MS_E$, ou outra métrica de erro.
+
+$$
+\begin{align}
+MS_E = SS_E/N \\
+MS_E = \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{N} \\
+\end{align}
+$$
+
+É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. O $MS_E$ da ANOVA relacionado aos dados de treinamento do modelo tem no denominador $N-k$, sendo, portanto, o número de graus de liberdade disponíveis para calcular o erro. Além do $R^2$, para os dados de treinamento, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, $R^2_{adj}$, isto é:
+
+$$
+R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}.
+$$
+
+Esta métrica é mais honesta uma vez que penaliza o modelo pela adição de mais coeficientes. O $R^2$ sempre aumentará com adição de novos coeficientes, enquanto o $R^2_{adj}$ será mais baixo casos novos termos adicionados não apresentem significância estatística. Entretanto, no contexto de aprendizado supervisionado é mais interessante realizar a validação cruzada e ver o desempenho do modelo em dados futuros. Isto será realizado nas aulas práticas.
+
+O teste t para os coeficientes de regressão pode ser calculado para medir a significância de cada coeficiente e testar as seguintes hipóteses para cada coeficiente de regressão.
+
+$$
+H_0: \beta_j = 0\\
+H_1: \beta_j \neq 0, j = 1, ..., k\\
+$$
+
+O teste é calculado conforme segue, onde $C_j$ é o valor da $j$-ésima linha e $j$-ésima coluna da matriz $(X^T)^{-1}$, correspondente a $\beta_j$. A hipótese nula é rejeitada se $t_{0j} > t_{[\alpha/2,N-k]}$, onde $\alpha$ é o nível de significância de interesse.
+
+$$
+t_{0j} = \frac{\hat{\beta}_j}{\sqrt{C_jSS_E/(N-k)}}
+$$
+
+Analogamente, estimativas intervalares para os coeficientes podem ser obtidas como segue, as quais consistem em intervalos que garantem $\gamma = 1-\alpha$ de confiança de encontrar os verdadeiros valores dos coeficientes de regressão.
+
+$$
+\hat{\beta}_j \pm t_{[\alpha/2,N-k]}\sqrt{C_jSS_E/(N-k)}
+$$
+
+A seguir ilustra-se graficamente um modelo de regressão linear múltipla para prever o preço de carros usados em função da idade e quilometragem.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(Stat2Data)
+data(ThreeCars2017)
+model <- lm(Price ~ Mileage+Age, ThreeCars2017)
+
+xs <- seq(min(ThreeCars2017$Mileage), max(ThreeCars2017$Mileage), length = 20)
+ys <- seq(min(ThreeCars2017$Age), max(ThreeCars2017$Age), length = 20)
+xys <- expand.grid(xs,ys)
+colnames(xys) <- c("Mileage", "Age")
+zs <- matrix(predict(model, xys), nrow = length(xs))
+
+n.cols <- 100
+palette <- colorRampPalette(c("orange", "purple"))(n.cols)
+zfacet <- zs[-1, -1] + zs[-1, -20] + zs[-20, -1] + zs[-20, -20]
+facetcol <- cut(zfacet, n.cols)
+
+p1<-persp(x=xs, y=ys, zs, theta=210, phi=30, ticktype='detailed', 
+            xlab="km", ylab="Idade", zlab="US$", 
+            col = palette[facetcol])
+
+with(ThreeCars2017, points(trans3d(Mileage,Age,Price,p1), pch=20, 
+                           col = "green3"))
+```
+
+Para este caso, os coeficientes estimados são apresentados a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+model$coefficients
+```
+
+O modelo pode ser escrito conforme segue.
+
+$$
+\hat{y} = 21,543 - 0,0531x_1 - 0,842x_2
+$$
+
+O teste t para os coeficientes de regressão resultante é apresentado a seguir. Como $|t_{\alpha/2,N-k}|$ = 1.987, tem-se que todos os coeficientes são significativos, uma vez que $t_{0j} > t_{\alpha/2,N-k}$, $\forall j = 1, ..., k$. Pode-se também considerar o $p-value$ que é a probabilidade de erro na rejeição da hipótese nula, $H_0$, associada ao valor calculado $t_0$. Se $p-value < \alpha$, rejeita-se $H_0$.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+summary(model)
+```
+
+A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+knitr::kable(confint(model))
+```
+
+Além de considerar termos de múltiplas variáveis é possível considerar a interação entre estas, colocando na matriz $\mathbf{X}$ colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma $\beta_{ij}x_ix_j$ Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+model_int <- lm(Price ~ Mileage*Age, ThreeCars2017)
+summary(model_int)
+```
+
+### Codificação de variáveis categóricas em regressão múltipla
+
+Retomando o problema de regressão do preço de revenda de carros considerando o ano e a quilometragem, imagine uma terceira variável regressora que determina o modelo ou tipo do veículo. Tal variável apresenta três categorias, *Mazda6*, *Accord* e *Maxima*. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+knitr::kable(ThreeCars2017[c(1:2,50:51,70:71),c(1,2,4,3)])
+```
+
+Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis *dummy* também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis *dummy* seriam suficientes. Observe a seguir que ao criar uma coluna denominada *Mazda6*, com 1, se *Mazda6* e 0, caso contrário e, de forma análoga, uma coluna para *Accord*, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no *Maxima*.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+ThreeCars2017$Mazda6 <- ifelse(ThreeCars2017$CarType == "Mazda6", 1, 0)
+ThreeCars2017$Accord <- ifelse(ThreeCars2017$CarType == "Accord", 1, 0)
+
+knitr::kable(ThreeCars2017[c(1:2,50:51,70:71),5:6])
+```
+
+O modelo com estas variáveis e as duas consideradas anteriormente ficaria conforme exposto a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+model_dum <- lm(Price ~ Mileage+Age+Mazda6+Accord, ThreeCars2017)
+summary(model_dum)
+```
+
+### Regressão polinomial
+
+É possível em regressão simples ou múltipla realizar transformações nos preditores de forma a incluir termos polinomiais associados à uma ou mais variáveis independentes. Para o caso simples, um modelo de regressão polinomial pode ser escrito conforme segue, onde $p$ é a ordem do modelo de regressão polinomial.
+
+$$
+\hat{y} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + ... \beta_px^p 
+$$
+
+Considerando a notação matricial, a matriz $\mathbf{X}$ fica conforme segue, podendo-se utilizar novamente as equações normais de mínimos quadrados para estimar os coeficientes, $\hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{y})$.
+
+$$
+\mathbf{X} = 
+\begin{bmatrix}
+1 & x_{11} & x_{11}^2 & \cdots & x_{p1}^p\\
+1 & x_{12} & x_{12}^2 & \cdots & x_{p2}^p \\
+\vdots & \vdots & \vdots & \ddots & \vdots\\
+1 & x_{1N} & x_{1N}^2 & \cdots & x_{pN}^p \\
+\end{bmatrix}\\ 
+$$
+
+Sejam os dados da massa de um paciente em kg medidos ao longo de 8 meses de um programa de perda de peso.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(MASS)
+rehab <- wtloss
+
+lm2 <- lm(Weight ~ Days + I(Days^2), rehab)
+
+ggplot(rehab, aes(x = Days, y = Weight)) + 
+  geom_point(color = "deepskyblue3", size = 2) +
+  # geom_smooth(method = "lm", formula = y ~ x + I(x^2), se = F, col = "mediumvioletred") +
+  # ggtitle("Peso vs Dias (dados de treino)") + 
+  xlab("Dias") + 
+  ylab("Peso") + theme_bw()
+```
+
+Considerando um modelo linear para tais dados, os resíduos obtidos ão plotados conforme segue. Pode-se observar claramente um padrão de não linearidade nos resíduos em relação aos valores ajustados, indicando o ajuste de um modelo não linear.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+lm1 <- lm(Weight ~ Days, rehab)
+par(mfrow=c(2,2))
+plot(lm1)
+```
+
+Pode-se pensar, portanto, em um modelo de regressão quadrático para aproximar o peso em função de dias. A curva plotada a seguir consiste em tal modelo.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+ggplot(rehab, aes(x = Days, y = Weight)) + 
+  geom_point(color = "deepskyblue3", size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x + I(x^2), se = F, col = "mediumvioletred") +
+  # ggtitle("Peso vs Dias (dados de treino)") + 
+  xlab("Dias") + 
+  ylab("Peso") + theme_bw()
+```
+
+O modelo quadrático obtido e associado ao gráfico anterior é exposto a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+lm2 <- lm(Weight ~ Days + I(Days^2), rehab)
+summary(lm2)
+```
+
+Os resíduos para os modelos quadráticos são plotados abaixo.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+par(mfrow=c(2,2))
+plot(lm2)
+```
+
+Finalmente, tal modelo estimado pode ser escrito conforme segue.
+
+$$
+\hat{y} = 183,3 -0,456x + 6,930\times10^{-4}x^2 
+$$
+
+
