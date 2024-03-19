@@ -20,3 +20,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_vicio_var.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab2.html
 
+## Regressão linear simples, múltipla e polinomial
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_ols.html
+
