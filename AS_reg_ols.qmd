@@ -165,11 +165,13 @@ $$
 L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \mathbf{X}\mathbf{\beta})^T(\mathbf{y} - \mathbf{X}\mathbf{\beta}) \\
 \mathbf{y}^T\mathbf{y} - 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{y} + \mathbf{\beta}^T\mathbf{X}^T\mathbf{X}\mathbf{\beta} 
 \end{aligned}
-$$ Para minimizar $L$ em relação à estimativa de $\mathbf{\beta}$, pode-se diferenciar tal quantidade em relação à $\mathbf{\beta}$ e igualar a zero:
+$$ 
+
+Para minimizar $L$ em relação à estimativa de $\mathbf{\beta}$, pode-se diferenciar tal quantidade em relação à $\mathbf{\beta}$ e igualar a zero:
 
 $$
 \begin{aligned}
-\frac{\partial L}{\partial \mathbf{\beta}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{X} = 0 \\
+\frac{\partial L}{\partial \mathbf{\beta}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{\beta} = 0 \\
 \hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{y})
 \end{aligned}
 $$
@@ -200,16 +202,15 @@ $$
 \begin{aligned}
 \hat{\mathbf{y}} = \mathbf{X}\mathbf{\beta}
 \end{aligned},
-$$ 
-com:
+$$ com:
 
 $$
 \mathbf{X} = 
 \begin{bmatrix}
-1 & x_{11} & x_{21} & \cdots & x_{k1}\\
-1 & x_{12} & x_{22} & \cdots & x_{k2} \\
+1 & x_{11} & x_{12} & \cdots & x_{1k}\\
+1 & x_{21} & x_{22} & \cdots & x_{2k} \\
 \vdots & \vdots & \vdots & \ddots & \vdots\\
-1 & x_{1N} & x_{2N} & \cdots & x_{kN} \\
+1 & x_{N1} & x_{N2} & \cdots & x_{Nk} \\
 \end{bmatrix} e\\ 
 $$
 
@@ -318,7 +319,7 @@ O teste t para os coeficientes de regressão resultante é apresentado a seguir.
 summary(model)
 ```
 
-A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes. 
+A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.
 
 ```{r}
 #| message: false
@@ -339,7 +340,7 @@ summary(model_int)
 
 ### Codificação de variáveis categóricas em regressão múltipla
 
-Retomando o problema de regressão do preço de revenda de carros considerando o ano e a quilometragem, imagine uma terceira variável regressora que determina o modelo ou tipo do veículo. Tal variável apresenta três categorias, *Mazda6*, *Accord* e *Maxima*. 
+Retomando o problema de regressão do preço de revenda de carros considerando o ano e a quilometragem, imagine uma terceira variável regressora que determina o modelo ou tipo do veículo. Tal variável apresenta três categorias, *Mazda6*, *Accord* e *Maxima*.
 
 ```{r}
 #| message: false
@@ -460,5 +461,3 @@ Finalmente, tal modelo estimado pode ser escrito conforme segue.
 $$
 \hat{y} = 183,3 -0,456x + 6,930\times10^{-4}x^2 
 $$
-
-

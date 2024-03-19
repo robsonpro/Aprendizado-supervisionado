@@ -209,10 +209,11 @@ y_{1N}\\
 L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \mathbf{X}\mathbf{\beta})^T(\mathbf{y} - \mathbf{X}\mathbf{\beta}) \\
 \mathbf{y}^T\mathbf{y} - 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{y} + \mathbf{\beta}^T\mathbf{X}^T\mathbf{X}\mathbf{\beta}
 \end{aligned}
-\]</span> Para minimizar <span class="math inline">\(L\)</span> em relação à estimativa de <span class="math inline">\(\mathbf{\beta}\)</span>, pode-se diferenciar tal quantidade em relação à <span class="math inline">\(\mathbf{\beta}\)</span> e igualar a zero:</p>
+\]</span></p>
+<p>Para minimizar <span class="math inline">\(L\)</span> em relação à estimativa de <span class="math inline">\(\mathbf{\beta}\)</span>, pode-se diferenciar tal quantidade em relação à <span class="math inline">\(\mathbf{\beta}\)</span> e igualar a zero:</p>
 <p><span class="math display">\[
 \begin{aligned}
-\frac{\partial L}{\partial \mathbf{\beta}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{X} = 0 \\
+\frac{\partial L}{\partial \mathbf{\beta}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{\beta} = 0 \\
 \hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{y})
 \end{aligned}
 \]</span></p>
@@ -239,10 +240,10 @@ L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \
 <p><span class="math display">\[
 \mathbf{X} =
 \begin{bmatrix}
-1 &amp; x_{11} &amp; x_{21} &amp; \cdots &amp; x_{k1}\\
-1 &amp; x_{12} &amp; x_{22} &amp; \cdots &amp; x_{k2} \\
+1 &amp; x_{11} &amp; x_{12} &amp; \cdots &amp; x_{1k}\\
+1 &amp; x_{21} &amp; x_{22} &amp; \cdots &amp; x_{2k} \\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
-1 &amp; x_{1N} &amp; x_{2N} &amp; \cdots &amp; x_{kN} \\
+1 &amp; x_{N1} &amp; x_{N2} &amp; \cdots &amp; x_{Nk} \\
 \end{bmatrix} e\\
 \]</span></p>
 <p><span class="math display">\[
