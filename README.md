@@ -24,3 +24,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab2.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_ols.html
 
+### Laboratório 3
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab3.html
+
