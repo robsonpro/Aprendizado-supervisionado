@@ -1,0 +1,387 @@
+---
+title: "Laboratório 3"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Laboratório 3 - Regressão linear simples, múltipla e polinomial
+
+### Caso 1 - regressão linear simples
+
+Carregando pacotes necessários para dados e gráficos.
+
+```{r}
+#| message: false
+#| warning: false
+library(AER)
+library(ggplot2)
+```
+
+Conjunto de dados de consumo e renda.
+
+```{r}
+data(USConsump1993)
+# ?USConsump1993
+
+Consumo <- data.frame(USConsump1993)
+```
+
+Seprando 75% dos dados para treino do modelo. 
+
+```{r}
+set.seed(3)
+tr <- round(0.75*nrow(Consumo))
+treino <- sample(nrow(Consumo), tr, replace = F)
+Consumo.tr <- Consumo[treino,]
+```
+
+Obtendo um modelo de regressão linear simples para consumo em função da renda.
+
+```{r}
+lm1 <- lm(expenditure ~ income, data = Consumo.tr)
+summary(lm1)
+```
+
+Visualizando modelo com dados de treino.
+
+```{r}
+ggplot(data = Consumo.tr, aes(x = income, y = expenditure)) + 
+  geom_point(color = 'indianred', size = 2) +
+  geom_smooth(method = "lm", formula = y ~ x, col = "palegreen3") +
+  ggtitle("Consumo vs renda (dados de treino)") + 
+  xlab("renda") + 
+  ylab("consumo") + theme_bw()
+```
+
+Função de métricas de desempenho para avaliar o modelo.
+
+```{r}
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Avaliando o modelo considerando os dados de treino
+
+```{r}
+metrics(Consumo.tr$expenditure, lm1$fitted.values)
+```
+
+Avaliando os resíduos do modelo.
+
+```{r}
+shapiro.test(lm1$residuals)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm1)
+```
+
+Utilizando o modelo para previsão com dados de teste (dados futuros).
+
+```{r}
+Consumo.te <- Consumo[-treino,]
+res.test <- predict(lm1, newdata = data.frame(income = Consumo.te$income))
+```
+
+Plotando modelo com dados de teste.
+
+```{r}
+ggplot() + 
+  geom_point(data = Consumo.te, mapping = aes(x = income, y = expenditure),
+             color = 'slateblue', size = 2) +
+  geom_smooth(data = Consumo.tr, method = "lm", formula = y ~ x, 
+              mapping = aes(x = income, y = expenditure), col = "khaki4") +
+  ggtitle("Consumo vs renda (dados de teste)") + 
+  xlab("renda") + 
+  ylab("consumo") + theme_bw()
+```
+
+Avaliando o modelo com dados de teste.
+
+```{r}
+pred.te <- predict(lm1, newdata=Consumo.te)
+
+metrics(Consumo.te$expenditure, pred.te)
+```
+
+### Regressão linear múltipla
+
+Carregando pacote para dados e gráfico.
+
+```{r}
+#| message: false
+#| warning: false
+library(caTools)
+library(GGally)
+```
+
+Exemplo de dados macroeconômicos para regressão linear múltipla.
+
+```{r}
+data(longley)
+# ?longley
+dim(longley)
+head(longley)
+```
+
+Visualizando dados.
+
+```{r}
+#| message: false
+#| warning: false
+ggpairs(longley) + theme_bw()
+```
+
+É importante padronizar os dados, especialmente os preditores, para evitar efeitos de escala e unidades de medida.
+
+```{r}
+longley_scaled <- data.frame(scale(longley))
+```
+
+```{r}
+#| message: false
+#| warning: false
+ggpairs(longley_scaled) + theme_bw()
+```
+
+Dividindo dados de treino e teste.
+
+```{r}
+set.seed(45)
+tr <- round(0.8*nrow(longley_scaled),0)
+treino <- sample(nrow(longley_scaled), tr, replace = F)
+longley.tr <- longley_scaled[treino,]
+longley.te <- longley_scaled[-treino,]
+```
+
+Regressão múltipla.
+
+```{r}
+lm_mult <- lm(Employed ~., longley.tr)
+summary(lm_mult)
+```
+
+Obtendo os coeficientes com as equações normais de mínimos quadrados.
+
+```{r}
+X <- model.matrix(~., data =longley.tr[,-7])
+X
+```
+
+```{r}
+y <- longley.tr$Employed
+beta_mat <- solve(t(X)%*%X)%*%t(X)%*%y
+beta_mat
+```
+
+Existem algoritmos de seleção de variáveis que permitem a melhora do ajuste do modelo considerando a remoção de coeficientes não significativos. Um deles é a eliminação para trás. O critério de informação de Akaike, o qual leva em conta o erro dos modelos e a complexidade, é usado para selecionar os modelos.
+
+```{r}
+lm_mult_red <- step(lm_mult, direction = "back")
+summary(lm_mult_red)
+```
+
+Avaliando o modelo considerando os dados de treino
+
+```{r}
+metrics(longley.tr$Employed, lm_mult_red$fitted.values)
+```
+
+Avaliando os resíduos do modelo.
+
+```{r}
+shapiro.test(lm_mult_red$residuals)
+```
+
+```{r}
+par(mfrow=c(2,2))
+plot(lm_mult_red)
+```
+
+Avaliando o modelo com dados de teste.
+
+```{r}
+pred_mult.te <- predict(lm_mult_red, newdata=longley.te)
+metrics(longley.te$Employed, pred_mult.te)
+```
+
+### Regressão múltipla com variáveis categóricas 
+
+Pacote para dados e para codificação dummy.
+
+```{r}
+#| message: false
+#| warning: false
+library(AER)
+library(fastDummies)
+```
+
+Carregando conjunto de dados com variáveis contínuas e uma categórica.
+
+```{r}
+data(Grunfeld)
+# ?Grunfeld
+head(Grunfeld)
+```
+
+Visualizando dados.
+
+```{r}
+#| message: false
+#| warning: false
+ggpairs(Grunfeld[1:80,], columns = 1:4, aes(color = firm)) + theme_bw()
+```
+
+```{r}
+levels(Grunfeld$firm)
+```
+
+Codificando a variável `firm` em variáveis binárias.
+
+```{r}
+Grunfeld <- dummy_cols(Grunfeld, select_columns = c("firm"))
+
+Grunfeld <- Grunfeld[,-c(4,16)] # removendo coluna da variável "firm" e coluna da última variável binária criada, a qual é desnecessária
+
+head(Grunfeld)
+```
+
+Padronizando variáveis regressoras contínuas.
+
+```{r}
+Grunfeld[,2:4] <- scale(Grunfeld[,2:4])
+```
+
+Dividindo dados de treino e teste.
+
+```{r}
+set.seed(87)
+tr <- round(0.8*nrow(Grunfeld),0)
+treino <- sample(nrow(Grunfeld), tr, replace = F)
+Grunfeld.tr <- Grunfeld[treino,]
+Grunfeld.te <- Grunfeld[-treino,]
+```
+
+Modelo de regressão linear múltipla com variáveis contínuas e categóricas.
+
+```{r}
+lm_invest <- lm(invest ~ ., Grunfeld.tr)
+summary(lm_invest)
+```
+
+Avaliando o modelo considerando os dados de treino.
+
+```{r}
+metrics(Grunfeld.tr$invest, lm_invest$fitted.values)
+```
+
+Avaliando o modelo considerando os dados de teste.
+
+```{r}
+pred.invest <- predict(lm_invest, newdata = Grunfeld.te)
+
+metrics(Grunfeld.te$invest, pred.invest)
+```
+
+Adicionando termo de interaçao ao modelo.
+
+```{r}
+lm_invest_int <- lm(invest ~ . + value*capital, Grunfeld.tr)
+summary(lm_invest_int)
+```
+
+Consegue fazer os próximos passos para avaliar o modelo com interação nos dados de teste?
+
+### Regressão polinomial
+
+Carregando pacote e dados.
+
+```{r}
+library(MASS)
+```
+
+```{r}
+rehab <- wtloss
+# ?wtloss
+```
+
+Visualizando o comportamento do peso (massa) em função de dias de treinamento.
+
+```{r}
+ggplot(rehab, aes(x = Days, y = Weight)) + 
+  geom_point(color = "deepskyblue3", size = 2) +
+  xlab("Dias") + 
+  ylab("Peso") + theme_bw()
+```
+
+Separando dados de treino e teste.
+
+```{r}
+set.seed(53)
+tr <- round(0.75*nrow(rehab),0)
+treino <- sample(nrow(rehab), tr, replace = F)
+rehab.tr <- rehab[treino,]
+rehab.te <- rehab[-treino,]
+```
+
+Estimando modelos linear e quadrático.
+
+```{r}
+lm1 <- lm(Weight ~ Days, rehab.tr)
+summary(lm1)
+```
+
+```{r}
+lm2 <- lm(Weight ~ Days + I(Days^2), rehab.tr)
+summary(lm2)
+```
+
+Desempenho para dados de treino.
+
+```{r}
+metrics(rehab.tr$Weight, lm1$fitted.values)
+```
+
+```{r}
+metrics(rehab.tr$Weight, lm2$fitted.values)
+```
+
+Desempenho dos modelos para dados de teste.
+
+```{r}
+pred.lm1 <- predict(lm1, newdata = rehab.te)
+metrics(rehab.te$Weight, pred.lm1)
+```
+
+```{r}
+pred.lm2 <- predict(lm2, newdata = rehab.te)
+metrics(rehab.te$Weight, pred.lm2)
+```
+
+Modelo e dados de teste.
+
+```{r}
+ggplot() + 
+  geom_point(data = rehab.tr, mapping = aes(x = Days, y = Weight), color = "deepskyblue3", size = 2) +
+  geom_smooth(data = rehab.te, mapping = aes(x = Days, y = Weight), 
+              method = "lm", formula = y ~ x + I(x^2), se = F, col = "mediumvioletred") +
+  ggtitle("Peso vs Dias (dados de teste)") + 
+  xlab("Dias") + 
+  ylab("Peso") + theme_bw()
+```
+
