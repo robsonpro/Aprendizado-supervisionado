@@ -74,7 +74,7 @@ metrics <- function(obs, pred) {
 }
 ```
 
-Avaliando o modelo considerando os dados de treino
+Avaliando o modelo considerando os dados de treino.
 
 ```{r}
 metrics(Consumo.tr$expenditure, lm1$fitted.values)
@@ -91,11 +91,12 @@ par(mfrow=c(2,2))
 plot(lm1)
 ```
 
-Utilizando o modelo para previsão com dados de teste (dados futuros).
+Utilizando o modelo para previsão com dados de teste (dados futuros) e avaliando modelo com dados de teste. Esta avaliação é importante para verificar a capacidade de generalização do modelo.  
 
 ```{r}
 Consumo.te <- Consumo[-treino,]
-res.test <- predict(lm1, newdata = data.frame(income = Consumo.te$income))
+pred.te <- predict(lm1, newdata = data.frame(income = Consumo.te$income))
+metrics(Consumo.te$expenditure, pred.te)
 ```
 
 Plotando modelo com dados de teste.
@@ -109,14 +110,6 @@ ggplot() +
   ggtitle("Consumo vs renda (dados de teste)") + 
   xlab("renda") + 
   ylab("consumo") + theme_bw()
-```
-
-Avaliando o modelo com dados de teste.
-
-```{r}
-pred.te <- predict(lm1, newdata=Consumo.te)
-
-metrics(Consumo.te$expenditure, pred.te)
 ```
 
 ### Regressão linear múltipla
@@ -196,7 +189,7 @@ lm_mult_red <- step(lm_mult, direction = "back")
 summary(lm_mult_red)
 ```
 
-Avaliando o modelo considerando os dados de treino
+Avaliando o modelo considerando os dados de treino.
 
 ```{r}
 metrics(longley.tr$Employed, lm_mult_red$fitted.values)
@@ -222,13 +215,14 @@ metrics(longley.te$Employed, pred_mult.te)
 
 ### Regressão múltipla com variáveis categóricas 
 
-Pacote para dados e para codificação dummy.
+Pacote para dados e para codificação de variáveis dummy ou dicotômicas.
 
 ```{r}
 #| message: false
 #| warning: false
 library(AER)
 library(fastDummies)
+library(dplyr)
 ```
 
 Carregando conjunto de dados com variáveis contínuas e uma categórica.
@@ -244,7 +238,7 @@ Visualizando dados.
 ```{r}
 #| message: false
 #| warning: false
-ggpairs(Grunfeld[1:80,], columns = 1:4, aes(color = firm)) + theme_bw()
+ggpairs(Grunfeld[1:60,], columns = 1:4, aes(color = firm)) + theme_bw()
 ```
 
 ```{r}
@@ -254,9 +248,9 @@ levels(Grunfeld$firm)
 Codificando a variável `firm` em variáveis binárias.
 
 ```{r}
-Grunfeld <- dummy_cols(Grunfeld, select_columns = c("firm"))
+Grunfeld2 <- dummy_cols(Grunfeld, select_columns = c("firm"))
 
-Grunfeld <- Grunfeld[,-c(4,16)] # removendo coluna da variável "firm" e coluna da última variável binária criada, a qual é desnecessária
+Grunfeld2 <- Grunfeld2[,-c(4,16)] # removendo coluna da variável "firm" e coluna da última variável binária criada, a qual é desnecessária
 
 head(Grunfeld)
 ```
@@ -264,17 +258,17 @@ head(Grunfeld)
 Padronizando variáveis regressoras contínuas.
 
 ```{r}
-Grunfeld[,2:4] <- scale(Grunfeld[,2:4])
+Grunfeld2[,2:4] <- scale(Grunfeld2[,2:4])
 ```
 
 Dividindo dados de treino e teste.
 
 ```{r}
 set.seed(87)
-tr <- round(0.8*nrow(Grunfeld),0)
-treino <- sample(nrow(Grunfeld), tr, replace = F)
-Grunfeld.tr <- Grunfeld[treino,]
-Grunfeld.te <- Grunfeld[-treino,]
+tr <- round(0.8*nrow(Grunfeld2),0)
+treino <- sample(nrow(Grunfeld2), tr, replace = F)
+Grunfeld.tr <- Grunfeld2[treino,]
+Grunfeld.te <- Grunfeld2[-treino,]
 ```
 
 Modelo de regressão linear múltipla com variáveis contínuas e categóricas.
@@ -282,6 +276,59 @@ Modelo de regressão linear múltipla com variáveis contínuas e categóricas.
 ```{r}
 lm_invest <- lm(invest ~ ., Grunfeld.tr)
 summary(lm_invest)
+```
+
+Outra forma de inclusão de variáveis dummy em modelos de regressão múltipla é na inetração. A diferença é que no caso anterior as variáveis dummy mudam apenas a constante, enquanto neste caso, vão mudar a inclinação.
+
+Supondo o caso da empresa General Electric que no gráfico *pairs* aparenta ter inclinação distinta das demais.
+
+```{r}
+lm_invest2 <- lm(invest ~ . + I(capital*`firm_General Electric`), Grunfeld.tr)
+summary(lm_invest2)
+```
+
+O gráfico a seguir ilustra a mudança da inclinação para a empresa GE em relação a outras três selecionadas arbitrariamente. Em um caso com tantos níveis de variáveis dummy como este é difícil explorar todas possibilidades. Uma sugestão seria fazer um modelo com todas interações possíveis e posteriormente usar a função step para realizar eliminação para trás (*backward elimination*) para remover os termos não significativos. 
+
+```{r}
+#| message: false
+#| warning: false
+ggplot() +
+  geom_point(data = Grunfeld |> 
+               filter(firm %in% c("General Motors", 
+                                  "US Steel",
+                                  "General Electric",
+                                  "IBM")),              aes(x=capital,
+                 size = value,
+                 y=invest,
+                 color = firm), alpha =0.5) +
+  geom_smooth(data = Grunfeld |> filter(firm=="General Motors"),               aes(x=capital,
+                  y=invest, 
+                  color = firm),
+              method = "lm", 
+              formula = y ~ x, 
+              se=F) +
+    geom_smooth(data = Grunfeld |> filter(firm=="US Steel"), 
+              aes(x=capital,
+                  y=invest, 
+                  color = firm),
+              method = "lm", 
+              formula = y ~ x, 
+              se=F) +
+      geom_smooth(data = Grunfeld |> filter(firm=="General Electric"), 
+              aes(x=capital,
+                  y=invest, 
+                  color = firm),
+              method = "lm", 
+              formula = y ~ x, 
+              se=F) +
+      geom_smooth(data = Grunfeld |> filter(firm=="IBM"), 
+              aes(x=capital,
+                  y=invest, 
+                  color = firm),
+              method = "lm", 
+              formula = y ~ x, 
+              se=F) +
+  theme_bw()
 ```
 
 Avaliando o modelo considerando os dados de treino.
@@ -373,7 +420,7 @@ pred.lm2 <- predict(lm2, newdata = rehab.te)
 metrics(rehab.te$Weight, pred.lm2)
 ```
 
-Modelo e dados de teste.
+Plotando o modelo com dados de teste.
 
 ```{r}
 ggplot() + 
@@ -384,4 +431,3 @@ ggplot() +
   xlab("Dias") + 
   ylab("Peso") + theme_bw()
 ```
-
