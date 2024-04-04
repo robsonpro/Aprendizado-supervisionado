@@ -28,3 +28,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_ols.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab3.html
 
+## Regressão rígida e LASSO
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_ridge_LASSO.html
+
