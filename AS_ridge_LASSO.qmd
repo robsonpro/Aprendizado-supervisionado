@@ -1,0 +1,279 @@
+---
+title: "Regressão rígida e LASSO"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Regressão rígida e LASSO
+
+### Regressão rígida
+
+Em regressão múltipla, a regressão rígida tem por finalizadade encolher ou diminuir coeficientes de variáveis correlacionadas, com a finalidade de minimizar a variância de modelos devido a inflação dos coeficientes.
+Quando um modelo de regressão linear múltipla apresenta muitas variáveis correlacionadas, seus coeficientes podem ser mal estimados, acarretando em alta variância das estimativas. 
+
+Para encolher os coeficientes, á regressão rígida usa uma alteração na função perda usada nas estimativas de mínimos quadrados.
+
+Sejam a função perda quadrática descrita anteriormente para mínimos quadrados em regressão múltipla.
+
+$$
+\begin{aligned}
+L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \mathbf{X}\mathbf{\beta})^T(\mathbf{y} - \mathbf{X}\mathbf{\beta}) \\
+=\mathbf{y}^T\mathbf{y} - 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{y} + \mathbf{\beta}^T\mathbf{X}^T\mathbf{X}\mathbf{\beta} 
+\end{aligned}
+$$
+
+Adicionado o termo de penalização de encolhimento dos coeficientes, $\lambda\beta^T\beta$, tem-se:
+
+$$
+\begin{aligned}
+L(\mathbf{\beta,\lambda}) = \mathbf{y}^T\mathbf{y} - 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{y} + \mathbf{\beta}^T\mathbf{X}^T\mathbf{X}\mathbf{\beta} + \lambda\beta^T\beta
+\end{aligned}
+$$
+
+Em notação algébrica a quantidade acima, pode ser escrita como:
+
+$$
+\begin{aligned}
+L(\mathbf{\beta,\lambda}) = \sum_{i=1}^N\varepsilon_i^2=\sum_{i=1}^N(y_i-\beta_0-\sum_{j=1}^k\beta_jx_{ij})^2 + \lambda\sum_{j=1}^k\beta_j^2
+\end{aligned}
+$$
+
+Onde $\lambda$ é uma constante não negativa de penalização de encolhimento (*shrinkage penalty*), que previne a inflação dos coeficientes. Se $\lambda=0$, tem-se as estimativas padrão de mínimos quadrados que, no caso de presença de multicolineariedade, implicarão em um modelo com alta variância. Se $\lambda	\rightarrow \infty$, os coeficientes tenderão a 0, $\beta_j \rightarrow 0$, $\forall j$, o que implicaria, por outro lado, em um modelo com alto vício ou viés. A regressão rígida visa, portanto, trabalhar o conflito entre vício e variância em modelos de regressão múltipla. Deve-se buscar um valor de $\lambda$ que estabeleça uma melhor relação. 
+
+Tomando a notação matricial, resolvendo para $\beta$, os coeficientes de mínimos quadrados para regressão rígida ficam:
+
+$$
+\begin{aligned}
+\frac{\partial L}{\partial \mathbf{\beta}} = -2\mathbf{X}^T\mathbf{y} + 2\mathbf{X}^T\mathbf{X}\mathbf{\beta} +2\lambda\beta= 0 \\
+\hat{\mathbf{\beta}} = (\mathbf{X}^T\mathbf{X}+\lambda\mathbf{I})^{-1}(\mathbf{X}^T\mathbf{y})
+\end{aligned}
+$$
+
+Seja um conjunto de dados com informações de custos de empresas de manufatura. Pode-se observar a presença de alta correlação entre algumas das variáveis de custo consideradas.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(AER)
+library(corrplot)
+library(GGally)
+
+data("ManufactCosts")
+dados <- data.frame(ManufactCosts)
+ggpairs(dados) + theme_bw()
+```
+
+O gráfico de correlação a seguir expõe as correlações aos pares em um mapa de calor, de forma que as positivas tendem para o azul escuro, enquanto as negativas para vermelho escuro.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+r <- cor(dados)
+corrplot::corrplot(r, 
+                   method = "color",
+                   type = "upper", 
+                   order = "hclust",
+                   addCoef.col = "black",
+                   tl.srt = 45, diag = F)
+```
+
+Em um modelo de regressão rígida considerando o custo como resposta e as demais variáveis como preditores, o gráfico a seguir expõe os níveis dos coeficientes em relação à constante de encolhimento $\lambda$. 
+Observa-se que o aumento desta constante implica no encolhimento dos coeficientes. 
+Deve-se tentar encontrar o valor de $\lambda$ que minimize o erro do modelo.
+Por exemplo, para o custo de energia, pode-se observar que um $\lambda=0$ implica em alta magnitude do coeficiente, sendo observado o encolhimento deste com o aumento de $\lambda$. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+X <- model.matrix(cost ~ ., dados)[,-1]
+y <- dados$cost
+
+tr <- round(0.5*nrow(dados))
+set.seed(45)
+treino <- sample(1:nrow(dados), tr, replace = F)
+X.treino <- X[treino,]
+y.treino <- y[treino]
+
+library(glmnet) 
+
+grid <- 10^seq(10, 1, length = 100)
+
+rid1 <- glmnet(X.treino, y.treino, alpha = 0, lambda = grid)
+
+plot(rid1, xvar = "lambda", col = 1:8)
+legend("bottomright", lwd = 1, col = 1:8,
+       legend = colnames(X.treino), cex = 0.7)
+```
+
+A partir de validação cruzada pode-se selecionar o valor de $\lambda$ dado um grid de valores. 
+Para o exemplo $\lambda^*=12.022$.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+rid.cv <- cv.glmnet(X.treino, y.treino, alpha = 0)
+plot(rid.cv)
+bestlam <- rid.cv$lambda.min # melhor lambda
+```
+
+Os coeficientes de regerssão rígida para o $\lambda$ ótimo são expostos à seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+out <- glmnet(X, y, alpha = 0)
+predict(out, type = "coefficients", s = bestlam)
+```
+
+### Regressão via LASSO
+
+Um problema da regressão rígida, se comparada aos métodos de seleção de variáveis, como a eliminação para trás, é que este método não faz seleção de coeficientes ou termos no modelo. 
+Ou seja, a regressão rígida não reduz o modelo a partir da exclusão de variáveis correlacionadas, o que implica na manutenção de preditores redundantes no modelo. 
+Logo, a regressão rígida apenas encolhe os coeficientes.
+
+Uma alternativa à regressão rígida que promove a seleção de coeficientes é a regressão pelo operador de seleção e contração mínima absoluta ou *Least Absolute Shrinkage and Selection Operator - LASSO*. 
+A regressão LASSO muda a penalização da função perda considerando a norma $L_1$, $\sum_{j=1}^k|\beta_j|$ em detrimento da norma $L_2$, $\sum_{j=1}^k\beta_j^2$, usada no caso rígido.
+
+$$
+\begin{aligned}
+L(\mathbf{\beta,\lambda}) = \sum_{i=1}^N\varepsilon_i^2=\sum_{i=1}^N(y_i-\beta_0-\sum_{j=1}^k\beta_jx_{ij})^2 + \lambda\sum_{j=1}^k|\beta_j|
+\end{aligned}
+$$
+
+No caso da regressão via LASSO, não há solução fechada ou equações normais, como no caso rígido.
+Logo, a formulação acima deve ser minimizada via programação quadrática para estimar os coeficientes.
+
+A seguir ilustra-se os valores dos coeficientes no exemplo anterior em função do parâmetro de encolhimento e seleção de variáveis, $\lambda$, na regressão via LASSO.
+É possível observar que à medida que $\lambda$ aumenta alguns coeficientes vão sendo anulados e, portanto, excluídos do modelo.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+grid <- 10^seq(10, -2, length = 100)
+lasso1 <- glmnet(X.treino, y.treino, alpha = 1, lambda = grid)
+
+plot(lasso1, xvar = "lambda", col = 1:8)
+legend("bottomright", lwd = 1, col = 1:8,
+       legend = colnames(X.treino), cex = 0.7)
+```
+
+Tomando o exemplo anterior para o caso LASSO, o valor ótimo do parâmetro de encolhimento e selção é $\lambda^*=2.415$.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+lasso.cv <- cv.glmnet(X.treino, y.treino, alpha = 1)
+plot(lasso.cv)
+bestlam2 <- lasso.cv$lambda.min # lambda otimo
+```
+
+Os coeficientes de regressão via LASSO para o $\lambda$ ótimo são expostos à seguir. 
+Pode-se observar que neste caso a realizada a seleção dos coeficientes mais importantes, sendo removidos aqueles das variáveis que apresentam multicolineariedade e menor importância em relação às selecionadas.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+out2 <- glmnet(X, y, alpha = 1)
+predict(out2, type = "coefficients", s = bestlam2)
+```
+
+### Formulações alternativas para regressão rígida e LASSO
+
+Uma formulação alternativa para o problema de regressão rígida pode ser expressa como segue, onde $s$ seria um parâmetro associado a $\lambda$ que limita o crescimento dos coeficientes.
+
+$$
+\begin{aligned}
+Min \Biggl\{\sum_{i=1}^N(y_i-\beta_0-\sum_{j=1}^k\beta_jx_{ij})^2\Biggl\} \\ 
+st.:\sum_{j=1}^k\beta_j^2 \leq s
+\end{aligned}
+$$
+
+Para o caso da regressão via LASSO a formulação fica conforme segue.
+
+$$
+\begin{aligned}
+Min \Biggl\{\sum_{i=1}^N(y_i-\beta_0-\sum_{j=1}^k\beta_jx_{ij})^2\Biggl\} \\ 
+st.:\sum_{j=1}^k|\beta_j| \leq s
+\end{aligned}
+$$
+
+A seguir ilustra-se a função perda quadrática sendo minimizada segundo a formulação de regressão rígida exposta. 
+Pode-se observar que o valor dos coeficientes de mínimos quadrados são encolhidos quando a restrição de regressão rígida é imposta.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# Função para calcular a perda de soma dos quadrados dos erros (RSS) para regressão rígida
+rss_ridge <- function(beta0, beta1, beta2, X1, X2, y, alpha) {
+  y_pred <- beta0 + beta1*X1 + beta2*X2
+  rss <- sum((y - y_pred)^2) + alpha*(beta1^2 + beta2^2)  # Adicionando a penalização L2 (ridge)
+  return(rss/50)
+}
+
+# Dados de exemplo
+set.seed(123) # para garantir a reproducibilidade
+X1 <- runif(100)
+X2 <- runif(100)
+y <- 2 + 3*X1 + 4*X2 + rnorm(100)
+
+# Grid para coeficientes lineares
+beta1_values <- seq(-5, 10, length.out = 100)
+beta2_values <- seq(-5, 10, length.out = 100)
+B1 <- outer(beta1_values, 1)
+B2 <- outer(beta2_values, 1)
+
+# Parâmetro de encolhimento (regularização)
+alpha <- 5
+
+# Calculando RSS para cada combinação de coeficientes
+rss_values <- matrix(0, nrow = length(beta1_values), ncol = length(beta2_values))
+for (i in 1:length(beta1_values)) {
+  for (j in 1:length(beta2_values)) {
+    rss_values[i, j] <- rss_ridge(2, beta1_values[i], beta2_values[j], X1, X2, y, alpha)
+  }
+}
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+contour(B1, B2, rss_values, 
+        xlab = "b1", 
+        ylab = "b2", 
+        nlevels = 12,
+        col = terrain.colors(20))
+
+gx <- function(x) {
+  y = sqrt(alpha - x^2)
+  return(cbind(-y,y))
+}
+
+bet1 <- seq(-sqrt(5)+.00001,sqrt(5)-.00001,length=1000)
+lines(bet1, gx(bet1)[,1], col = "grey30",lty=2)
+lines(bet1, gx(bet1)[,2], col = "grey30",lty=2)
+
+points(3,4, pch=16, col="red")
+points(1.4, 1.8, pch=16, col="purple")
+legend("bottomright", c("RSS", "beta(OLS)","beta(ridge)","b1^2+b2^2=s"), 
+       pch=c(NA,16,16,NA),lty=c(1,NA,NA,2),col=c("green2","red","purple","grey30"))
+
+```
