@@ -32,3 +32,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab3.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_ridge_LASSO.html
 
+### Laboratório 4
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab4.html
+
