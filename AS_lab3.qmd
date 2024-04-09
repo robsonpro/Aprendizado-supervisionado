@@ -27,7 +27,7 @@ data(USConsump1993)
 Consumo <- data.frame(USConsump1993)
 ```
 
-Seprando 75% dos dados para treino do modelo. 
+Seprando 75% dos dados para treino do modelo.
 
 ```{r}
 set.seed(3)
@@ -91,7 +91,7 @@ par(mfrow=c(2,2))
 plot(lm1)
 ```
 
-Utilizando o modelo para previsão com dados de teste (dados futuros) e avaliando modelo com dados de teste. Esta avaliação é importante para verificar a capacidade de generalização do modelo.  
+Utilizando o modelo para previsão com dados de teste (dados futuros) e avaliando modelo com dados de teste. Esta avaliação é importante para verificar a capacidade de generalização do modelo.
 
 ```{r}
 Consumo.te <- Consumo[-treino,]
@@ -213,7 +213,7 @@ pred_mult.te <- predict(lm_mult_red, newdata=longley.te)
 metrics(longley.te$Employed, pred_mult.te)
 ```
 
-### Regressão múltipla com variáveis categóricas 
+### Regressão múltipla com variáveis categóricas
 
 Pacote para dados e para codificação de variáveis dummy ou dicotômicas.
 
@@ -287,48 +287,24 @@ lm_invest2 <- lm(invest ~ . + I(capital*`firm_General Electric`), Grunfeld.tr)
 summary(lm_invest2)
 ```
 
-O gráfico a seguir ilustra a mudança da inclinação para a empresa GE em relação a outras três selecionadas arbitrariamente. Em um caso com tantos níveis de variáveis dummy como este é difícil explorar todas possibilidades. Uma sugestão seria fazer um modelo com todas interações possíveis e posteriormente usar a função step para realizar eliminação para trás (*backward elimination*) para remover os termos não significativos. 
+O gráfico a seguir ilustra a mudança da inclinação para a empresa GE em relação a outras três selecionadas arbitrariamente. Em um caso com tantos níveis de variáveis dummy como este é difícil explorar todas possibilidades. Uma sugestão seria fazer um modelo com todas interações possíveis e posteriormente usar a função step para realizar eliminação para trás (*backward elimination*) para remover os termos não significativos.
 
 ```{r}
 #| message: false
 #| warning: false
-ggplot() +
-  geom_point(data = Grunfeld |> 
-               filter(firm %in% c("General Motors", 
-                                  "US Steel",
-                                  "General Electric",
-                                  "IBM")),              aes(x=capital,
-                 size = value,
-                 y=invest,
-                 color = firm), alpha =0.5) +
-  geom_smooth(data = Grunfeld |> filter(firm=="General Motors"),               aes(x=capital,
-                  y=invest, 
-                  color = firm),
-              method = "lm", 
-              formula = y ~ x, 
-              se=F) +
-    geom_smooth(data = Grunfeld |> filter(firm=="US Steel"), 
-              aes(x=capital,
-                  y=invest, 
-                  color = firm),
-              method = "lm", 
-              formula = y ~ x, 
-              se=F) +
-      geom_smooth(data = Grunfeld |> filter(firm=="General Electric"), 
-              aes(x=capital,
-                  y=invest, 
-                  color = firm),
-              method = "lm", 
-              formula = y ~ x, 
-              se=F) +
-      geom_smooth(data = Grunfeld |> filter(firm=="IBM"), 
-              aes(x=capital,
-                  y=invest, 
-                  color = firm),
-              method = "lm", 
-              formula = y ~ x, 
-              se=F) +
+Grunfeld_select <- Grunfeld |> 
+  filter(firm %in% c("General Motors",
+                     "US Steel",
+                     "General Electric",
+                     "IBM"))
+
+g <- ggplot(Grunfeld_select, aes(x=capital,
+                  y=invest)) + 
+  geom_jitter(aes(color = firm, size=value), alpha =0.5) + 
+  geom_smooth(aes(col=firm), method="lm", se=F) +
   theme_bw()
+
+g
 ```
 
 Avaliando o modelo considerando os dados de treino.
