@@ -1,0 +1,241 @@
+---
+title: "Laboratório 4"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Laboratório 4 - Regressão rígida e LASSO
+
+### Regressão rígida
+
+Carregando pacotes para dados, gráficos e análise.
+
+```{r}
+#| message: false
+#| warning: false
+
+library(AER)
+library(corrplot)
+library(GGally)
+library(glmnet)
+library(car)
+```
+
+Carregando dados e visualizando distribuições e correlações.
+
+```{r}
+#| message: false
+#| warning: false
+
+data("ManufactCosts")
+dados <- data.frame(ManufactCosts)
+ggpairs(dados) + theme_bw()
+```
+
+Gráfico de correlação com correlações aos pares em um mapa de calor. As positivas tendem para o azul escuro, enquanto as negativas para o vermelho escuro.
+
+```{r}
+#| message: false
+#| warning: false
+
+r <- cor(dados)
+corrplot::corrplot(r, 
+                   method = "color",
+                   type = "upper", 
+                   order = "hclust",
+                   addCoef.col = "black",
+                   tl.srt = 45, diag = F)
+```
+
+Separando dados de treino, preditores e resposta. O pacote `glmnet` exige esta última separação.
+
+```{r}
+X <- model.matrix(cost ~ ., dados)[,-1]
+y <- dados$cost
+
+tr <- round(0.5*nrow(dados))
+set.seed(45)
+treino <- sample(1:nrow(dados), tr, replace = F)
+X.treino <- X[treino,]
+y.treino <- y[treino]
+```
+
+Definindo sequência para valores da penalização de encolhimento (lambda).
+
+```{r}
+grid <- 10^seq(10, -2, length = 100)
+```
+
+Modelo de regressão rígida para todos valores de penalização de interesse. O comando glmnet faz tanto a regressão rígida quanto a regressão via LASSO. O argumento `alpha` define qual dos dois tipos de método de regularização é aplicado, com `alpha=0` para regressão rígida e `alpha=1` para LASSO.
+
+```{r}
+rid1 <- glmnet(X.treino, y.treino, alpha = 0, lambda = grid)
+```
+
+Plotando valores dos coeficientes em relação à penalização de encolhimento.
+
+```{r}
+plot(rid1, xvar = "lambda", col = 1:8)
+legend("bottomright", lwd = 1, col = 1:8, legend = colnames(X.treino), cex = .7)
+```
+Função de métricas de desempenho para avaliar o modelo.
+
+```{r}
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Dados de teste.
+
+```{r}
+X.teste <- X[-treino,]
+y.teste <- y[-treino]
+```
+
+Desempenho com lambda = 0.02.
+
+```{r}
+rid1.pred <- predict(rid1, s = .02, newx = X.teste)
+metrics(rid1.pred, y.teste)
+```
+
+Desempenho com lambda = 0 (regressão múltipla).
+
+```{r}
+rid2.pred <- predict(rid1, s = 0, newx = X.teste)
+metrics(rid2.pred, y.teste)
+```
+
+Desempenho com lambda ~ inf (modelo com coefs nulos).
+
+```{r}
+rid3.pred <- predict(rid1, s = 1e10, newx = X.teste)
+metrics(rid3.pred, y.teste)
+```
+
+Validação cruzada para selecionar lambda.
+
+```{r}
+rid.cv <- cv.glmnet(X.treino, y.treino, alpha = 0)
+plot(rid.cv)
+bestlam <- rid.cv$lambda.min # selecionando lambda otimo
+bestlam
+```
+
+Desempenho com lambda ótimo.
+
+```{r}
+ridge.pred <- predict(rid.cv, s = bestlam, newx = X.teste)
+metrics(ridge.pred, y.teste)
+```
+
+Coeficientes (modelo) com lambda ótimo.
+
+```{r}
+out <- glmnet(X,y, alpha =0)
+predict(out , type = "coefficients", s = bestlam)
+```
+
+Regressão linear múltipla. 
+
+```{r}
+lm1 <- lm(cost~., dados[treino,])
+summary(lm1)
+```
+
+```{r}
+lm1.pred <- predict(lm1, newdata =  dados[-treino,-1])
+metrics(lm1.pred, y.teste)
+```
+
+Fator de inflação de variância (ideal, menor que 5). 
+
+```{r}
+vif(lm1)
+```
+
+### Regressão pelo operador de seleção e contração mínima absoluta ou *Least Absolute Shrinkage and Selection Operator - LASSO*
+
+Treino do modelo LASSO, alpha = 1 no comando glmnet.
+
+```{r}
+lasso1 <- glmnet(X.treino, y.treino, alpha = 1, lambda = grid)
+```
+
+Plotando encolhimento/seleção de coeficientes em função de lambda.
+
+```{r}
+plot(lasso1, xvar = "lambda", col = 1:8)
+legend("bottomright", lwd = 1, col = 1:8, legend = colnames(X.treino), cex = .7)
+```
+
+Desempenho com lambda = 0.02.
+
+```{r}
+lasso1.pred <- predict(lasso1, s = .02, newx = X.teste)
+metrics(lasso1.pred, y.teste)
+```
+
+Desempenho com lambda nulo (regressão linear múltipla).
+
+```{r}
+lasso2.pred <- predict(rid1, s = 0, newx = X.teste)
+metrics(lasso2.pred, y.teste)
+```
+
+Desempenho com lambda ~ inf (coeficientes nulos).
+
+```{r}
+lasso3.pred <- predict(rid1, s = 1e10, newx = X.teste)
+metrics(lasso3.pred, y.teste)
+```
+
+Validação cruzada para definir lambda.
+
+```{r}
+#| message: false
+#| warning: false
+
+lasso.cv <- cv.glmnet(X.treino, y.treino, alpha = 1)
+plot(lasso.cv)
+```
+
+```{r}
+bestlam <- lasso.cv$lambda.min # lambda otimo
+bestlam
+```
+
+Desempenho do modelo LASSO com lambda ótimo.
+
+```{r}
+lasso.pred <- predict(lasso.cv, s = bestlam, newx = X.teste)
+metrics(lasso.pred, y.teste)
+```
+
+Coeficientes do modelo LASSO.
+
+```{r}
+out <- glmnet(X,y, alpha = 1)
+predict(out , type = "coefficients", s = bestlam)
+```
+
+
+
+
+
+
+
