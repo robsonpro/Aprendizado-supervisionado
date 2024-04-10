@@ -188,28 +188,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Desempenho com lambda = 0.02.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>rid1.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rid1, <span class="at">s =</span> .<span class="dv">02</span>, <span class="at">newx =</span> X.teste)</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(rid1.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste, rid1.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      RMSE      MAE        R2
-1 42.96158 27.05691 0.9432086</code></pre>
+1 42.96158 27.05691 0.9259479</code></pre>
 </div>
 </div>
 <p>Desempenho com lambda = 0 (regressão múltipla).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>rid2.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rid1, <span class="at">s =</span> <span class="dv">0</span>, <span class="at">newx =</span> X.teste)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(rid2.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,rid2.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      RMSE      MAE       R2
-1 43.94182 27.54097 0.940749</code></pre>
+<pre><code>      RMSE      MAE        R2
+1 43.94182 27.54097 0.9225301</code></pre>
 </div>
 </div>
 <p>Desempenho com lambda ~ inf (modelo com coefs nulos).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>rid3.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rid1, <span class="at">s =</span> <span class="fl">1e10</span>, <span class="at">newx =</span> X.teste)</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(rid3.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,rid3.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      RMSE      MAE            R2
-1 158.2486 134.6094 -2.639677e+14</code></pre>
+<pre><code>      RMSE      MAE           R2
+1 158.2486 134.6094 -0.004746261</code></pre>
 </div>
 </div>
 <p>Validação cruzada para selecionar lambda.</p>
@@ -232,16 +232,16 @@ fold</code></pre>
 <p>Desempenho com lambda ótimo.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>ridge.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rid.cv, <span class="at">s =</span> bestlam, <span class="at">newx =</span> X.teste)</span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(ridge.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,ridge.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      RMSE      MAE        R2
-1 24.48286 18.33099 0.9770201</code></pre>
+1 24.48286 18.33099 0.9759508</code></pre>
 </div>
 </div>
 <p>Coeficientes (modelo) com lambda ótimo.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>out <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(X,y, <span class="at">alpha =</span><span class="dv">0</span>)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(out , <span class="at">type =</span> <span class="st">"coefficients"</span>, <span class="at">s =</span> bestlam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="fu">predict</span>(out, <span class="at">type =</span> <span class="st">"coefficients"</span>, <span class="at">s =</span> bestlam)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>9 x 1 sparse Matrix of class "dgCMatrix"
                         s1
@@ -292,10 +292,10 @@ F-statistic: 744.2 on 8 and 3 DF,  p-value: 7.411e-05</code></pre>
 </div>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lm1.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(lm1, <span class="at">newdata =</span>  dados[<span class="sc">-</span>treino,<span class="sc">-</span><span class="dv">1</span>])</span>
-<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lm1.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste, lm1.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      RMSE      MAE        R2
-1 57.21022 34.04142 0.9066313</code></pre>
+<pre><code>      RMSE      MAE       R2
+1 57.21022 34.04142 0.868682</code></pre>
 </div>
 </div>
 <p>Fator de inflação de variância (ideal, menor que 5).</p>
@@ -326,28 +326,28 @@ F-statistic: 744.2 on 8 and 3 DF,  p-value: 7.411e-05</code></pre>
 <p>Desempenho com lambda = 0.02.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a>lasso1.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso1, <span class="at">s =</span> .<span class="dv">02</span>, <span class="at">newx =</span> X.teste)</span>
-<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lasso1.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,lasso1.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>      RMSE     MAE        R2
-1 41.96439 26.6854 0.9454738</code></pre>
+1 41.96439 26.6854 0.9293457</code></pre>
 </div>
 </div>
 <p>Desempenho com lambda nulo (regressão linear múltipla).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>lasso2.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rid1, <span class="at">s =</span> <span class="dv">0</span>, <span class="at">newx =</span> X.teste)</span>
-<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lasso2.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a>lasso2.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso1, <span class="at">s =</span> <span class="dv">0</span>, <span class="at">newx =</span> X.teste)</span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,lasso2.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      RMSE      MAE       R2
-1 43.94182 27.54097 0.940749</code></pre>
+<pre><code>      RMSE      MAE        R2
+1 43.40887 27.36208 0.9243979</code></pre>
 </div>
 </div>
 <p>Desempenho com lambda ~ inf (coeficientes nulos).</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>lasso3.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rid1, <span class="at">s =</span> <span class="fl">1e10</span>, <span class="at">newx =</span> X.teste)</span>
-<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lasso3.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>lasso3.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso1, <span class="at">s =</span> <span class="fl">1e10</span>, <span class="at">newx =</span> X.teste)</span>
+<span id="cb37-2"><a href="#cb37-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,lasso3.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>      RMSE      MAE            R2
-1 158.2486 134.6094 -2.639677e+14</code></pre>
+<pre><code>      RMSE      MAE           R2
+1 158.2486 134.6094 -0.004746378</code></pre>
 </div>
 </div>
 <p>Validação cruzada para definir lambda.</p>
@@ -368,10 +368,10 @@ F-statistic: 744.2 on 8 and 3 DF,  p-value: 7.411e-05</code></pre>
 <p>Desempenho do modelo LASSO com lambda ótimo.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb42"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" aria-hidden="true" tabindex="-1"></a>lasso.pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso.cv, <span class="at">s =</span> bestlam, <span class="at">newx =</span> X.teste)</span>
-<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(lasso.pred, y.teste)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb42-2"><a href="#cb42-2" aria-hidden="true" tabindex="-1"></a><span class="fu">metrics</span>(y.teste,lasso.pred)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>     RMSE      MAE        R2
-1 13.9822 11.88066 0.9921873</code></pre>
+1 13.9822 11.88066 0.9921562</code></pre>
 </div>
 </div>
 <p>Coeficientes do modelo LASSO.</p>

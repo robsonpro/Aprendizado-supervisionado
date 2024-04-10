@@ -110,21 +110,21 @@ Desempenho com lambda = 0.02.
 
 ```{r}
 rid1.pred <- predict(rid1, s = .02, newx = X.teste)
-metrics(rid1.pred, y.teste)
+metrics(y.teste, rid1.pred)
 ```
 
 Desempenho com lambda = 0 (regressão múltipla).
 
 ```{r}
 rid2.pred <- predict(rid1, s = 0, newx = X.teste)
-metrics(rid2.pred, y.teste)
+metrics(y.teste,rid2.pred)
 ```
 
 Desempenho com lambda ~ inf (modelo com coefs nulos).
 
 ```{r}
 rid3.pred <- predict(rid1, s = 1e10, newx = X.teste)
-metrics(rid3.pred, y.teste)
+metrics(y.teste,rid3.pred)
 ```
 
 Validação cruzada para selecionar lambda.
@@ -140,14 +140,14 @@ Desempenho com lambda ótimo.
 
 ```{r}
 ridge.pred <- predict(rid.cv, s = bestlam, newx = X.teste)
-metrics(ridge.pred, y.teste)
+metrics(y.teste,ridge.pred)
 ```
 
 Coeficientes (modelo) com lambda ótimo.
 
 ```{r}
 out <- glmnet(X,y, alpha =0)
-predict(out , type = "coefficients", s = bestlam)
+predict(out, type = "coefficients", s = bestlam)
 ```
 
 Regressão linear múltipla. 
@@ -159,7 +159,7 @@ summary(lm1)
 
 ```{r}
 lm1.pred <- predict(lm1, newdata =  dados[-treino,-1])
-metrics(lm1.pred, y.teste)
+metrics(y.teste, lm1.pred)
 ```
 
 Fator de inflação de variância (ideal, menor que 5). 
@@ -187,21 +187,21 @@ Desempenho com lambda = 0.02.
 
 ```{r}
 lasso1.pred <- predict(lasso1, s = .02, newx = X.teste)
-metrics(lasso1.pred, y.teste)
+metrics(y.teste,lasso1.pred)
 ```
 
 Desempenho com lambda nulo (regressão linear múltipla).
 
 ```{r}
-lasso2.pred <- predict(rid1, s = 0, newx = X.teste)
-metrics(lasso2.pred, y.teste)
+lasso2.pred <- predict(lasso1, s = 0, newx = X.teste)
+metrics(y.teste,lasso2.pred)
 ```
 
 Desempenho com lambda ~ inf (coeficientes nulos).
 
 ```{r}
-lasso3.pred <- predict(rid1, s = 1e10, newx = X.teste)
-metrics(lasso3.pred, y.teste)
+lasso3.pred <- predict(lasso1, s = 1e10, newx = X.teste)
+metrics(y.teste,lasso3.pred)
 ```
 
 Validação cruzada para definir lambda.
@@ -223,7 +223,7 @@ Desempenho do modelo LASSO com lambda ótimo.
 
 ```{r}
 lasso.pred <- predict(lasso.cv, s = bestlam, newx = X.teste)
-metrics(lasso.pred, y.teste)
+metrics(y.teste,lasso.pred)
 ```
 
 Coeficientes do modelo LASSO.
