@@ -36,3 +36,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_ridge_LASSO.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab4.html
 
+## Regressão por árvores de decisão
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_tree.html
+
