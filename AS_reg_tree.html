@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.433">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Robson Bruno Dutra Pereira">
+
+<title>Regressão por árvores de decisão e floresta aleatória</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="AS_reg_tree_files/libs/clipboard/clipboard.min.js"></script>
+<script src="AS_reg_tree_files/libs/quarto-html/quarto.js"></script>
+<script src="AS_reg_tree_files/libs/quarto-html/popper.min.js"></script>
+<script src="AS_reg_tree_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="AS_reg_tree_files/libs/quarto-html/anchor.min.js"></script>
+<link href="AS_reg_tree_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="AS_reg_tree_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="AS_reg_tree_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="AS_reg_tree_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="AS_reg_tree_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Regressão por árvores de decisão e floresta aleatória</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Robson Bruno Dutra Pereira </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="regressão-por-árvores-de-decisão-e-floresta-aleatória" class="level2">
+<h2 class="anchored" data-anchor-id="regressão-por-árvores-de-decisão-e-floresta-aleatória">Regressão por árvores de decisão e floresta aleatória</h2>
+<section id="árvores-de-regressão" class="level3">
+<h3 class="anchored" data-anchor-id="árvores-de-regressão">Árvores de regressão</h3>
+<p>As árvores de decisão foram inicialmente propostas para problemas de classificação, porém podem ser adaptadas de forma simples para problemas de regressão. A regressão por árvores de decisão ou simplesmente as árvores de regressão envolvem dividir o espaço preditor em várias regiões retangulares simples tomando como predição a média ou outra medida simples das observações de treinamento da região. O conjunto de regras de divisão usado para segmentar o espaço preditor pode ser resumido em um diagrama semelhante a uma árvore, conforme a Figura a seguir.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>O gráfico a seguir expõe o modelo obtido em função das duas variáveis preditoras, podendo-se observar que o valor previsto é constante em cada região retangular correspondente ao diagrama ilustrado anteriormente.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Pode-se observar o mesmo modelo de árvore de regressão de forma bidimensional, ficando mais clara a divisão do espaço preditor.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Sejam <span class="math inline">\(k\)</span> variáveis de entrada e uma resposta, ou seja, <span class="math inline">\((\mathbf{x}_i,y)\)</span>, com <span class="math inline">\(\mathbf{x}_i = (x_{i1}, x_{i2},..., x_{iK})\)</span>, para <span class="math inline">\(i=1,...,N\)</span> observações de treino, o algoritmo de (<em>Classification and Regression Trees</em> - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores. Considerando <span class="math inline">\(J\)</span> regiões <span class="math inline">\(R_1, R_2, ..., R_J\)</span>, o valor predito será uma constante <span class="math inline">\(\gamma_j\)</span>, em cada região, <span class="math inline">\(j=1,...,J\)</span>. Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, <span class="math inline">\(\{R_j,\gamma_j\}, j=1,\ldots,J\)</span>, onde <span class="math inline">\(I(\mathbf{x} \in R_j)\)</span> é uma função indicativa que recebe 1 se <span class="math inline">\(\mathbf{x}\)</span> pertence à região <span class="math inline">\(R_j\)</span> e 0 caso contrário. O melhor <span class="math inline">\(\gamma_j\)</span> para minimizar a soma dos quadrados é a média das observações na região, para <span class="math inline">\(y_i \in R_j\)</span>, <span class="math inline">\(\hat{\gamma}_j = (\bar{y}_i | x_i \in R_j\)</span>).</p>
+<p><span class="math display">\[
+\begin{aligned}
+f(\mathbf{x}) = T(\mathbf{x},R_j,\gamma_j) = \sum_{j=1}^J \gamma_jI(\mathbf{x} \in R_j)
+\end{aligned}
+\]</span></p>
+<p>Considerando todos os dados de treinamento, as divisões são definidas tomando uma variável para divisão, <span class="math inline">\(x_k\)</span>, <span class="math inline">\(k = 1,..., K\)</span>, e um ponto de divisão <span class="math inline">\(x_k = s\)</span>, <span class="math inline">\(R_1(k,s)\)</span> = <span class="math inline">\({\mathbf{x}|x_k \leq s}\)</span> e <span class="math inline">\(R_2(k,s)\)</span> = <span class="math inline">\({\mathbf{x}|x_k&gt;s}\)</span>. Portanto, o algoritmo CART busca a variável para o particionamento e o valor desta na divisão resolvendo:</p>
+<p><span class="math display">\[
+\begin{aligned}
+    \min_{k,s} \Bigl[ \min_{\gamma_1} \sum_{x_i \in R_1(k,s)} (y_i - \gamma_1)^2 +  \min_{\gamma_2} \sum_{x_i \in R_2(k,s)} (y_i - \gamma_2)^2 \Bigr].
+\end{aligned}
+\]</span></p>
+<p>O algoritmo CART repete o particionamento recursivamente até um determinado critério de parada ser alcançado, por exemplo, até um número mínimo de observações em cada partição ser atingido.</p>
+<p>Seja um conjunto de dados da liga maior americana de Baseball para as temporadas de 1986 e 1987. São disponibilizadas 322 observações de jogadores da liga, incluindo número de batidas, número de corridas, tempo em anos na liga, etc. A variável de interesse a ser predita é o salário do jogador. A seguir é plotado um gráfico de correlação entra tais variáveis.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Seja um modelo de árvore de regressão para prever o salário em função das demais variáveis considerando metade dos dados selecionados aleatoriamente para treino do modelo.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>node), split, n, deviance, yval
+      * denotes terminal node
+
+  1) root 132 25650000  510.7  
+    2) CRuns &lt; 325.5 82  6125000  296.3  
+      4) CRuns &lt; 208.5 60  4378000  222.1  
+        8) Hits &lt; 45 5  3103000  558.3 *
+        9) Hits &gt; 45 55   659200  191.5  
+         18) CRBI &lt; 114.5 36   100900  131.2 *
+         19) CRBI &gt; 114.5 19   178200  306.0 *
+      5) CRuns &gt; 208.5 22   514100  498.8 *
+    3) CRuns &gt; 325.5 50  9578000  862.2  
+      6) RBI &lt; 103 44  4352000  765.5  
+       12) PutOuts &lt; 1113.5 39  2944000  704.6  
+         24) Runs &lt; 38 7   297000  431.0 *
+         25) Runs &gt; 38 32  2008000  764.5  
+           50) CRuns &lt; 444.5 10   466300  594.7  
+            100) CWalks &lt; 256.5 5    24560  759.4 *
+            101) CWalks &gt; 256.5 5   170400  430.0 *
+           51) CRuns &gt; 444.5 22  1123000  841.7  
+            102) CHmRun &lt; 142.5 9   426800  987.2 *
+            103) CHmRun &gt; 142.5 13   373200  740.9 *
+       13) PutOuts &gt; 1113.5 5   134200 1241.0 *
+      7) RBI &gt; 103 6  1797000 1571.0 *</code></pre>
+</div>
+</div>
+<p>O diagrama do modelo pode ser plotado conforme segue. Acima tem-se <code>CRBI&lt;307.5</code> que consiste na primeira partição ou nó raiz. Qualquer subconjunto de partições interligadas da árvore pode ser chamado de sub-árvore. Cada partição gera duas regiões às quais podem ou não ser mais particionadas, as partições finais são chamadas de nós terminais ou folhas. Neste caso tem-se 10 nós terminais, ou seja, 10 valores previstos distintos para 10 regiões distintas do espaço de preditores. Por exemplo seguindo as seguintes partições <code>CRuns &lt; 325.5 82  6125000  296.3</code> e <code>CRuns &gt; 208.5 22   514100  498.8 *</code>, tem-se o valor previsto do salário do jogador igual a 498.8 unidades monetárias com soma dos quadrados dos erros igual a 514100.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Pode-se realizar uma validação cruzada para “podar” ou “secar” a árvore com a finalidade de diminuir o sobreajuste.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>A árvore podada plotada apresenta apenas 4 folhas, com estrutura mais simples, facilitando a interpretação e buscando melhor generalização.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>node), split, n, deviance, yval
+      * denotes terminal node
+
+ 1) root 132 25650000  510.7  
+   2) CRuns &lt; 325.5 82  6125000  296.3 *
+   3) CRuns &gt; 325.5 50  9578000  862.2  
+     6) RBI &lt; 103 44  4352000  765.5  
+      12) PutOuts &lt; 1113.5 39  2944000  704.6 *
+      13) PutOuts &gt; 1113.5 5   134200 1241.0 *
+     7) RBI &gt; 103 6  1797000 1571.0 *</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="bagged-trees-ou-bagging" class="level3">
+<h3 class="anchored" data-anchor-id="bagged-trees-ou-bagging"><em>Bagged trees ou bagging</em></h3>
+<p><em>Bagged trees ou bagging</em> ou, em português, “árvores ensacadas” é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore. O resultado final previsto para um determinado vetor de valores das variáveis preditoras é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens e, portanto, de árvores é obtido, obtendo-se um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome <em>bagging</em> vem de <em>bootstrap aggregated</em> ou agregação por bootstrap.</p>
+<p>Para o conjunto de dados Hitters seja um modelo de regressão por <em>Bagging</em> considerando duas variáveis, <code>Cruns</code> e <code>RBI</code>. O modelo plotado é muito mais complexo e pretende apresentar uma melhor acuracidade que um modelo baseado em árvore por justamente congregar diversas árvores baseadas na reamostragem dos dados de treino. Porém, Como tais modelos apresentam maior variância que os modelos de árvore para regressão,é importante avaliar se há sobreajuste.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+<section id="floresta-aleatória" class="level3">
+<h3 class="anchored" data-anchor-id="floresta-aleatória">Floresta aleatória</h3>
+<p>O modelo de floresta aleatória consiste em uma melhoria ao modelo <em>bagging</em> com a finalidade de diminuir a variância. Basicamente, em casos onde há multicolineariedade ou redundância entre variáves regressoras, o bagging pode acarretar na seleção de apenas alguns dos preditores disponíveis durante o particionamento binário recursivo, de forma que as árvores geradas considerando a reamostragem das observações de treino possam apresentar alta correlaão entre si, acarretando em alta variabilidade das previsões finais. No modelo de floresta aleatória antes de cada partição são selecionadas aleatoriamente <span class="math inline">\(m\)</span> variáveis regressoras, <span class="math inline">\(m&lt;k\)</span>, às quais serão consideradas no processo de particionamento binário. Geralmente para regressão recomenda-se <span class="math inline">\(m=k/3\)</span>.</p>
+<p>A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, <span class="math inline">\(k=2\)</span>, <code>Cruns</code> e <code>RBI</code>. Para cada particionamento considerou-se <span class="math inline">\(m=2/3 \simeq 1\)</span></p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="768"></p>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,240 @@
+---
+title: "Regressão por árvores de decisão e floresta aleatória"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Regressão por árvores de decisão e floresta aleatória
+
+### Árvores de regressão
+
+As árvores de decisão foram inicialmente propostas para problemas de classificação, porém podem ser adaptadas de forma simples para problemas de regressão. A regressão por árvores de decisão ou simplesmente as árvores de regressão envolvem dividir o espaço preditor em várias regiões retangulares simples tomando como predição a média ou outra medida simples das observações de treinamento da região. O conjunto de regras de divisão usado para segmentar o espaço preditor pode ser resumido em um diagrama semelhante a uma árvore, conforme a Figura a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+data(Hitters, package = "ISLR")
+dados <- na.omit(Hitters)
+X <- model.matrix(Salary~., dados)[,-1]
+y <- dados$y # resposta
+dados2 <- data.frame(dados[,c(5,6,19)])
+colnames(dados2) <- c("x1", "x2", "y")
+set.seed(1)
+tr <- round(0.5*nrow(X))
+treino <- sample(1:nrow(X), tr, replace = F)
+library(tree)
+tree1 <- tree(y ~ x1 + x2, dados2, subset = treino)
+cv.tree1 <- cv.tree(tree1)
+prune1 <- prune.tree(tree1, best = 4)
+plot(prune1)
+text(prune1, pretty = 0)
+```
+
+O gráfico a seguir expõe o modelo obtido em função das duas variáveis preditoras, podendo-se observar que o valor previsto é constante em cada região retangular correspondente ao diagrama ilustrado anteriormente.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+xs <- seq(min(dados2$x1), max(dados2$x1), length = 30)
+ys <- seq(min(dados2$x2), max(dados2$x2), length = 30)
+xys <- expand.grid(xs,ys)
+colnames(xys) <- c("x1", "x2")
+zs <- matrix(predict(prune1 , xys), nrow = length(xs))
+
+n.cols <- 200
+palette <- colorRampPalette(c("palevioletred", "lightseagreen"))(n.cols)
+zfacet <- zs[-1, -1] + zs[-1, -10] + zs[-10, -1] + zs[-10, -10]
+facetcol <- cut(zfacet, n.cols)
+
+persp(x=xs, y=ys, z=zs, theta=-45, phi=30, 
+            xlab="x1", ylab="x2", zlab="y", 
+            col = palette[facetcol])
+```
+
+Pode-se observar o mesmo modelo de árvore de regressão de forma bidimensional, ficando mais clara a divisão do espaço preditor.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(ggplot2)
+xys$y <- predict(prune1 , xys)
+ggplot(xys, aes(y = x2, x = x1)) + 
+  geom_raster(aes(fill = y)) +
+  labs(col = "y") + 
+  scale_fill_gradientn(colors = c ("palevioletred", "lightseagreen")) + 
+  geom_segment(aes(x = 0, y = 37.55, xend = 120, yend = 37.55), 
+               lty = 2, cex = 1, col = "navy") +
+  geom_segment(aes(x = 0, y = 60, xend = 120, yend = 60), 
+               lty = 2, cex = 1, col = "navy") +
+  geom_segment(aes(x = 0, y = 60, xend = 120, yend = 60), 
+               lty = 2, cex = 1, col = "navy") +
+  geom_segment(aes(x = 65, y = 60, xend = 65, yend = 106), 
+               lty = 2, cex = 1, col = "navy") +
+  theme_bw()
+```
+
+Sejam $k$ variáveis de entrada e uma resposta, ou seja, $(\mathbf{x}_i,y)$, com $\mathbf{x}_i = (x_{i1}, x_{i2},..., x_{iK})$, para $i=1,...,N$ observações de treino, o algoritmo de (*Classification and Regression Trees* - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores.
+Considerando $J$ regiões $R_1, R_2, ..., R_J$, o valor predito será uma constante $\gamma_j$, em cada região, $j=1,...,J$.
+Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, $\{R_j,\gamma_j\}, j=1,\ldots,J$, onde $I(\mathbf{x} \in R_j)$ é uma função indicativa que recebe 1 se $\mathbf{x}$ pertence à região $R_j$ e 0 caso contrário.
+O melhor $\gamma_j$ para minimizar a soma dos quadrados é a média das observações na região, para $y_i \in R_j$, $\hat{\gamma}_j = (\bar{y}_i | x_i \in R_j$). 
+
+$$
+\begin{aligned}
+f(\mathbf{x}) = T(\mathbf{x},R_j,\gamma_j) = \sum_{j=1}^J \gamma_jI(\mathbf{x} \in R_j)
+\end{aligned}
+$$
+
+Considerando todos os dados de treinamento, as divisões são definidas tomando uma variável para divisão, $x_k$, $k = 1,..., K$, e um ponto de divisão $x_k = s$, $R_1(k,s)$  = ${\mathbf{x}|x_k \leq s}$ e $R_2(k,s)$ = ${\mathbf{x}|x_k>s}$.
+Portanto, o algoritmo CART busca a variável para o particionamento e o valor desta na divisão resolvendo:
+
+$$
+\begin{aligned}
+    \min_{k,s} \Bigl[ \min_{\gamma_1} \sum_{x_i \in R_1(k,s)} (y_i - \gamma_1)^2 +  \min_{\gamma_2} \sum_{x_i \in R_2(k,s)} (y_i - \gamma_2)^2 \Bigr].
+\end{aligned}
+$$
+
+O algoritmo CART repete o particionamento recursivamente até um determinado critério de parada ser alcançado, por exemplo, até um número mínimo de observações em cada partição ser atingido.
+
+Seja um conjunto de dados da liga maior americana de Baseball para as temporadas de 1986 e 1987. São disponibilizadas 322 observações de jogadores da liga, incluindo número de batidas, número de corridas, tempo em anos na liga, etc. A variável de interesse a ser predita é o salário do jogador. A seguir é plotado um gráfico de correlação entra tais variáveis.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+data(Hitters, package = "ISLR")
+dados <- na.omit(Hitters)
+r <- cor(dados[,-c(14,15,20)])
+library(corrplot)
+corrplot::corrplot(r, method="color", 
+                   type="upper", order="hclust", 
+                   addCoef.col = NULL, tl.srt=45, 
+                   diag=FALSE)
+```
+
+Seja um modelo de árvore de regressão para prever o salário em função das demais variáveis considerando metade dos dados selecionados aleatoriamente para treino do modelo. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+tr <- round(0.5*nrow(dados))
+treino <- sample(1:nrow(dados), tr, replace = F)
+library(tree)
+tree1 <- tree(Salary ~ ., dados, subset = treino)
+tree1
+```
+
+O diagrama do modelo pode ser plotado conforme segue. Acima tem-se `CRBI<307.5` que consiste na primeira partição ou nó raiz. Qualquer subconjunto de partições interligadas da árvore pode ser chamado de sub-árvore. Cada partição gera duas regiões às quais podem ou não ser mais particionadas, as partições finais são chamadas de nós terminais ou folhas. Neste caso tem-se 10 nós terminais, ou seja, 10 valores previstos distintos para 10 regiões distintas do espaço de preditores. Por exemplo seguindo as seguintes partições `CRuns < 325.5 82  6125000  296.3` e `CRuns > 208.5 22   514100  498.8 *`, tem-se o valor previsto do salário do jogador igual a 498.8 unidades monetárias com soma dos quadrados dos erros igual a 514100.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+plot(tree1)
+text(tree1, pretty = 0, cex = .7)
+```
+
+Pode-se realizar uma validação cruzada para "podar" ou "secar" a árvore com a finalidade de diminuir o sobreajuste.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+set.seed(3)
+cv.tree1 <- cv.tree(tree1)
+plot(cv.tree1$size, cv.tree1$dev, type = "b", col = "blue")
+```
+
+A árvore podada plotada apresenta apenas 4 folhas, com estrutura mais simples, facilitando a interpretação e buscando melhor generalização.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+prune1 <- prune.tree(tree1, best = 4)
+prune1
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+plot(prune1)
+text(prune1, pretty = 0)
+```
+
+### *Bagged trees ou bagging*
+
+*Bagged trees ou bagging* ou, em português, "árvores ensacadas" é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore. O resultado final previsto para um determinado vetor de valores das variáveis preditoras é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens e, portanto, de árvores é obtido, obtendo-se um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome *bagging* vem de *bootstrap aggregated* ou agregação por bootstrap.
+
+Para o conjunto de dados Hitters seja um modelo de regressão por *Bagging* considerando duas variáveis, `Cruns` e `RBI`. O modelo plotado é muito mais complexo e pretende apresentar uma melhor acuracidade que um modelo baseado em árvore por justamente congregar diversas árvores baseadas na reamostragem dos dados de treino. Porém, Como tais modelos apresentam maior variância que os modelos de árvore para regressão,é importante avaliar se há sobreajuste.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+# Plotando superficie do modelo bagged tree 1
+library(randomForest)
+bag <- randomForest(Salary ~ CRuns+RBI, dados, subset = treino, mtry = 2,
+                    importance = TRUE, ntree = 500)
+
+xs <- seq(min(dados$CRuns), max(dados$CRuns), length = 40)
+ys <- seq(min(dados$RBI), max(dados$RBI), length = 40)
+xys <- expand.grid(xs,ys)
+colnames(xys) <- c("CRuns", "RBI")
+
+zs <- matrix(predict(bag, xys), nrow = length(xs))
+
+n.cols <- 100
+palette <- colorRampPalette(c("palevioletred", "lightseagreen"))(n.cols)
+zfacet <- zs[-1, -1] + zs[-1, -20] + zs[-20, -1] + zs[-20, -20]
+facetcol <- cut(zfacet, n.cols)
+
+persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed', 
+            xlab="CRuns", ylab="RBI", zlab="Salary", 
+            col = palette[facetcol])
+```
+
+### Floresta aleatória
+
+O modelo de floresta aleatória consiste em uma melhoria ao modelo *bagging* com a finalidade de diminuir a variância. Basicamente, em casos onde há multicolineariedade ou redundância entre variáves regressoras, o bagging pode acarretar na seleção de apenas alguns dos preditores disponíveis durante o particionamento binário recursivo, de forma que as árvores geradas considerando a reamostragem das observações de treino possam apresentar alta correlaão entre si, acarretando em alta variabilidade das previsões finais. No modelo de floresta aleatória antes de cada partição são selecionadas aleatoriamente $m$ variáveis regressoras, $m<k$, às quais serão consideradas no processo de particionamento binário. Geralmente para regressão recomenda-se $m=k/3$.
+
+A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, $k=2$, `Cruns` e `RBI`. Para cada particionamento considerou-se $m=2/3 \simeq 1$
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+# Plotando superficie do modelo bagged tree 1
+library(randomForest)
+rf <- randomForest(Salary ~ CRuns+RBI, dados, subset = treino, mtry = 1,
+                    importance = TRUE, ntree = 500)
+
+xs <- seq(min(dados$CRuns), max(dados$CRuns), length = 40)
+ys <- seq(min(dados$RBI), max(dados$RBI), length = 40)
+xys <- expand.grid(xs,ys)
+colnames(xys) <- c("CRuns", "RBI")
+
+zs <- matrix(predict(rf, xys), nrow = length(xs))
+
+n.cols <- 100
+palette <- colorRampPalette(c("palevioletred", "lightseagreen"))(n.cols)
+zfacet <- zs[-1, -1] + zs[-1, -20] + zs[-20, -1] + zs[-20, -20]
+facetcol <- cut(zfacet, n.cols)
+
+persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed', 
+            xlab="CRuns", ylab="RBI", zlab="Salary", 
+            col = palette[facetcol])
+```
