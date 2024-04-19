@@ -1,0 +1,162 @@
+---
+title: "Laboratório 5"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Laboratório 5 - Regressão por árvores de decisão, Bagging e Floresta aleatória
+
+### Árvores para regressão
+
+Carregando pacotes.
+
+```{r}
+#| message: false
+#| warning: false
+library(ISLR)
+library(tree)
+library(GGally)
+library(randomForest)
+```
+
+Carregando base de dados sobre liga de *Baseball* americana para as temporadas de de 1986 a 1987.
+
+```{r}
+data(Hitters, package = "ISLR")
+dados <- na.omit(Hitters)
+```
+
+Visualizando dados.
+
+```{r}
+#| message: false
+#| warning: false
+r <- cor(dados[,-c(14,15,20)])
+library(corrplot)
+corrplot::corrplot(r, method="color", 
+                   type="upper", order="hclust", 
+                   addCoef.col = NULL, tl.srt=45, 
+                   diag=FALSE)
+```
+
+```{r}
+#| message: false
+#| warning: false
+ggpairs(dados[,c(3,4,6,8,9,12,13,16,19)], aes(color = dados$Division, alpha = .2)) + theme_bw()
+```
+
+Sorteando observações de treino.
+
+```{r}
+set.seed(1)
+tr <- round(0.5*nrow(dados))
+treino <- sample(1:nrow(dados), tr, replace = F)
+```
+
+Árvore de regressão para prever o salário do jogador em função das variáveis de desempenho deste.
+
+```{r}
+tree1 <- tree(Salary ~ ., dados, subset = treino)
+tree1
+```
+
+Plotando o diagrama da árvore de regressão.
+
+```{r}
+plot(tree1)
+text(tree1, cex = 0.6)
+```
+```{r}
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Desempenho do modelo para dados de teste.
+
+```{r}
+pred.teste <- predict(tree1, newdata = dados[-treino,])
+metrics(dados$Salary[-treino], pred.teste)
+```
+
+Validação cruzada para podar a árvore.
+
+```{r}
+set.seed(3)
+cv.tree1 <- cv.tree(tree1)
+plot(cv.tree1$size, cv.tree1$dev, type = "b", col = "blue")
+```
+
+```{r}
+prune1 <- prune.tree(tree1, best = 4)
+prune1
+```
+
+```{r}
+plot(prune1)
+text(prune1, cex = 0.6)
+```
+
+Avaliando modelo podado.
+
+```{r}
+pred.teste2 <- predict(prune1, newdata = dados[-treino,])
+metrics(dados$Salary[-treino], pred.teste2)
+```
+
+### *Bagging*
+
+O *bagging* ou bootstrap *aggregated* faz $B$ reamostragens dos dados de treino via boostrap e a partir destas estima $B$ árvores de regressão (ou decisão no caso de aplicações de classificação). O parâmetro `mtry` consiste no número de variáveis regressoras que serão consideradas em cada particionamento binário recursivo durante a estimativa das árvores. No caso do *bagging* deve-se considerar `mtry=k`.
+
+```{r}
+bag <- randomForest(Salary ~ ., dados, subset = treino, mtry = 19,
+                    importance = TRUE, ntree = 500)
+```
+
+```{r}
+pred.bag <- predict(bag, newdata = dados[-treino,])
+metrics(dados$Salary[-treino], pred.bag)
+```
+
+### *Random Forest*
+
+No caso da foresta aleatória deve-se considerar `mtry=k/3` para problemas de regressão, sendo sorteadas $m$ *features* das $k$ disponíveis para serem consideradas no particionamento binário recursivo, de forma a "decorrelacionar" as árvores.
+
+```{r}
+rf <- randomForest(Salary ~ ., dados, subset = treino, mtry = 6,
+                   importance = TRUE, ntree = 500)
+```
+
+```{r}
+pred.rf <- predict(rf, newdata = dados[-treino,])
+metrics(dados$Salary[-treino], pred.rf)
+```
+
+### Comparando os resultados com regressão linear múltipla
+
+```{r}
+lm1 <- lm(Salary ~ ., dados, subset = treino)
+summary(lm1)
+```
+
+```{r}
+pred.lm <- predict(lm1, newdata = dados[-treino,])
+metrics(dados$Salary[-treino], pred.lm)
+```
+
+Pode-se observar que o modelo de regressão múltipla obtido apresentou desempenho mais baixo que todos os estados anteriormente.
+
+Obviamente, há muitas possibilidades para melhorar o modelo de regressão múltipla que não foram consideradas nesta rápida implementação. Por exemplo, as variáveis numéricas não foram escalonadas, pode-se tentar reduzir o modelo com eliminação para trás aplicando a função `step`. Pode-se testar também os métodos de regessão rígida e LASSO, entre outras possibilidades, como considerar termos de interação e polinomiais. Consegue testar algumas possibilidades?
