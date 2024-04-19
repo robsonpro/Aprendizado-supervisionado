@@ -40,3 +40,6 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab4.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_tree.html
 
+### Laboratório 5
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab5.html
