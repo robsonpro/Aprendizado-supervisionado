@@ -1,0 +1,95 @@
+---
+title: "Reforço de gradiente"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Máquinas de reforço por gradiente
+
+As máquinas de reforço por gradiente (*gradient boosting machines* - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsõ a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.
+
+Um algoritmo GBM simplista do método GBM para regressão é apresentado à seguir:
+
+1.  Defina $\hat{f}(\mathbf{x})=0$ e $\varepsilon_i = y_i$ para todos dados de treino.
+2.  Para $b=1,...,B$:
+  i)  Estime uma árvore, $\hat{f}_b$, para os dados de treino $(\mathbf{x}_i,\varepsilon_i)$, $i=1,...,N$;
+  ii) Atualize $\hat{f}(\mathbf{x})$ adicionando a árvore de regressão obtida multiplicada por uma taxa de aprendizagem $\lambda$, isto é, $\hat{f}(\mathbf{x}) \leftarrow \hat{f}(\mathbf{x}) + \lambda\hat{f}_b(\mathbf{x})$;
+  iii) Atualize os resíduos, isto é $\varepsilon_i \leftarrow \varepsilon_i - \lambda\hat{f}_b(\mathbf{x}_i)$, $i=1,...,N$;
+3.  Atualize o modelo "impulsionado" ou "reforçado": $\hat{f}(\mathbf{x}) = \sum_{b=1}^B\lambda\hat{f}_b(\mathbf{x})$
+
+O número de iterações ou árvores consideradas, $\mathbf{B}$, pode ser definido por validação cruzada. A taxa de aprendizado, $\lambda$, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor $\lambda$, maior o número de árvores, $B$, necessário para uma boa aproximação.
+
+Seja a função perda quadrática comumente usada em problemas de regressão:
+
+$$
+\begin{aligned}
+L = \frac{1}{2}(y - \hat{f}(\mathbf{x}))^2
+\end{aligned}
+$$ 
+
+A divisão por 2 viabiliza facilitar os cálculos no algoritmo de *boosting*. Tomando a derivada de $L$ em relação a $f$ obtém-se o valor residual ou erro em relação à resposta de interesse, isto é:
+
+$$
+\begin{aligned}
+\frac{\partial L}{\partial f} = y - \hat{f}(\mathbf{x}) = \varepsilon
+\end{aligned}
+$$
+
+Portanto, em cada iteração, o algoritmo GBM, ao aproximar uma árvore considerando $N$ observações das variáveis regressoras, $\mathbf{x}_i$, em relação à $N$ valores residuais, $\varepsilon_i$, $i=1,...,N$, aproxima o gradiente da função perda que, no caso da função perda quadrática, é o valor residual ou erro, $\varepsilon$.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+data(Hitters, package = "ISLR")
+dados <- na.omit(Hitters)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+set.seed(9)
+tr <- round(0.5*nrow(dados))
+treino <- sample(1:nrow(dados), tr, replace = F)
+
+library(gbm)
+
+boost1 <- gbm(Salary ~ ., data = dados[treino,],
+              distribution = "gaussian", 
+              n.trees = 2000, bag.fraction = 1, 
+              interaction.depth = 1, shrinkage = 0.1)
+```
+
+Retomando o conjunto de dados Hitters seja um modelo de regressão por GBM considerando duas variáveis, `Cruns` e `RBI`. Tomando $B=2000$ e $\lambda=0.1$, tem-se o gráfico de superfície do salário previsto em função de tais variáveis regressoras.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+boost2 <- gbm(Salary ~ CRuns+RBI, data = dados[treino,],
+              distribution = "gaussian", 
+              n.trees = 2000, bag.fraction = 1, 
+              interaction.depth = 1, shrinkage = 0.1)
+
+xs <- seq(min(dados$CRuns), max(dados$CRuns), length = 40)
+ys <- seq(min(dados$RBI), max(dados$RBI), length = 40)
+xys <- expand.grid(xs,ys)
+colnames(xys) <- c("CRuns", "RBI")
+
+zs <- matrix(predict(boost2, xys), nrow = length(xs))
+
+n.cols <- 100
+palette <- colorRampPalette(c("palevioletred", "lightseagreen"))(n.cols)
+zfacet <- zs[-1, -1] + zs[-1, -20] + zs[-20, -1] + zs[-20, -20]
+facetcol <- cut(zfacet, n.cols)
+
+persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed', 
+            xlab="CRuns", ylab="RBI", zlab="Salary", 
+            col = palette[facetcol])
+```
