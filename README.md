@@ -43,3 +43,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_tree.html
 ### Laboratório 5
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab5.html
+
+## Regressão por Máquinas de reforço por gradiente
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_boosting.html
