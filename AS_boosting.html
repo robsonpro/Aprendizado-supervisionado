@@ -8,7 +8,7 @@
 
 <meta name="author" content="Robson Bruno Dutra Pereira">
 
-<title>Reforço de gradiente</title>
+<title>Reforço por gradiente</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -48,7 +48,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Reforço de gradiente</h1>
+<h1 class="title">Reforço por gradiente</h1>
 </div>
 
 
@@ -86,7 +86,8 @@ ul.task-list li input[type="checkbox"] {
 <li>Atualize o modelo “impulsionado” ou “reforçado”: <span class="math inline">\(\hat{f}(\mathbf{x}) = \sum_{b=1}^B\lambda\hat{f}_b(\mathbf{x})\)</span></li>
 </ol>
 <p>O número de iterações ou árvores consideradas, <span class="math inline">\(\mathbf{B}\)</span>, pode ser definido por validação cruzada. A taxa de aprendizado, <span class="math inline">\(\lambda\)</span>, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor <span class="math inline">\(\lambda\)</span>, maior o número de árvores, <span class="math inline">\(B\)</span>, necessário para uma boa aproximação.</p>
-<p>Seja a função perda quadrática comumente usada em problemas de regressão:</p>
+<p>Geralmente <span class="math inline">\(\hat{f}(\mathbf{x})\)</span> é um modelo de árvore com apenas uma partição e portanto dois nós terminais ou regiões, sendo portanto um aprendiz fraco (<em>weak leaner</em>). Em alguns casos pode ser interessante modelos com árvores com duas partições, o que de certa forma implica em modelos com interação.</p>
+<p>Considerando a função perda quadrática comumente usada em problemas de regressão:</p>
 <p><span class="math display">\[
 \begin{aligned}
 L = \frac{1}{2}(y - \hat{f}(\mathbf{x}))^2

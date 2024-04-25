@@ -1,5 +1,5 @@
 ---
-title: "Reforço de gradiente"
+title: "Reforço por gradiente"
 author: "Robson Bruno Dutra Pereira"
 format: html
 editor: visual
@@ -20,7 +20,9 @@ Um algoritmo GBM simplista do método GBM para regressão é apresentado à segu
 
 O número de iterações ou árvores consideradas, $\mathbf{B}$, pode ser definido por validação cruzada. A taxa de aprendizado, $\lambda$, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor $\lambda$, maior o número de árvores, $B$, necessário para uma boa aproximação.
 
-Seja a função perda quadrática comumente usada em problemas de regressão:
+Geralmente $\hat{f}(\mathbf{x})$ é um modelo de árvore com apenas uma partição e portanto dois nós terminais ou regiões, sendo portanto um aprendiz fraco (*weak leaner*). Em alguns casos pode ser interessante modelos com árvores com duas partições, o que de certa forma implica em modelos com interação.
+
+Considerando a função perda quadrática comumente usada em problemas de regressão:
 
 $$
 \begin{aligned}
@@ -74,7 +76,7 @@ Retomando o conjunto de dados Hitters seja um modelo de regressão por GBM consi
 #| fig-height: 8
 boost2 <- gbm(Salary ~ CRuns+RBI, data = dados[treino,],
               distribution = "gaussian", 
-              n.trees = 2000, bag.fraction = 1, 
+              n.trees = 2000, bag.fraction = 0.5, 
               interaction.depth = 1, shrinkage = 0.1)
 
 xs <- seq(min(dados$CRuns), max(dados$CRuns), length = 40)
