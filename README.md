@@ -47,3 +47,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab5.html
 ## Regressão por Máquinas de reforço por gradiente
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_boosting.html
+
+## Regressão por Vetores de Suporte
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_SVR.html
