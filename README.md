@@ -51,3 +51,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_boosting.html
 ## Regressão por Vetores de Suporte
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_SVR.html
+
+## Validação cruzada e grid search
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_cv.html
