@@ -1,0 +1,302 @@
+---
+title: "Validação cruzada e *grid search*"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Validação cruzada e *grid search*
+
+Seja a modelagem de uma resposta $y$ a qual supõe-se dependente de um vetor de variáveis de entrada ou preditoras $\mathbf{x} = [x_1, ..., x_k]^T$.
+Um modelo desconhecido pode ser denotado $f(\mathbf{\mathbf{x}, \mathbf{\alpha}})$, onde $\mathbf{\alpha}$ consiste em um (ou um vetor de) hyperparâmetro que minimiza o erro de previsão.
+Um conjunto de observações de treino, $\mathcal{T} = (\mathbf{x}_1,y_1), ..., (\mathbf{x}_N,y_N)$, obtidos da distribuição de probabilidade conjunta de $\mathbf{x},y$, $P(\mathbf{x},y)$, está disponível para o propósito de estimativas. 
+O modelo estimado, $\hat{f}(\mathbf{x}, \mathbf{\alpha})$, é obtido pela minimização de uma função perda, que mede a distância entre o modelo e as observações de treino.
+No caso de problemas de regressão, $y \in \mathcal{R}^1$,a escolha mais comum é a função perda quadrática, $L(y,\hat{f}(\mathbf{x}, \mathbf{\alpha})) = (y-\hat{f}(\mathbf{x}, \mathbf{\alpha}))^2$. 
+Em casos de problemas de classificação binária, $y \in [0,1]$, quando deseja-se modelar probabilidades de pertencer a uma das classes, $p(\mathbf{x}) = Pr(y|\mathbf{x})$, a função perda de entropia cruzada é a escolha mais comum, $L(y,\hat{h}(\mathbf{x}, \mathbf{\alpha})) = -2(y log(p(\mathbf{x}))+(1-y)log(1-p(\mathbf{x})))$.
+O erro de generalização ou de teste pode ser calculado segundo a Equação a seguir, onde $(\mathbf{x}_0,y_0)$ é uma nova observação.
+
+$$
+    Err_\mathcal{T} = E[L(y_0,\hat{f}(\mathbf{x}_0, \mathbf{\alpha}))|\mathcal{T}]
+$$
+O erro de treino, $\overline{err} =  (1/N)\sum_{i=1}^{N}L(y,\hat{h}(\mathbf{x}, \mathbf{\alpha}))$, sempre será maior que o erro de generalização, $Err_\mathcal{T}$.
+O erro esperado de generalização pode ser calculado como $Err = E[L(y_0,\hat{f}(\mathbf{x}_0, \mathbf{\alpha}))] = E[Err_\mathcal{T}]$.
+A forma mais eficiente e prática de estimar o erro esperado de previsão é através da validação cruzada.
+A validação cruzada via $k$-dobras (*$k$-fold cross-validation*) é a abordagem mais usada dadas suas propriedades e simplicidade.
+Particionando os dados disponíveis em $K$ folds, $k = 1, ..., K$, com aproximadamente  mesmo número de observações em cada partição, $n_k \sim N/K$, para a $k$-ésima partição o modelo é estimado usando os dados das outras $K-1$ partições ou dobras, e o erro é estimado na $k$-ésima dobra. 
+Seja a função aproximada com a $k$-ésima dobra excluída, $\hat{f}^{-k(i)}(\mathbf{x}_i,\alpha)$.
+O erro de generalização ou teste é calculado via validação cruzada segundo a Equação a seguir.
+Mais detalhes podem ser encontrados em \cite{hastie2009elements}.
+
+$$
+    CV(\hat{h}, \alpha) = \frac{1}{N} \sum_{i=1}^N L(y_i, \hat{h}^{-k(i)}(\mathbf{x}_i,\alpha))
+$$ 
+
+A Figura a seguir ilustra a validação cruzada por $k$-dobras para $K=5$ dobras.
+
+```{r}
+#| label: kfold
+#| fig-cap: "Validação cruzada via k-dobras"
+#| message: false
+#| warning: false
+#| echo: false
+#| #| fig-width: 8
+#| fig-height: 10
+knitr::include_graphics("figs/kfold.png")
+```
+
+Algumas métricas utilizadas em validação cruzada para quantificar o erro em dados de teste são apresentadas a seguir.
+
+A métrica $R^2$, $R^2 \in [0,1]$, denominada coeficiente de determinação, consiste na proporção da variabilidade dos dados explicados pelo modelo.
+Quanto maior é o valor de $R^2$ para os dados de teste, maior a capacidade de generalização do modelo.
+$$
+    R^2(y,\hat{y})  = 1 - \frac{\sum_{i=1}^{n}{(y_i - \hat{y}_i)}^2}{\sum_{i=1}^{n}{(y_i - \bar{y})}^2}
+$$
+
+Se o modelo for pior do que um modelo simples que prevê a média, $\hat{y} = \overline{y}$, o $R^2$ pode ser negativo. Isso ocorre porque o denominador, que representa a variabilidade total da resposta, pode ser menor do que o numerador, que expressa a variabilidade explicada pelo modelo. Essa situação pode ocorrer na validação cruzada, na qual os modelos são testados em dados futuros, e, posteriormente, a métrica é calculada. 
+
+O erro médio absoluto (*mean absolute error* -  MAE) mede a média dos valores absolutos das diferenças entre o valor real e o valor predito. Essa métrica é mais robusta a \textit{outliers}. 
+$$
+    MAE (y,\hat{y})  = \frac{1}{n} \sum_{i=1}^{n}\left|y_i - \hat{y}_i\right|
+$$
+
+A raiz do erro quadrático médio (*root mean square error* - RMSE) consiste na raiz da média dos quadrados dos erros de previsão de teste. O RMSE tem a mesma unidade da resposta em estudo, porém é mais impactado por *outliers*, demonstrando a influência destes no erro de previsão. Esta métrica é uma boa opção quando deseja-se mensurar o erro na mesma unidade da resposta.
+$$
+    RMSE (y,\hat{y})  = \sqrt{\frac{1}{n} \sum_{i=1}^{n}{(y_i - \hat{y}_i)}^2}
+$$
+
+### Exemplo: Validação cruzada por $k$-dobras para seleção do hiperparâmetro de encolhimento em regressão rígida
+
+Sejam os dados de medições de massa de órgãos de 30 focas mortas não intencionalmente em consequência da pesca comercial.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(DAAG)
+dados <- cfseal[ colSums(is.na(cfseal))==0]
+```
+
+Consideremos um problema de previsão da idade destes animais em função da massa total, massa do coração, do fígado, do estômago e do rim. A seguir são observadas algumas linhas do conjunto de dados.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(gt)
+library(dplyr)
+
+head(dados) |> 
+  gt()
+```
+
+Obviamente, espera-se uma alta correlação entre tais variáveis, todas medidas em escala de massa.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(GGally)
+ggpairs(dados) + theme_bw()
+```
+
+Devido ao número baixo de observações e a alta correlação entre os preditores, uma escolha razoável para modelagem seria a regressão rígida, de forma a buscar-se encolher os coeficientes em razão de uma possível inflação decorrente da multicolineariedade dos preditores. Neste método é importante realizar a escolha do hiperparâmetro de encolhimento $\lambda$. Uma vez que deve-se selecionar o nível ideal deste hiperparâmetro para garantir melhor genaralização, na validação cruzada via $k$-dobras, é importante testar um conjunto de funções, $\hat{f}^{-k(i)}(\mathbf{x}_i,\lambda_l)$, onde $\lambda_l$ seria o nível do hiperparâmetro a ser testado, considerando um vetor ou *grid* de níveis tentativos, $l=1,...,L$. Devse-se testar cada modelo em cada partição ou dobra, ou seja, serão testados ao final $K\times L$ modelos, sendo o melhor valor de $\lambda$ escolhido comparando o valor médio do erro obtido na validação, 
+$$
+    CV_l(\hat{h}, \lambda_l) = \frac{1}{N} \sum_{i=1}^N L(y_i, \hat{h}^{-k(i)}(\mathbf{x}_i,\lambda_l))
+$$ 
+para todo $l=1,...,L$.
+
+Tomando o conjunto de dados, inicialmente faz-se o sorteio das observações de cada partição. Neste caso, para $N=30$ e tomando $K=10$ dobras, tem-se exatamente $n_k=30/10=3$. A seguir todo  conjunto de dados é exposto considerando o particionamento realizado de forma aleatória.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+set.seed(7)
+dados_ <- dados
+fold <- sample(rep(1:10,3), replace = F) 
+
+dados_$fold <- fold 
+
+# dados_ |> gt()
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+dados_ |> 
+  gt() |> 
+  data_color(
+    columns = fold,
+    target_column = everything(),
+    method = "numeric")
+```
+
+Ordenando segundo a coluna das dobras ou *folds*, tem-se:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+dados_ |> 
+  arrange(fold) |> 
+  gt() |> 
+  data_color(
+    columns = fold,
+    target_column = everything(),
+    method = "numeric")
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+X <- data.frame(model.matrix(age ~ ., dados_)[,-1])
+y <- data.frame(age = dados_$age,
+                fold = dados_$fold)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+grid <- 10^seq(10, -2, length = 100)
+
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Testando-se um *grid* de 100 níveis para $\lambda$ variando de $10^{10}$ até $10^{-2}$, pode-se observar o valor de RMSE de teste em cada dobra para cada $\lambda$ testado.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(glmnet)
+library(dplyr)
+library(ggplot2)
+
+for (i in 1:10){
+  rig <- glmnet(as.matrix(X |>
+                            filter(fold != i) |>
+                            select(weight, heart, liver, stomach, kidney)), 
+                (y |> 
+                  filter(fold != i))$age, 
+                alpha = 0, 
+                lambda = grid)
+  
+  assign(paste0("rid.", i), rig)
+  
+  pred <- predict(rig,
+                  s = grid,
+                  newx = as.matrix(X |>
+                                     filter(fold == i) |>
+                                     select(-fold)))
+  
+  perf <- rbind(apply(pred, 2, metrics, obs = (y|> filter(fold == i))$age))
+  perf <- data.frame(matrix(unlist(perf), 
+                            nrow=length(perf), 
+                            byrow=TRUE))
+  colnames(perf) <- c("RMSE","MAE","R2")
+  perf$grid <- grid
+  
+  assign(paste0("perf.", i), perf)
+  
+  # p <- ggplot(perf, aes(x=grid,y=RMSE)) +
+  # geom_point() + 
+  # scale_x_log10() +
+  # theme_bw()
+  # print(p)
+}
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(plyr)
+
+perf <-
+  rbind.fill(list(perf.1,perf.2,perf.3,perf.4,perf.5,
+                  perf.6,perf.7,perf.8,perf.9,perf.10))
+
+perf$fold <- rep(1:10,each=100)
+
+# ggplot(perf, aes(x=grid,y=RMSE, col=as.factor(fold))) +
+#   geom_point() + 
+#   scale_x_log10() +
+#   labs(x="lambda", col="fold") +
+#   theme_bw()
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| fig-width: 7
+#| fig-height: 8
+ggplot(perf, aes(x=grid,y=RMSE,col=as.factor(fold))) +
+  geom_point() + 
+  facet_grid(vars(fold)) +
+  scale_x_log10() +
+  labs(x="log(lambda)", col="fold") +
+  theme_bw() +
+  theme(legend.position = "none")
+```
+
+A variação em RMSE observada entre as dobras está relacionada ao número baixo de observações no exemplo em questão. Entretanto, fica claro que um $\lambda$ mais baixo apresentará melhor desempenho. Conforme já esclarecido, deve-se tomar a média do erro de teste para todos as dobras ou partições, conforme plotado abaixo com intervalo de confiança. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+perf <- perf |>
+  group_by(grid) |>
+  dplyr::summarize(RMSE_ = mean(RMSE),
+                   SDRMSE_ = sd(RMSE),
+                   MAE_ = mean(MAE),
+                   SDMAE_ = sd(MAE),
+                   R2_ = mean(R2),
+                   SDR2_ = sd(R2))
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+ggplot(perf, aes(x=grid,y=RMSE_)) +
+  geom_errorbar(aes(ymin=RMSE_-1.96*SDRMSE_/sqrt(10), 
+                    ymax=RMSE_+1.96*SDRMSE_/sqrt(10)), col="grey") +
+  geom_point() + 
+  scale_x_log10() +
+  labs(x="lambda",y="RMSE") +
+  theme_bw()
+```
+
+Observação: A escolha de hiperparâmetros em alguns métodos, sobretudo os de origem estatística, pode ser baseada também em critérios de informação, como o AIC. Entretanto, neste curso, dar-se-á ênfase em validação cruzada uma vez que está técnica é útil tanto para os métodos de origem na estatística quanto para os de origem na computação, além de ser simples de implementar.
+
+### Referências
+
+Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer.
+
