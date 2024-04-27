@@ -69,19 +69,21 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="máquinas-de-reforço-por-gradiente" class="level2">
-<h2 class="anchored" data-anchor-id="máquinas-de-reforço-por-gradiente">Máquinas de reforço por gradiente</h2>
-<p>As máquinas de reforço por gradiente (<em>gradient boosting machines</em> - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsõ a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.</p>
+<section id="máquinas-de-reforço-de-gradiente" class="level2">
+<h2 class="anchored" data-anchor-id="máquinas-de-reforço-de-gradiente">Máquinas de reforço de gradiente</h2>
+<p>As máquinas de reforço de gradiente (<em>gradient boosting machines</em> - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsõ a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.</p>
 <p>Um algoritmo GBM simplista do método GBM para regressão é apresentado à seguir:</p>
 <ol type="1">
 <li>Defina <span class="math inline">\(\hat{f}(\mathbf{x})=0\)</span> e <span class="math inline">\(\varepsilon_i = y_i\)</span> para todos dados de treino.</li>
 <li>Para <span class="math inline">\(b=1,...,B\)</span>:</li>
 </ol>
+<!-- -->
 <ol type="i">
 <li>Estime uma árvore, <span class="math inline">\(\hat{f}_b\)</span>, para os dados de treino <span class="math inline">\((\mathbf{x}_i,\varepsilon_i)\)</span>, <span class="math inline">\(i=1,...,N\)</span>;</li>
 <li>Atualize <span class="math inline">\(\hat{f}(\mathbf{x})\)</span> adicionando a árvore de regressão obtida multiplicada por uma taxa de aprendizagem <span class="math inline">\(\lambda\)</span>, isto é, <span class="math inline">\(\hat{f}(\mathbf{x}) \leftarrow \hat{f}(\mathbf{x}) + \lambda\hat{f}_b(\mathbf{x})\)</span>;</li>
 <li>Atualize os resíduos, isto é <span class="math inline">\(\varepsilon_i \leftarrow \varepsilon_i - \lambda\hat{f}_b(\mathbf{x}_i)\)</span>, <span class="math inline">\(i=1,...,N\)</span>;</li>
 </ol>
+<!-- -->
 <ol start="3" type="1">
 <li>Atualize o modelo “impulsionado” ou “reforçado”: <span class="math inline">\(\hat{f}(\mathbf{x}) = \sum_{b=1}^B\lambda\hat{f}_b(\mathbf{x})\)</span></li>
 </ol>
