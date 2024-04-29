@@ -96,7 +96,7 @@ ul.task-list li input[type="checkbox"] {
   10.927762    2.728817 </code></pre>
 </div>
 </div>
-<p>A primeira pergunta a ser feita seria como estimar tais coeficientes de regressão. Pode-se pensar em estimativas que minimizem o erro de previsão. Conforme, plotado a seguir, o erro de previsão seria a diferença entre o valor experimental e o previsto, <span class="math inline">\(\varepsilon_i = y_i - \hat{y}_i\)</span>, <span class="math inline">\(i = 1, ...., N\)</span>.</p>
+<p>A primeira pergunta a ser feita seria como estimar tais coeficientes de regressão. Pode-se pensar em estimativas que minimizem o erro de previsão. Conforme, plotado a seguir em linhas verticais vermelhas, o erro de previsão seria a diferença entre o valor experimental e o previsto, <span class="math inline">\(\varepsilon_i = y_i - \hat{y}_i\)</span>, <span class="math inline">\(i = 1, ...., N\)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_ols_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
@@ -650,7 +650,7 @@ L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \
 \end{aligned}
 \]</span></p>
 <p>Tal solução constitui as chamadas equações normais de mínimos quadrados.</p>
-<p>Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos.</p>
+<p>Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos. Tais pressuposições implicam que o modelo o obtido por mínimos quadrados é paramétrico, uma vez que implicam em uma distribuição para os resíduos. Neste curso de aprendizado não supervisionado, serão vistos diversos modelos que não implicam qualquer distribuição acerca dos resíduos ou dados sendo, portanto, livres de distribuição e ditos não-paramétricos.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_ols_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
@@ -702,7 +702,7 @@ MS_E = \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{N} \\
 <p><span class="math display">\[
 R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}
 \]</span></p>
-<p>Esta métrica é mais honesta uma vez que penaliza o modelo pela adição de mais coeficientes. O <span class="math inline">\(R^2\)</span> sempre aumentará com adição de novos coeficientes, enquanto o <span class="math inline">\(R^2_{adj}\)</span> será mais baixo casos novos termos adicionados não apresentem significância estatística. Entretanto, no contexto de aprendizado supervisionado é mais interessante realizar a validação cruzada e ver o desempenho do modelo em dados futuros. Isto será realizado nas aulas práticas.</p>
+<p>Esta métrica é mais honesta uma vez que penaliza o modelo pela adição de mais coeficientes. O <span class="math inline">\(R^2\)</span> sempre aumentará com adição de novos coeficientes, enquanto o <span class="math inline">\(R^2_{adj}\)</span> será mais baixo casos novos termos adicionados não apresentem significância estatística. Entretanto, quando outros métodos de aprendizado não paramétricos são utilizados, especialmente os que não tem origem na estatística mas na computação, tal métrica não pode ser calculada. No contexto de aprendizado supervisionado é mais interessante realizar a validação cruzada e estimar o desempenho do modelo em dados futuros, viabilizando a comparação de tipos distintos de modelos.</p>
 <p>O teste t para os coeficientes de regressão pode ser calculado para medir a significância de cada coeficiente e testar as seguintes hipóteses para cada coeficiente de regressão.</p>
 <p><span class="math display">\[
 \begin{matrix}
@@ -2338,6 +2338,11 @@ F-statistic: 1.287e+04 on 2 and 49 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><span class="math display">\[
 \hat{y} = 183,3 -0,456x + 6,930\times10^{-4}x^2
 \]</span></p>
+</section>
+<section id="referências" class="level3">
+<h3 class="anchored" data-anchor-id="referências">Referências</h3>
+<p>Hastie, T., Tibshirani, R., Friedman, J. H., &amp; Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp.&nbsp;1-758). New York: springer.</p>
+<p>Gareth, J., Daniela, W., Trevor, H., &amp; Robert, T. (2013). An introduction to statistical learning: with applications in R. Spinger.</p>
 </section>
 </section>
 
