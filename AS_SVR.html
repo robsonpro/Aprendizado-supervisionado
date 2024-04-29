@@ -126,7 +126,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
 - \sum_{i=1}^N \alpha_i^*(\varepsilon + \xi_i^* - \mathbf{x}_i^T\mathbf{w} - b +  y_i) -\sum_{i=1}^N(\eta_i\xi_i + \eta_i^*\xi_i^*)
 \end{split}
 \]</span></p>
-<p>Derivando a função Lagrangeana em relação às variáveis do problema primal, <span class="math inline">\(\mathbf{w}\)</span>, <span class="math inline">\(b\)</span>, <span class="math inline">\(\xi_i\)</span> e <span class="math inline">\(\xi_i^*\)</span>, e igualando a zero, as condições de otimalidade de primeira ordem são obtidas conforme segue.</p>
+<p>Derivando a função Lagrangeana em relação às variáveis do problema primal, <span class="math inline">\(\mathbf{w}\)</span>, <span class="math inline">\(b\)</span>, <span class="math inline">\(\xi_i\)</span> e <span class="math inline">\(\xi_i^*\)</span>, e igualando a zero, as condições de otimalidade de primeira ordem são obtidas conforme segue (SMOLA e BERNHARD, 2004).</p>
 <p><span class="math display">\[
 \begin{aligned}
 &amp;\frac{\partial L}{\partial b} = \sum_{i=1}^N(\alpha_i + \alpha_i^*) = 0 \\
@@ -135,7 +135,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
 &amp;\frac{\partial L}{\partial \xi_i^*} = C - \alpha_i^* - \eta_i^* = 0 \\
 \end{aligned}
 \]</span></p>
-<p>Substituindo os resultados das derivadas na formulação primal, obtém-se a formulação dual do problema de SVR, conforme segue (VAPNIK, 1999; DRUCKER, 1996).</p>
+<p>Substituindo os resultados das derivadas na formulação primal, obtém-se a formulação dual do problema de SVR, conforme segue (VAPNIK, 1999; DRUCKER, 1996; SMOLA e BERNHARD, 2004).</p>
 <p><span class="math display">\[
 \begin{aligned}
     \text{Max}\ &amp;\begin{Bmatrix}
@@ -184,6 +184,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
 <section id="referências" class="level3">
 <h3 class="anchored" data-anchor-id="referências">Referências</h3>
 <p>Drucker, H., Burges, C. J., Kaufman, L., Smola, A., &amp; Vapnik, V. (1996). Support vector regression machines. Advances in neural information processing systems, 9.</p>
+<p>Smola, Alex J., and Bernhard Schölkopf. “A tutorial on support vector regression.” Statistics and computing 14 (2004): 199-222.</p>
 <p>Vapnik, V. N. (1999). An overview of statistical learning theory. IEEE transactions on neural networks, 10(5), 988-999.</p>
 <p>Vapnik, V. (2013). The nature of statistical learning theory. Springer science &amp; business media.</p>
 </section>
