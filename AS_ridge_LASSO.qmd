@@ -9,8 +9,7 @@ editor: visual
 
 ### Regressão rígida
 
-Em regressão múltipla, a regressão rígida tem por finalizadade encolher ou diminuir coeficientes de variáveis correlacionadas, com a finalidade de minimizar a variância de modelos devido a inflação dos coeficientes.
-Quando um modelo de regressão linear múltipla apresenta muitas variáveis correlacionadas, seus coeficientes podem ser mal estimados, acarretando em alta variância das estimativas. 
+Em regressão múltipla, a regressão rígida tem por finalizadade encolher ou diminuir coeficientes de variáveis correlacionadas, com a finalidade de minimizar a variância de modelos devido a inflação dos coeficientes. Quando um modelo de regressão linear múltipla apresenta muitas variáveis correlacionadas, seus coeficientes podem ser mal estimados, acarretando em alta variância das estimativas.
 
 Para encolher os coeficientes, á regressão rígida usa uma alteração na função perda usada nas estimativas de mínimos quadrados.
 
@@ -23,6 +22,14 @@ L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \
 \end{aligned}
 $$
 
+Tal quantidade consiste em notação algébrica na soma dos quadrados dos erros, isto é:
+
+$$
+L(\mathbf{\beta}) = \sum_{i=1}^N\varepsilon_i^2 =\sum_{i=1}^N(y_i-\hat{y}_i)^2\text{    ,}
+$$
+onde $\hat{y}_i= \beta_0+\sum_{j=1}^k\beta_jx_{ij}$, para o caso de regressão linear múltipla.
+
+Minimizando tal quantidade pela escolha de $\beta$, conforme visto anteriormente, resultam nas equações normais de mínimos quadrados, $\hat{\beta}=(\mathbf{X}^T\mathbf{X})^{-1}(\mathbf{X}^T\mathbf{y})$.
 Adicionado o termo de penalização de encolhimento dos coeficientes, $\lambda\beta^T\beta$, tem-se:
 
 $$
@@ -39,7 +46,7 @@ L(\mathbf{\beta,\lambda}) = \sum_{i=1}^N\varepsilon_i^2=\sum_{i=1}^N(y_i-\beta_0
 \end{aligned}
 $$
 
-Onde $\lambda$ é uma constante não negativa de penalização de encolhimento (*shrinkage penalty*), que previne a inflação dos coeficientes. Se $\lambda=0$, tem-se as estimativas padrão de mínimos quadrados que, no caso de presença de multicolineariedade, implicarão em um modelo com alta variância. Se $\lambda	\rightarrow \infty$, os coeficientes tenderão a 0, $\beta_j \rightarrow 0$, $\forall j$, o que implicaria, por outro lado, em um modelo com alto vício ou viés. A regressão rígida visa, portanto, trabalhar o conflito entre vício e variância em modelos de regressão múltipla. Deve-se buscar um valor de $\lambda$ que estabeleça uma melhor relação. 
+Onde $\lambda$ é uma constante não negativa de penalização de encolhimento (*shrinkage penalty*), que previne a inflação dos coeficientes. Se $\lambda=0$, tem-se as estimativas padrão de mínimos quadrados que, no caso de presença de multicolineariedade, implicarão em um modelo com alta variância. Se $\lambda \rightarrow \infty$, os coeficientes tenderão a 0, $\beta_j \rightarrow 0$, $\forall j$, o que implicaria, por outro lado, em um modelo com alto vício ou viés. A regressão rígida visa, portanto, trabalhar o conflito entre vício e variância em modelos de regressão múltipla. Deve-se buscar um valor de $\lambda$ que estabeleça uma melhor relação entre tais medidas de erro.
 
 Tomando a notação matricial, resolvendo para $\beta$, os coeficientes de mínimos quadrados para regressão rígida ficam:
 
@@ -56,6 +63,8 @@ Seja um conjunto de dados com informações de custos de empresas de manufatura.
 #| message: false
 #| warning: false
 #| echo: false
+#| fig-width: 9
+#| fig-height: 8
 library(AER)
 library(corrplot)
 library(GGally)
@@ -81,10 +90,7 @@ corrplot::corrplot(r,
                    tl.srt = 45, diag = F)
 ```
 
-Em um modelo de regressão rígida considerando o custo como resposta e as demais variáveis como preditores, o gráfico a seguir expõe os níveis dos coeficientes em relação à constante de encolhimento $\lambda$. 
-Observa-se que o aumento desta constante implica no encolhimento dos coeficientes. 
-Deve-se tentar encontrar o valor de $\lambda$ que minimize o erro do modelo.
-Por exemplo, para o custo de energia, pode-se observar que um $\lambda=0$ implica em alta magnitude do coeficiente, sendo observado o encolhimento deste com o aumento de $\lambda$. 
+Em um modelo de regressão rígida considerando o custo como resposta e as demais variáveis como preditores, o gráfico a seguir expõe os níveis dos coeficientes em relação à constante de encolhimento $\lambda$. Observa-se que o aumento desta constante implica no encolhimento dos coeficientes. Deve-se tentar encontrar o valor de $\lambda$ que minimize o erro do modelo. Por exemplo, para o custo de energia, pode-se observar que um $\lambda=0$ implica em alta magnitude do coeficiente, sendo observado o encolhimento deste com o aumento de $\lambda$.
 
 ```{r}
 #| message: false
@@ -111,8 +117,7 @@ legend("bottomright", lwd = 1, col = 1:8,
        legend = colnames(X.treino), cex = 0.7)
 ```
 
-A partir de validação cruzada pode-se selecionar o valor de $\lambda$ dado um grid de valores. 
-Para o exemplo $\lambda^*=12.022$.
+A partir de validação cruzada pode-se selecionar o valor de $\lambda$ dado um grid de valores. Para o exemplo $\lambda^*=12.022$.
 
 ```{r}
 #| message: false
@@ -136,12 +141,9 @@ predict(out, type = "coefficients", s = bestlam)
 
 ### Regressão via LASSO
 
-Um problema da regressão rígida, se comparada aos métodos de seleção de variáveis, como a eliminação para trás, é que este método não faz seleção de coeficientes ou termos no modelo. 
-Ou seja, a regressão rígida não reduz o modelo a partir da exclusão de variáveis correlacionadas, o que implica na manutenção de preditores redundantes no modelo. 
-Logo, a regressão rígida apenas encolhe os coeficientes.
+Um problema da regressão rígida, se comparada aos métodos de seleção de variáveis, como a eliminação para trás, é que este método não faz seleção de coeficientes ou termos no modelo. Ou seja, a regressão rígida não reduz o modelo a partir da exclusão de variáveis correlacionadas, o que implica na manutenção de preditores redundantes no modelo. Logo, a regressão rígida apenas encolhe os coeficientes.
 
-Uma alternativa à regressão rígida que promove a seleção de coeficientes é a regressão pelo operador de seleção e contração mínima absoluta ou *Least Absolute Shrinkage and Selection Operator - LASSO*. 
-A regressão LASSO muda a penalização da função perda considerando a norma $L_1$, $\sum_{j=1}^k|\beta_j|$ em detrimento da norma $L_2$, $\sum_{j=1}^k\beta_j^2$, usada no caso rígido.
+Uma alternativa à regressão rígida que promove a seleção de coeficientes é a regressão pelo operador de seleção e contração mínima absoluta ou *Least Absolute Shrinkage and Selection Operator - LASSO*. A regressão LASSO muda a penalização da função perda considerando a norma $L_1$, $\sum_{j=1}^k|\beta_j|$ em detrimento da norma $L_2$, $\sum_{j=1}^k\beta_j^2$, usada no caso rígido.
 
 $$
 \begin{aligned}
@@ -149,11 +151,9 @@ L(\mathbf{\beta,\lambda}) = \sum_{i=1}^N\varepsilon_i^2=\sum_{i=1}^N(y_i-\beta_0
 \end{aligned}
 $$
 
-No caso da regressão via LASSO, não há solução fechada ou equações normais, como no caso rígido.
-Logo, a formulação acima deve ser minimizada via programação quadrática para estimar os coeficientes.
+No caso da regressão via LASSO, não há solução fechada ou equações normais, como no caso rígido. Logo, a formulação acima deve ser minimizada via programação quadrática para estimar os coeficientes.
 
-A seguir ilustra-se os valores dos coeficientes no exemplo anterior em função do parâmetro de encolhimento e seleção de variáveis, $\lambda$, na regressão via LASSO.
-É possível observar que à medida que $\lambda$ aumenta alguns coeficientes vão sendo anulados e, portanto, excluídos do modelo.
+A seguir ilustra-se os valores dos coeficientes no exemplo anterior em função do parâmetro de encolhimento e seleção de variáveis, $\lambda$, na regressão via LASSO. É possível observar que à medida que $\lambda$ aumenta alguns coeficientes vão sendo anulados e, portanto, excluídos do modelo.
 
 ```{r}
 #| message: false
@@ -179,8 +179,7 @@ plot(lasso.cv)
 bestlam2 <- lasso.cv$lambda.min # lambda otimo
 ```
 
-Os coeficientes de regressão via LASSO para o $\lambda$ ótimo são expostos à seguir. 
-Pode-se observar que neste caso a realizada a seleção dos coeficientes mais importantes, sendo removidos aqueles das variáveis que apresentam multicolineariedade e menor importância em relação às selecionadas.
+Os coeficientes de regressão via LASSO para o $\lambda$ ótimo são expostos à seguir. Pode-se observar que neste caso é realizada a seleção dos coeficientes mais importantes, sendo removidos aqueles das variáveis que apresentam multicolineariedade e menor importância em relação às selecionadas.
 
 ```{r}
 #| message: false
@@ -210,8 +209,7 @@ st.:\sum_{j=1}^k|\beta_j| \leq s
 \end{aligned}
 $$
 
-A seguir ilustra-se a função perda quadrática sendo minimizada segundo a formulação de regressão rígida exposta. 
-Pode-se observar que o valor dos coeficientes de mínimos quadrados são encolhidos quando a restrição de regressão rígida é imposta.
+A seguir ilustra-se a função perda quadrática sendo minimizada segundo a formulação de regressão rígida exposta. Pode-se observar que o valor dos coeficientes de mínimos quadrados são encolhidos quando a restrição de regressão rígida é imposta.
 
 ```{r}
 #| message: false
@@ -277,3 +275,9 @@ legend("bottomright", c("RSS", "beta(OLS)","beta(ridge)","b1^2+b2^2=s"),
        pch=c(NA,16,16,NA),lty=c(1,NA,NA,2),col=c("green2","red","purple","grey30"))
 
 ```
+
+### Referências
+
+Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer.
+
+Gareth, J., Daniela, W., Trevor, H., & Robert, T. (2013). An introduction to statistical learning: with applications in R. Spinger.
