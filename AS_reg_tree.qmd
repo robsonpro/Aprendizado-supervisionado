@@ -79,10 +79,7 @@ ggplot(xys, aes(y = x2, x = x1)) +
   theme_bw()
 ```
 
-Sejam $k$ variáveis de entrada e uma resposta, ou seja, $(\mathbf{x}_i,y)$, com $\mathbf{x}_i = (x_{i1}, x_{i2},..., x_{iK})$, para $i=1,...,N$ observações de treino, o algoritmo de (*Classification and Regression Trees* - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores.
-Considerando $J$ regiões $R_1, R_2, ..., R_J$, o valor predito será uma constante $\gamma_j$, em cada região, $j=1,...,J$.
-Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, $\{R_j,\gamma_j\}, j=1,\ldots,J$, onde $I(\mathbf{x} \in R_j)$ é uma função indicativa que recebe 1 se $\mathbf{x}$ pertence à região $R_j$ e 0 caso contrário.
-O melhor $\gamma_j$ para minimizar a soma dos quadrados é a média das observações na região, para $y_i \in R_j$, $\hat{\gamma}_j = (\bar{y}_i | x_i \in R_j$). 
+Sejam $k$ variáveis de entrada e uma resposta, ou seja, $(\mathbf{x}_i,y)$, com $\mathbf{x}_i = (x_{i1}, x_{i2},..., x_{iK})$, para $i=1,...,N$ observações de treino, o algoritmo de (*Classification and Regression Trees* - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores. Considerando $J$ regiões $R_1, R_2, ..., R_J$, o valor predito será uma constante $\gamma_j$, em cada região, $j=1,...,J$. Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, $\{R_j,\gamma_j\}, j=1,\ldots,J$, onde $I(\mathbf{x} \in R_j)$ é uma função indicativa que recebe 1 se $\mathbf{x}$ pertence à região $R_j$ e 0 caso contrário. O melhor $\gamma_j$ para minimizar a soma dos quadrados é a média das observações na região, para $y_i \in R_j$, $\hat{\gamma}_j = (\bar{y}_i | x_i \in R_j$).
 
 $$
 \begin{aligned}
@@ -90,8 +87,7 @@ f(\mathbf{x}) = T(\mathbf{x},R_j,\gamma_j) = \sum_{j=1}^J \gamma_jI(\mathbf{x} \
 \end{aligned}
 $$
 
-Considerando todos os dados de treinamento, as divisões são definidas tomando uma variável para divisão, $x_k$, $k = 1,..., K$, e um ponto de divisão $x_k = s$, $R_1(k,s)$  = ${\mathbf{x}|x_k \leq s}$ e $R_2(k,s)$ = ${\mathbf{x}|x_k>s}$.
-Portanto, o algoritmo CART busca a variável para o particionamento e o valor desta na divisão resolvendo:
+Considerando todos os dados de treinamento, as divisões são definidas tomando uma variável para divisão, $x_k$, $k = 1,..., K$, e um ponto de divisão $x_k = s$, $R_1(k,s)$ = ${\mathbf{x}|x_k \leq s}$ e $R_2(k,s)$ = ${\mathbf{x}|x_k>s}$. Portanto, o algoritmo CART busca a variável para o particionamento e o valor desta na divisão resolvendo:
 
 $$
 \begin{aligned}
@@ -118,7 +114,7 @@ corrplot::corrplot(r, method="color",
                    diag=FALSE)
 ```
 
-Seja um modelo de árvore de regressão para prever o salário em função das demais variáveis considerando metade dos dados selecionados aleatoriamente para treino do modelo. 
+Seja um modelo de árvore de regressão para prever o salário em função das demais variáveis considerando metade dos dados selecionados aleatoriamente para treino do modelo.
 
 ```{r}
 #| message: false
@@ -210,7 +206,6 @@ O modelo de floresta aleatória consiste em uma melhoria ao modelo *bagging* com
 
 A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, $k=2$, `Cruns` e `RBI`. Para cada particionamento considerou-se $m=2/3 \simeq 1$
 
-
 ```{r}
 #| message: false
 #| warning: false
@@ -238,3 +233,9 @@ persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed',
             xlab="CRuns", ylab="RBI", zlab="Salary", 
             col = palette[facetcol])
 ```
+
+### Referências
+
+Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer.
+
+Gareth, J., Daniela, W., Trevor, H., & Robert, T. (2013). An introduction to statistical learning: with applications in R. Spinger.
