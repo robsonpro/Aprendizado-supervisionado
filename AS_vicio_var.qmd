@@ -13,6 +13,7 @@ editor: visual
 #| echo: false
 library(ggplot2)
 library(dplyr)
+library(gt)
 ```
 
 Seja uma variável regressora ou independente $x \in \mathbb{R}$ e uma resposta ou variável dependente igualmente medida em uma escala contínua, $y \in \mathbb{R}$.
@@ -83,15 +84,17 @@ Seja o ajuste aos dados disponíveis de três modelos de regressão com distinta
 
 Tais modelos são da forma que segue:
 
-$$y_1 = \beta_0 + \beta_1x$$ $$y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3$$
-
-$$y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta_{10}x^{10} $$
+$$
+\begin{matrix}
+y_1 = \beta_0 + \beta_1x\\ 
+y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3\\
+y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta_{10}x^{10} \end{matrix}
+$$
 
 Os modelos são estimados por mínimos quadrados e plotados com os dados a seguir:
 
 ```{r}
 #| echo: false
-
 colors <- c("y" = "red3", "linear" = "grey", "cúbico" = "green2", "poly-10" = "purple")
 
 ggplot(data, aes(x,y)) + 
@@ -186,18 +189,20 @@ A seguir também são tabelados valores de vício e variância dos modelos segun
 ```{r}
 #| echo: false
 #| tbl-cap: Vício versus complexidade dos modelos
-knitr::kable(pred |>
+pred |>
   group_by(ordem = model) |>
-  summarise(vicio2 = format(mean(vicio)^2, scientific=F)))
+  summarise(vicio2 = format(mean(vicio)^2, scientific=F)) |> 
+  gt()
 ```
 
 ```{r}
 #| echo: false
 #| tbl-cap: Variância versus complexidade dos modelos
 
-knitr::kable(pred |>
+pred |>
   group_by(ordem = model) |>
-  summarise(var = format(var(pred), scientific = F)))
+  summarise(var = format(var(pred), scientific = F))  |> 
+  gt()
 ```
 
 Em casos onde o número de observações é baixo o conflito entre vício e variância fica mais claro. Considerando o exemplo plotado a seguir, pode-se observar que enquanto o modelo linear apresenta um baixo ajuste, o modelo polinomial de décima ordem apresenta um sobreajuste, uma vez que praticamente interpola os dados disponíveis. Este último apresentará um ajuste muito além do real, uma vez que sua capacidade não se confirmará para dados futuros.
@@ -288,4 +293,8 @@ Pode-se observar que para os dados de treino, à medida que se aumenta a complex
 
 Quando um modelo apresenta alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.
 
-O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que no exemplo dado seria o de terceira ordem.
+O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que, no exemplo dado, seria o de terceira ordem.
+
+### Referências
+
+Bishop, Christopher M., and Hugh Bishop. "Deep learning: foundations and concepts." (2024).

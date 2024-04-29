@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.3.433">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -103,8 +103,12 @@ Var_D[\hat f(x)] &amp;= E_D[(\hat f(x) - \hat f(x))^2]
 <p>O erro associado às medições, <span class="math inline">\(Var(\varepsilon) = \sigma^2_\varepsilon\)</span>, consiste no erro irredutível. Este erro está associado à qualidade dos dados. Portanto sua variabilidade terá implicação no erro do modelo estimado.</p>
 <p>Seja o ajuste aos dados disponíveis de três modelos de regressão com distintas complexidades, um linear, um cúbico e um modelo polinomial de décima ordem.</p>
 <p>Tais modelos são da forma que segue:</p>
-<p><span class="math display">\[y_1 = \beta_0 + \beta_1x\]</span> <span class="math display">\[y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3\]</span></p>
-<p><span class="math display">\[y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta_{10}x^{10} \]</span></p>
+<p><span class="math display">\[
+\begin{matrix}
+y_1 = \beta_0 + \beta_1x\\
+y_3 = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3\\
+y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta_{10}x^{10} \end{matrix}
+\]</span></p>
 <p>Os modelos são estimados por mínimos quadrados e plotados com os dados a seguir:</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -126,56 +130,930 @@ Var_D[\hat f(x)] &amp;= E_D[(\hat f(x) - \hat f(x))^2]
 <p>A seguir também são tabelados valores de vício e variância dos modelos segundo a ordem ou complexidade entre os mesmos. Observa-se que o modelo de menor grau e, portanto menor complexidade, apresenta alto vício, porém baixa variância. Já o modelo de maior grau, ou maior complexidade, apresenta baixo vício, porém alta variância.</p>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Vício versus complexidade dos modelos </caption>
-<thead>
-<tr class="header">
-<th style="text-align: right;">ordem</th>
-<th style="text-align: left;">vicio2</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">0.3134804</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">3</td>
-<td style="text-align: left;">0.0002074545</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">0.0002207692</td>
-</tr>
-</tbody>
+
+<div id="ghzpojrdnq" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ghzpojrdnq table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ghzpojrdnq thead, #ghzpojrdnq tbody, #ghzpojrdnq tfoot, #ghzpojrdnq tr, #ghzpojrdnq td, #ghzpojrdnq th {
+  border-style: none;
+}
+
+#ghzpojrdnq p {
+  margin: 0;
+  padding: 0;
+}
+
+#ghzpojrdnq .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ghzpojrdnq .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ghzpojrdnq .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ghzpojrdnq .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ghzpojrdnq .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ghzpojrdnq .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ghzpojrdnq .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ghzpojrdnq .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ghzpojrdnq .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ghzpojrdnq .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ghzpojrdnq .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ghzpojrdnq .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ghzpojrdnq .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ghzpojrdnq .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ghzpojrdnq .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ghzpojrdnq .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ghzpojrdnq .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ghzpojrdnq .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ghzpojrdnq .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ghzpojrdnq .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ghzpojrdnq .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ghzpojrdnq .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ghzpojrdnq .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ghzpojrdnq .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ghzpojrdnq .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ghzpojrdnq .gt_left {
+  text-align: left;
+}
+
+#ghzpojrdnq .gt_center {
+  text-align: center;
+}
+
+#ghzpojrdnq .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ghzpojrdnq .gt_font_normal {
+  font-weight: normal;
+}
+
+#ghzpojrdnq .gt_font_bold {
+  font-weight: bold;
+}
+
+#ghzpojrdnq .gt_font_italic {
+  font-style: italic;
+}
+
+#ghzpojrdnq .gt_super {
+  font-size: 65%;
+}
+
+#ghzpojrdnq .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ghzpojrdnq .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ghzpojrdnq .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ghzpojrdnq .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ghzpojrdnq .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ghzpojrdnq .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ghzpojrdnq .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false"><caption><p>Vício versus complexidade dos modelos</p></caption>
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="ordem">ordem</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="vicio2">vicio2</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="ordem" class="gt_row gt_right">1</td>
+<td headers="vicio2" class="gt_row gt_right">0.3134804</td></tr>
+    <tr><td headers="ordem" class="gt_row gt_right">3</td>
+<td headers="vicio2" class="gt_row gt_right">0.0002074545</td></tr>
+    <tr><td headers="ordem" class="gt_row gt_right">10</td>
+<td headers="vicio2" class="gt_row gt_right">0.0002207692</td></tr>
+  </tbody>
+  
+  
 </table>
+</div>
 </div>
 </div>
 <div class="cell">
 <div class="cell-output-display">
-<table class="table table-sm table-striped small">
-<caption>Variância versus complexidade dos modelos </caption>
-<thead>
-<tr class="header">
-<th style="text-align: right;">ordem</th>
-<th style="text-align: left;">var</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">0.07020973</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">3</td>
-<td style="text-align: left;">0.1268333</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">0.2922431</td>
-</tr>
-</tbody>
+
+<div id="mesnmekeil" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#mesnmekeil table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#mesnmekeil thead, #mesnmekeil tbody, #mesnmekeil tfoot, #mesnmekeil tr, #mesnmekeil td, #mesnmekeil th {
+  border-style: none;
+}
+
+#mesnmekeil p {
+  margin: 0;
+  padding: 0;
+}
+
+#mesnmekeil .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#mesnmekeil .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#mesnmekeil .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#mesnmekeil .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#mesnmekeil .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#mesnmekeil .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#mesnmekeil .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#mesnmekeil .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#mesnmekeil .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#mesnmekeil .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#mesnmekeil .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#mesnmekeil .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#mesnmekeil .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#mesnmekeil .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#mesnmekeil .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mesnmekeil .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#mesnmekeil .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#mesnmekeil .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#mesnmekeil .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mesnmekeil .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#mesnmekeil .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mesnmekeil .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#mesnmekeil .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mesnmekeil .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#mesnmekeil .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#mesnmekeil .gt_left {
+  text-align: left;
+}
+
+#mesnmekeil .gt_center {
+  text-align: center;
+}
+
+#mesnmekeil .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#mesnmekeil .gt_font_normal {
+  font-weight: normal;
+}
+
+#mesnmekeil .gt_font_bold {
+  font-weight: bold;
+}
+
+#mesnmekeil .gt_font_italic {
+  font-style: italic;
+}
+
+#mesnmekeil .gt_super {
+  font-size: 65%;
+}
+
+#mesnmekeil .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#mesnmekeil .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#mesnmekeil .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#mesnmekeil .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#mesnmekeil .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#mesnmekeil .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#mesnmekeil .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false"><caption><p>Variância versus complexidade dos modelos</p></caption>
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="ordem">ordem</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="var">var</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="ordem" class="gt_row gt_right">1</td>
+<td headers="var" class="gt_row gt_right">0.07020973</td></tr>
+    <tr><td headers="ordem" class="gt_row gt_right">3</td>
+<td headers="var" class="gt_row gt_right">0.1268333</td></tr>
+    <tr><td headers="ordem" class="gt_row gt_right">10</td>
+<td headers="var" class="gt_row gt_right">0.2922431</td></tr>
+  </tbody>
+  
+  
 </table>
+</div>
 </div>
 </div>
 <p>Em casos onde o número de observações é baixo o conflito entre vício e variância fica mais claro. Considerando o exemplo plotado a seguir, pode-se observar que enquanto o modelo linear apresenta um baixo ajuste, o modelo polinomial de décima ordem apresenta um sobreajuste, uma vez que praticamente interpola os dados disponíveis. Este último apresentará um ajuste muito além do real, uma vez que sua capacidade não se confirmará para dados futuros.</p>
@@ -192,7 +1070,11 @@ Var_D[\hat f(x)] &amp;= E_D[(\hat f(x) - \hat f(x))^2]
 </div>
 <p>Pode-se observar que para os dados de treino, à medida que se aumenta a complexidade do modelo ajustado o erro diminui. Entretanto, o mesmo não acontece para os dados futuros ou de teste do modelo.</p>
 <p>Quando um modelo apresenta alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.</p>
-<p>O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que no exemplo dado seria o de terceira ordem.</p>
+<p>O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que, no exemplo dado, seria o de terceira ordem.</p>
+<section id="referências" class="level3">
+<h3 class="anchored" data-anchor-id="referências">Referências</h3>
+<p>Bishop, Christopher M., and Hugh Bishop. “Deep learning: foundations and concepts.” (2024).</p>
+</section>
 </section>
 
 </main>
