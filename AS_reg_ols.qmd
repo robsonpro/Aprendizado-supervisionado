@@ -15,6 +15,7 @@ editor: visual
 #| echo: false
 library(ggplot2)
 library(dplyr)
+library(gt)
 ```
 
 Seja um problema onde deseja-se prever uma resposta contínua, $y \in \mathbb{R}$, em função de uma única variável independente também contínua, $x \in \mathbb{R}$. Conforme observado graficamente abaixo, pode-se considerar em diversos casos a aproximação de uma função linear para tal relação.
@@ -41,7 +42,7 @@ $$
 \hat{y} = \beta_0 + \beta_1x
 $$
 
-A seguir pode-se observar para os dados plotados anteriormente a linha azual do modelo de regressão linear simples obtido.
+A seguir pode-se observar para os dados plotados anteriormente a linha azul do modelo de regressão linear simples obtido.
 
 ```{r}
 #| message: false
@@ -71,7 +72,7 @@ Para este caso inicial os coeficientes de regressão estimados são:
 lm1$coefficients
 ```
 
-A primeira pergunta a ser feita seria como estimar tais coeficientes de regressão. Pode-se pensar em estimativas que minimizem o erro de previsão. Conforme, plotado a seguir, o erro de previsão seria a diferença entre o valor experimental e o previsto, $\varepsilon_i = y_i - \hat{y}_i$, $i = 1, ...., N$.
+A primeira pergunta a ser feita seria como estimar tais coeficientes de regressão. Pode-se pensar em estimativas que minimizem o erro de previsão. Conforme, plotado a seguir em linhas verticais vermelhas, o erro de previsão seria a diferença entre o valor experimental e o previsto, $\varepsilon_i = y_i - \hat{y}_i$, $i = 1, ...., N$.
 
 ```{r}
 #| message: false
@@ -86,7 +87,7 @@ ggplot(data, aes(x,y)) +
   theme_bw()
 ```
 
-Neste sentido, as observações da variável dependente ou resposta podem ser descritos conforme segue.
+Neste sentido, as observações da variável dependente ou resposta podem ser descritas conforme segue.
 
 $$
 \begin{aligned}
@@ -108,7 +109,7 @@ data <- data |>
   mutate(y_hat = pred) |> 
   mutate(erro = y - y_hat)
 
-knitr::kable(head(data))
+head(data) |> gt()
 ```
 
 A sintaxe anteriormente apresentada pode ser escrita de forma matricial, conforme segue, onde $\mathbf{x}_{[2 \times N]}$ consiste em uma matriz relacionada às observações independentes, com uma coluna de valores unitários associada à $\beta_0$ e outra com as observações de $x$, portanto associada a $\beta_1$. $\mathbf{y}_{[N\times1]}$ consiste no vetor de observações da resposta, $\mathbf{\varepsilon}_{[N\times1]}$ consiste no vetor de erros ou resíduos de previsão e $\mathbf{\beta}_{[2\times1]}$ consiste em um vetor de coeficientes.
@@ -148,7 +149,7 @@ $$
 \varepsilon_{11}\\
 \vdots \\
 \varepsilon_{1N}\\
-\end{bmatrix}, e \\
+\end{bmatrix}\text{,    e} \\
 $$
 
 $$
@@ -165,7 +166,7 @@ $$
 L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \mathbf{X}\mathbf{\beta})^T(\mathbf{y} - \mathbf{X}\mathbf{\beta}) \\
 \mathbf{y}^T\mathbf{y} - 2\mathbf{\beta}^T\mathbf{X}^T\mathbf{y} + \mathbf{\beta}^T\mathbf{X}^T\mathbf{X}\mathbf{\beta} 
 \end{aligned}
-$$ 
+$$
 
 Para minimizar $L$ em relação à estimativa de $\mathbf{\beta}$, pode-se diferenciar tal quantidade em relação à $\mathbf{\beta}$ e igualar a zero:
 
@@ -178,7 +179,7 @@ $$
 
 Tal solução constitui as chamadas equações normais de mínimos quadrados.
 
-Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos.
+Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos. Tais pressuposições implicam que o modelo o obtido por mínimos quadrados é paramétrico, uma vez que implicam em uma distribuição para os resíduos. Neste curso de aprendizado não supervisionado, serão vistos diversos modelos que não implicam qualquer distribuição acerca dos resíduos ou dados sendo, portanto, livres de distribuição e ditos não-paramétricos.
 
 ```{r}
 #| message: false
@@ -242,16 +243,18 @@ $$
 É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. O $MS_E$ da ANOVA relacionado aos dados de treinamento do modelo tem no denominador $N-k$, sendo, portanto, o número de graus de liberdade disponíveis para calcular o erro. Além do $R^2$, para os dados de treinamento, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, $R^2_{adj}$, isto é:
 
 $$
-R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}.
+R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}
 $$
 
-Esta métrica é mais honesta uma vez que penaliza o modelo pela adição de mais coeficientes. O $R^2$ sempre aumentará com adição de novos coeficientes, enquanto o $R^2_{adj}$ será mais baixo casos novos termos adicionados não apresentem significância estatística. Entretanto, no contexto de aprendizado supervisionado é mais interessante realizar a validação cruzada e ver o desempenho do modelo em dados futuros. Isto será realizado nas aulas práticas.
+Esta métrica é mais honesta uma vez que penaliza o modelo pela adição de mais coeficientes. O $R^2$ sempre aumentará com adição de novos coeficientes, enquanto o $R^2_{adj}$ será mais baixo casos novos termos adicionados não apresentem significância estatística. Entretanto, quando outros métodos de aprendizado não paramétricos são utilizados, especialmente os que não tem origem na estatística mas na computação, tal métrica não pode ser calculada. No contexto de aprendizado supervisionado é mais interessante realizar a validação cruzada e estimar o desempenho do modelo em dados futuros, viabilizando a comparação de tipos distintos de modelos.
 
 O teste t para os coeficientes de regressão pode ser calculado para medir a significância de cada coeficiente e testar as seguintes hipóteses para cada coeficiente de regressão.
 
 $$
-H_0: \beta_j = 0\\
+\begin{matrix}
+H_0: \beta_j = 0 \\
 H_1: \beta_j \neq 0, j = 1, ..., k\\
+\end{matrix}
 $$
 
 O teste é calculado conforme segue, onde $C_j$ é o valor da $j$-ésima linha e $j$-ésima coluna da matriz $(X^T)^{-1}$, correspondente a $\beta_j$. A hipótese nula é rejeitada se $t_{0j} > t_{[\alpha/2,N-k]}$, onde $\alpha$ é o nível de significância de interesse.
@@ -295,7 +298,7 @@ with(ThreeCars2017, points(trans3d(Mileage,Age,Price,p1), pch=20,
                            col = "green3"))
 ```
 
-Para este caso, os coeficientes estimados são apresentados a seguir.
+Para este caso, os coeficientes estimados são apresentados a seguir. Estes foram estimados nas unidades originais das variáveis. Porém, para fins de inferência, é importante padronizar as variáveis regressoras.
 
 ```{r}
 #| message: false
@@ -325,7 +328,7 @@ A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.
 #| message: false
 #| warning: false
 #| echo: false
-knitr::kable(confint(model))
+data.frame(confint(model)) |> gt()
 ```
 
 Além de considerar termos de múltiplas variáveis é possível considerar a interação entre estas, colocando na matriz $\mathbf{X}$ colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma $\beta_{ij}x_ix_j$ Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.
@@ -346,7 +349,7 @@ Retomando o problema de regressão do preço de revenda de carros considerando o
 #| message: false
 #| warning: false
 #| echo: false
-knitr::kable(ThreeCars2017[c(1:2,50:51,70:71),c(1,2,4,3)])
+ThreeCars2017[c(1:2,50:51,70:71),c(1,2,4,3)] |> gt()
 ```
 
 Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis *dummy* também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis *dummy* seriam suficientes. Observe a seguir que ao criar uma coluna denominada *Mazda6*, com 1, se *Mazda6* e 0, caso contrário e, de forma análoga, uma coluna para *Accord*, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no *Maxima*.
@@ -359,7 +362,7 @@ Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou 
 ThreeCars2017$Mazda6 <- ifelse(ThreeCars2017$CarType == "Mazda6", 1, 0)
 ThreeCars2017$Accord <- ifelse(ThreeCars2017$CarType == "Accord", 1, 0)
 
-knitr::kable(ThreeCars2017[c(1:2,50:51,70:71),5:6])
+ThreeCars2017[c(1:2,50:51,70:71),] |> gt()
 ```
 
 O modelo com estas variáveis e as duas consideradas anteriormente ficaria conforme exposto a seguir.
@@ -461,3 +464,9 @@ Finalmente, tal modelo estimado pode ser escrito conforme segue.
 $$
 \hat{y} = 183,3 -0,456x + 6,930\times10^{-4}x^2 
 $$
+
+### Referências
+
+Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer.
+
+Gareth, J., Daniela, W., Trevor, H., & Robert, T. (2013). An introduction to statistical learning: with applications in R. Spinger.
