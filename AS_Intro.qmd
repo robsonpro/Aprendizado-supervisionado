@@ -265,3 +265,17 @@ s2 <- e$vectors[1,2]/e$vectors[2,2] # PC2
 abline(a=0, b=s1, col='blue', lwd = 2)
 abline(a=0, b=s2, col='lightblue', lwd = 2)
 ```
+
+### Referências
+
+Box, George EP, and Kenneth B. Wilson. "On the experimental attainment of optimum conditions." Breakthroughs in statistics: methodology and distribution. New York, NY: Springer New York, 1992. 270-310.
+
+Chen, Tianqi, and Carlos Guestrin. "Xgboost: A scalable tree boosting system." Proceedings of the 22nd acm sigkdd international conference on knowledge discovery and data mining. 2016.
+
+Chipman, Hugh A., and V. Roshan Joseph. "A conversation with Jeff Wu." (2016): 624-636.
+
+Fisher, Ronald Aylmer. "Statistical methods for research workers." Statistical methods for research workers. 6th Ed (1936).
+
+Student. "The probable error of a mean." Biometrika (1908): 1-25.
+
+Tukey, John Wilder. Exploratory data analysis. Vol. 2. Reading, MA: Addison-wesley, 1977.

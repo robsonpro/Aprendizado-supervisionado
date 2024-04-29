@@ -1,5 +1,5 @@
 ---
-title: "Reforço por gradiente"
+title: "Reforço de gradiente"
 author: "Robson Bruno Dutra Pereira"
 format: html
 editor: visual
@@ -14,16 +14,14 @@ Um algoritmo GBM simplista do método GBM para regressão é apresentado à segu
 1.  Defina $\hat{f}(\mathbf{x})=0$ e $\varepsilon_i = y_i$ para todos dados de treino.
 2.  Para $b=1,...,B$:
 
-```{=html}
 <!-- -->
-```
+
 i)  Estime uma árvore, $\hat{f}_b$, para os dados de treino $(\mathbf{x}_i,\varepsilon_i)$, $i=1,...,N$;
 ii) Atualize $\hat{f}(\mathbf{x})$ adicionando a árvore de regressão obtida multiplicada por uma taxa de aprendizagem $\lambda$, isto é, $\hat{f}(\mathbf{x}) \leftarrow \hat{f}(\mathbf{x}) + \lambda\hat{f}_b(\mathbf{x})$;
 iii) Atualize os resíduos, isto é $\varepsilon_i \leftarrow \varepsilon_i - \lambda\hat{f}_b(\mathbf{x}_i)$, $i=1,...,N$;
 
-```{=html}
 <!-- -->
-```
+
 3.  Atualize o modelo "impulsionado" ou "reforçado": $\hat{f}(\mathbf{x}) = \sum_{b=1}^B\lambda\hat{f}_b(\mathbf{x})$
 
 O número de iterações ou árvores consideradas, $\mathbf{B}$, pode ser definido por validação cruzada. A taxa de aprendizado, $\lambda$, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor $\lambda$, maior o número de árvores, $B$, necessário para uma boa aproximação.
@@ -103,3 +101,9 @@ persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed',
             xlab="CRuns", ylab="RBI", zlab="Salary", 
             col = palette[facetcol])
 ```
+
+### Referências
+
+Hastie, T., Tibshirani, R., Friedman, J. H., & Friedman, J. H. (2009). The elements of statistical learning: data mining, inference, and prediction (Vol. 2, pp. 1-758). New York: springer.
+
+Gareth, J., Daniela, W., Trevor, H., & Robert, T. (2013). An introduction to statistical learning: with applications in R. Spinger.
