@@ -1,0 +1,398 @@
+---
+title: "Regressão por splines e modelos generalizados aditivos"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Regressão por splines e modelos generalizados aditivos
+
+Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores dada sua flexibilidade em relação aos paramétricos. Dentre estes destacam-se os modelos aditivos generalizados (*generalized aditive models* - GAM). O GAM foi introduzido por Hastie et al. (1987) e consiste em uma extensão dos modelos lineares generalizados (*Generalized Linear Models* - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear.
+Para falar sobre modelos generalizados aditivos, é necessário primeiro introduzir os polinômios por partes e a regressão por \textit{splines}.
+
+## Polinômios por partes Regressão por splines
+
+### Regressão por funções de passo ou escada
+
+Antes de explicar os polinômios por partes é preciso entender as funções por partes mais simples.
+
+A regressão por funções de passo ou escada consideram a divisão do domínio do preditor, estimando uma constante para cada divisão. É um modelo que se parece com uma regressão por árvore de decisão para uma variável, porém a forma de estimar e sua estrutura é completamente distinta.
+
+Para realizar a divisão no domínio pode-se utilizar de funções indicadoras $I(.)$ que recebem 1 caso a condição seja satisfeita e 0 caso contrário. São portanto criadas divisões a partir da definição de nós no espaço do preditor, $\xi_1, \xi_2, \ldots, \xi_G$, onde $G$ é o número de nós (JAMES et al., 2013). Por exemplo, para dois nós:
+
+$$
+\begin{matrix}
+C_1(x) = I(x<\xi_1)\\
+C_2(x) = I(\xi_1 \leq x < \xi_2)\\
+C_3(x) = I(\xi_2 \geq x)\\
+\end{matrix}
+$$
+Para qualquer valor de $x$ é importante observar que $C_1(x)+C_2(x)+C_3(x)=0$.
+Um modelo de regressão por funções de passo para dois nós pode ser definido conforme segue. Pode-se observar que o resultado estimado será $\beta_0+\beta_1$ ou $\beta_0+\beta_2$ ou $\beta_0+\beta_3$, se $C_1(x)$ ou $C_2(x)$ ou $C_3(x)$ seja unitário (JAMES et al., 2013).
+$$
+\hat{y}=\beta_0+\beta_1C_1(x)+\beta_2C_2(x)+\beta_3C_3(x)
+$$
+Considerando $\beta_0 = \overline{y}$, $\beta_j=(\overline{y}|c_j\leq x <c_{j+1})-\overline{y}$, ou seja cada coeficiente que multiplica as funções indicadoras consiste na diferença entre a média das observações na divisão e a média geral. Ao final, o valor previsto consiste em uma constantre que é a média das observações de treino da região. Seja um conjunto de dados da concentração do químico GAG na urina de crianças de 0 a 17 anos. Um modelo de regressão por funções de passo considerando duas divisões na idade, 8 e 16 anos, é plotado abaixo.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(MASS)
+data(GAGurine)
+# ?GAGurine
+dados <- GAGurine
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(ggplot2)
+pdata <- ggplot(dados, aes(x=Age, y=GAG)) + 
+  geom_point(alpha=0.5) +
+  theme_bw()
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+set.seed(45)
+tr <- round(0.8*nrow(dados))
+treino <- sample(nrow(dados), tr, replace = F)
+dados.treino <- dados[treino,]
+dados.teste <- dados[-treino,]
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+lm_pas <- lm(GAG ~ 1 + I(1*(Age<6)) + (1*I(Age>= 6 & Age<12)) +  I(1*(Age>=12)), dados.treino)
+
+x_grid <- seq(min(dados$Age), max(dados$Age), length=1000)
+pred_pas <- predict(lm_pas, newdata = data.frame(Age=x_grid))
+pred_pas <- data.frame(Age=x_grid,
+                       GAG=pred_pas)
+```
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# library(dplyr)
+# 
+# beta0 <- mean(dados$GAG)
+# beta1 <- unlist(dados |>
+#                   filter(Age<6) |> 
+#                   summarise(GAG = mean(GAG)) - beta0
+#                 )
+# beta2 <- unlist(dados |>
+#                   filter(Age>= 6) |>
+#                   filter(Age<12) |>
+#                   summarise(GAG = mean(GAG)) - beta0
+#                   )
+# beta3 <- unlist(dados |>
+#                   filter(Age>= 12) |> 
+#                   summarise(GAG = mean(GAG)) - beta0
+#                   )
+# 
+# reg_pas <- function(xx) {
+#   y_hat <- beta0 + 
+#     ifelse(xx<6, beta1, 0) + 
+#     ifelse((xx>= 6 & xx<12), beta2, 0) + 
+#     ifelse(xx>=12, beta3, 0) 
+#   return(y_hat)
+# }
+# 
+# x_grid <- seq(min(dados$Age), max(dados$Age), length=1000)
+# 
+# pred_pas <- data.frame(Age=x_grid,
+#                        GAG=reg_pas(x_grid))
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+pdata + geom_line(data=pred_pas, aes(x=Age,y=GAG), 
+                  col = "orange3", lwd=1) 
+  # geom_vline(xintercept = 8, lty=2,col="grey")
+```
+
+Obviamente modelos mais complexos podem ser considerados, por exemplo, modelos polinomiais para cada região.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# lm_pl <- lm(GAG ~ 1 + I(Age*(Age<6)) + (Age*I(Age>= 6 & Age<12)) +  I(Age*(Age>=12)), dados.treino)
+# 
+# pred_pl <- predict(lm_pl, newdata = data.frame(Age=x_grid))
+# pred_pl <- data.frame(Age=x_grid,
+#                        GAG=pred_pl)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# pdata + geom_line(data=pred_pl, aes(x=Age,y=GAG), 
+#                   col = "blue2", lwd=1) +
+#   geom_vline(xintercept = c(6,12), lty=2,lwd=1, col="grey")
+```
+
+### Polinomios por partes
+
+Uma regressão polinomial cúbica por partes consiste em um modelo definido da seguinte forma:
+$$
+y_i = \biggl\{ 
+\begin{matrix}
+\beta_{01} + \beta_{11}x + \beta_{21}x^2 + \beta_{31}x^3, x_i < \xi\\
+\beta_{02} + \beta_{12}x + \beta_{22}x^2 + \beta_{32}x^3, x_i \ge \xi,
+\end{matrix}
+$$
+
+onde $\xi$ consite em nó ou divisão no domnínio da variável regressora $x$ e os coeficientes diferem para cada uma das regiões obtidas. Para o exemplo de concentração de GAG em urina de adolescentes, um modelo de regressão polinomial cúbico por partes, considerando dois nós para idades de 6 e 12, pode ser plotado como segue.
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(dplyr)
+lm_l6 <- lm(GAG ~ Age + I(Age^2) + I(Age^3),
+             dados.treino |> filter(Age<6))
+lm_l612 <- lm(GAG ~ Age + I(Age^2) + I(Age^3),
+             dados.treino |> filter(Age>=6 & Age<12))
+lm_g12 <- lm(GAG ~ Age + I(Age^2) + I(Age^3),
+             dados.treino |> filter(Age>=12))
+
+x_grid_l6 <- seq(min(dados$Age),6, length=50)
+pred_l6 <- predict(lm_l6, newdata = data.frame(Age=x_grid_l6))
+pred_l6 <- data.frame(Age=x_grid_l6,
+                       GAG=pred_l6)
+
+x_grid_l612 <- seq(6,12, length=50)
+pred_l612 <- predict(lm_l612, newdata = data.frame(Age=x_grid_l612))
+pred_l612 <- data.frame(Age=x_grid_l612,
+                       GAG=pred_l612)
+
+x_grid_g12 <- seq(12, max(dados$Age), length=50)
+pred_g12 <- predict(lm_g12, newdata = data.frame(Age=x_grid_g12))
+pred_g12 <- data.frame(Age=x_grid_g12,
+                       GAG=pred_g12)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+pdata + geom_line(data=pred_l6, aes(x=Age,y=GAG), 
+                  col = "blue", lwd=1) +
+  geom_line(data=pred_l612, aes(x=Age,y=GAG), 
+            col = "blue", lwd=1) +
+  geom_line(data=pred_g12, aes(x=Age,y=GAG), 
+            col = "blue", lwd=1) +
+  geom_vline(xintercept = 8, lty=2,col="grey")
+```
+
+Um problema deste modelo é a descontinuidade e falta de suavidade na2 divisões.
+
+### Regressão por spline cúbica
+
+Considerando uma função de uma variável $f(x)$, $x$ $\in \mathbb{R}^1$, seja $h_m(x)$ a $m$-ésima transformação de $x$, $m=1, \ldots, M$. Um modelo considerando esta transformação pode ser representado conforme segue.
+$$
+\begin{matrix}
+f(x) = \sum_{i=1}^M \beta_m h_m(x) \\
+\end{matrix}
+$$
+
+As funções de transformação $h_m(X)$ para um modelo de regressão por *spline* cúbico com, por exemplo, dois nós, são geralmente $h_1(x) = 1$, $h_2(x) = x$, $h_3(x) = x^2$, $h_4(x) = x^3$, $h_5(x) = (x - \xi_1)_+^3$, $h_6(x) = (x - \xi_2)_+^3$, onde $\xi_1$ e $\xi_2$ são nós e $t_+$ denota a parte positiva desses domínios, isto é:
+$$
+(x - \xi)_+^3 = \biggl\{ 
+\begin{matrix}
+\text{0,    }x< \xi\\
+(x - \xi)^3\text{, } x\ge\xi
+\end{matrix}
+$$
+
+Considerando essas transformações na Equação anterior, a função obtida é um polinômio cúbico por partes.
+Tal função, para três nós, pode ser escrita como segue, sendo uma função cúbica para todo o domínio adicionada de termos cúbicos para as divisões realizadas no domínio.
+$$
+\hat{y}=\beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x-\xi_1)_+^3 + \beta_5(x-\xi_2)_+^3 + \beta_6(x-\xi_3)_+^3 
+$$
+
+Para garantir a continuidade da função resultante nos nós e considerar os quatro parâmetros para cada uma das três regiões resultantes, podem ser definidas restrições de igualdade das funções nos nós. Para uma transição suave, a continuidade nas derivadas de primeira e segunda ordem também podem ser adicionadas.
+Para cada uma destas restrições adicionadas, um parâmetro do modelo pode ser diminuído. Portanto, neste caso, o modelo resultante terá seis parâmetros. Uma \textit{spline} cúbica terá $4 + g$ graus de liberdade, onde $g$ é o número de nós (JAMES et al., 2013). 
+Para o mesmo problema de previsão de GAG em urina de adolescentes, considerando três nós nas idades de 4, 8 e 12 anos, o gráfico a seguir plota uma estimativa por regressão via spline cúbica.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+lm_cub <- lm(GAG ~ Age + I(Age^2) + I(Age^3) + I((Age-4)^3*(Age>=4)) +
+               I((Age-8)^3*(Age >= 8)) +
+               I((Age-12)^3*(Age >= 12)),
+             dados.treino)
+
+pred_cub <- predict(lm_cub, newdata = data.frame(Age=x_grid))
+pred_cub <- data.frame(Age=x_grid,
+                       GAG=pred_cub)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+pdata + geom_line(data=pred_cub, aes(x=Age,y=GAG), 
+                  col = "red", lwd =1)
+```
+
+Pode-se observar que, para o exemplo estudado, existe um volume maior de observações para os primeiros anos de idade. Uma escolha mais razoável para os nós seria a definição destes a partir da distribuição das observações no domínio da variável regressora, de forma a garantir um número aproximadamente igual de observações entre os nós. Tomando os quantis de 25, 50 e 75%, tem-se o modelo atualizado a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+knots <- quantile(dados$Age)[2:4]
+lm_cub_ <- lm(GAG ~ Age + I(Age^2) + I(Age^3) + I((Age-knots[1])^3*(Age>=knots[1])) +
+               I((Age-knots[2])^3*(Age >= knots[2])) +
+               I((Age-knots[3])^3*(Age >= knots[3])),
+             dados.treino)
+
+pred_cub_ <- predict(lm_cub_, newdata = data.frame(Age=x_grid))
+pred_cub_ <- data.frame(Age=x_grid,
+                        GAG=pred_cub_)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+pdata + geom_line(data=pred_cub_, aes(x=Age,y=GAG), 
+                  col = "purple", lwd=1)
+```
+
+### Regressão por *spline* natural cúbica
+
+Outro detalhe considerado na regressão por spline cúbica é a linearização nas caudas. Tal modificação visa diminuir a variabilidade nos extremos do modelo. Para tal deve-se apenas excluir os termos envolvendo as transformações quadrática e cúbica para todo o domínio de $x$, isto é, $h_3(x) = x^2$, $h_4(x) = x^3$. Este modelo é conhecido como regressão por *spline* natural cúbica (JAMES et al., 2013).
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+knots <- quantile(dados$Age)[2:4]
+lm_cub_ <- lm(GAG ~ Age + I((Age-knots[1])^3*(Age>=knots[1])) +
+               I((Age-knots[2])^3*(Age >= knots[2])) +
+               I((Age-knots[3])^3*(Age >= knots[3])),
+             dados.treino)
+
+pred_cub_ <- predict(lm_cub_, newdata = data.frame(Age=x_grid))
+pred_cub_ <- data.frame(Age=x_grid,
+                        GAG=pred_cub_)
+```
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+pdata + geom_line(data=pred_cub_, aes(x=Age,y=GAG), 
+                  col = "violetred", lwd=1)
+```
+
+### Suavização de modelos de regressão por *spline*
+
+A realização da estimativa de um modelo de regressão por *spline* é feita minimizando uma função perda quadrática, isto é,
+$$
+L=\sum_{i=1}^N(y_i-f(x_i))^2\text{.}
+$$
+Porém, ao se utilizar de um modelo de regressão por *spline* é possível fazer tal função perda chegar a um valor nulo, interpolando todas observações de treino, o que implicará, obviamente em um alto ajuste. Para evitar tal problema, um termo de suavização é adicionado à função perda em otimização, isto é:
+$$
+L=\sum_{i=1}^N(y_i-f(x_i))^2 + \lambda\int f''(t)^2dt,
+$$
+onde o termo $\int f''(t)^2dt$ mede a soma da variação na inclinação da função, de forma a controlar o grau de rugosidade do modelo. Se $\lambda \rightarrow 0$, tem-se um modelo o mais rugoso que seria um modelo com $N$ nós, ou seja, um nó para cada observação de treino, apresentando $g+2$ graus de liberdade, o qual apresentará alta variância. Por outro lado, se $\lambda \rightarrow \infty$, tem-se um modelo linear que seria o mais suave possível, apresentando apenas dois termos e, portanto 2 graus de liberdade. O parâmetro de suavização $\lambda$ controla o grau de suavidade dõ modelo e, portanto, o número efetivo de graus de liberdade. A escolha de $\lambda$ deve ser realizada por validação cruzada (JAMES et al., 2013).
+
+Existem outros métodos de regressão por *splines* os quais não serão abordados aqui. Dentre estes destacam-se a regressão local. O leitor é convidado a ler as referências utilizadas neste texto para mais informações.
+
+## Modelos generalizados aditivos (GAM)
+
+Conforme visto, os modelos de regressão por *splines* são em função de uma variável. Os modelos generalizados aditivos visam a extensão dos modelos de regressão por *splines* para o caso de múltiplas variáveis regressoras de interesse. Os modelos generalizados aditivos visam extender os modelos de regressão múltipla,
+$$
+\hat{y}=\beta_0+\beta_1x_1+\beta_2x_2+\ldots+\beta_kx_k,
+$$
+substituindo os coeficientes lineares $\beta_j$, por uma função não-linear do termo $x_j$, $f(x_j)$. Tal função pode ser, por exemplo, uma *spline* natural. Um modelo GAM pode ser descrito, portanto, conforme segue.
+$$
+\hat{y}=\beta_0+\beta_1f(x_1)+\beta_2f(x_2)+\ldots+\beta_kf(x_k),
+$$
+Seja um conjunto com 99 observações de distintos campos de Petróleo dos EUA contendo o preço médio do barril de petróleo e função do grau de pureza e do percentual de enxofre. Deseja-se prever o preço médio do barril em função de tais variáveis.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(AER)
+data(USCrudes)
+# ?USCrudes
+dados <- USCrudes
+
+set.seed(11)
+tr <- round(0.8*nrow(dados))
+treino <- sample(nrow(dados), tr, replace = F)
+
+library(gam)
+gam2 <- gam(price~s(gravity,5) + s(sulphur,5), family = gaussian, dados[treino,])
+```
+
+Considerando um GAM a partir de *splines* naturais em função dos dois parâmetros, pode-se estudar o efeito individual de cada uma no preço do barril do Petróleo.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+par(mfrow = c(1,2))
+plot(gam2, se=TRUE, col ="red", lwd = 2)
+```
+
+O GAM estimado para tal caso é plotado a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+#| fig-width: 8
+#| fig-height: 8
+
+xs <- seq(min(dados$gravity), max(dados$gravity), length = 20)
+ys <- seq(min(dados$sulphur), max(dados$sulphur), length = 20)
+xys <- expand.grid(xs,ys)
+colnames(xys) <- c("gravity", "sulphur")
+
+zs <- matrix(predict(gam2, xys), nrow = length(xs))
+
+n.cols <- 100
+palette <- colorRampPalette(c("gold", "chartreuse4"))(n.cols)
+zfacet <- zs[-1, -1] + zs[-1, -20] + zs[-20, -1] + zs[-20, -20]
+facetcol <- cut(zfacet, n.cols)
+
+par(mfrow = c(1,1))
+p1 <- persp(x=xs, y=ys, z=zs, theta=-45, phi=30, ticktype='detailed', 
+            xlab="gravity", ylab="sulphur", zlab="price", col = palette[facetcol])
+
+obs <- with(dados[treino,], trans3d(gravity,sulphur,price,p1))
+
+pred <- with(dados[treino,], trans3d(gravity,sulphur,gam2$fitted.values,p1))
+
+points(obs, col = "red", pch = 16)
+segments(obs$x, obs$y, pred$x, pred$y)
+
+```
+
+Dentre algumas limitações dos modelos generalizados aditivos podem-se destacar a impossibilidade de incluir iretamente interações entre os preditores, uma vez que os modelos são aditivos. Entretanto, é possível gerar variáveis adicionais que consistem no produto de variáveis preditoras para avaliar a interação entre estas.
+
+### Referências
+
+Hastie, Trevor, and Robert Tibshirani. "Generalized additive models: some applications." Journal of the American Statistical Association 82.398 (1987): 371-386.
+
+James, G., Witten, D., Hastie, T., & Tibshirani, R. (2013). An introduction to statistical learning (Vol. 112, p. 18). New York: springer.
