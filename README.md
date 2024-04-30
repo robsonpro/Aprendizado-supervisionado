@@ -28,7 +28,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_ols.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab3.html
 
-## Regressão rígida e LASSO
+## Regressão Rígida e LASSO
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_ridge_LASSO.html
 
@@ -36,7 +36,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_ridge_LASSO.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab4.html
 
-## Regressão por modelos baseados em árvores
+## Regressão por Modelos baseados em árvores
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_reg_tree.html
 
@@ -48,10 +48,14 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab5.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_boosting.html
 
-## Regressão por Vetores de Suporte
+## Regressão por Vetores de suporte
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_SVR.html
 
 ## Validação cruzada e grid search
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_cv.html
+
+## Regressão por Modelos generalizados aditivos
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_GAM.html
