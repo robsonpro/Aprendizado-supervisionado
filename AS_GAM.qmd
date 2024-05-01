@@ -7,8 +7,7 @@ editor: visual
 
 ## Regressão por splines e modelos generalizados aditivos
 
-Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores dada sua flexibilidade em relação aos paramétricos. Dentre estes destacam-se os modelos aditivos generalizados (*generalized aditive models* - GAM). O GAM foi introduzido por Hastie et al. (1987) e consiste em uma extensão dos modelos lineares generalizados (*Generalized Linear Models* - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear.
-Para falar sobre modelos generalizados aditivos, é necessário primeiro introduzir os polinômios por partes e a regressão por \textit{splines}.
+Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores dada sua flexibilidade em relação aos paramétricos. Dentre estes destacam-se os modelos aditivos generalizados (*generalized aditive models* - GAM). O GAM foi introduzido por Hastie et al. (1987) e consiste em uma extensão dos modelos lineares generalizados (*Generalized Linear Models* - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear. Para falar sobre modelos generalizados aditivos, é necessário primeiro introduzir os polinômios por partes e a regressão por \textit{splines}.
 
 ## Polinômios por partes Regressão por splines
 
@@ -26,13 +25,9 @@ C_1(x) = I(x<\xi_1)\\
 C_2(x) = I(\xi_1 \leq x < \xi_2)\\
 C_3(x) = I(\xi_2 \geq x)\\
 \end{matrix}
-$$
-Para qualquer valor de $x$ é importante observar que $C_1(x)+C_2(x)+C_3(x)=0$.
-Um modelo de regressão por funções de passo para dois nós pode ser definido conforme segue. Pode-se observar que o resultado estimado será $\beta_0+\beta_1$ ou $\beta_0+\beta_2$ ou $\beta_0+\beta_3$, se $C_1(x)$ ou $C_2(x)$ ou $C_3(x)$ seja unitário (JAMES et al., 2013).
-$$
+$$ Para qualquer valor de $x$ é importante observar que $C_1(x)+C_2(x)+C_3(x)=0$. Um modelo de regressão por funções de passo para dois nós pode ser definido conforme segue. Pode-se observar que o resultado estimado será $\beta_0+\beta_1$ ou $\beta_0+\beta_2$ ou $\beta_0+\beta_3$, se $C_1(x)$ ou $C_2(x)$ ou $C_3(x)$ seja unitário (JAMES et al., 2013). $$
 \hat{y}=\beta_0+\beta_1C_1(x)+\beta_2C_2(x)+\beta_3C_3(x)
-$$
-Considerando $\beta_0 = \overline{y}$, $\beta_j=(\overline{y}|c_j\leq x <c_{j+1})-\overline{y}$, ou seja cada coeficiente que multiplica as funções indicadoras consiste na diferença entre a média das observações na divisão e a média geral. Ao final, o valor previsto consiste em uma constantre que é a média das observações de treino da região. Seja um conjunto de dados da concentração do químico GAG na urina de crianças de 0 a 17 anos. Um modelo de regressão por funções de passo considerando duas divisões na idade, 8 e 16 anos, é plotado abaixo.
+$$ Considerando $\beta_0 = \overline{y}$, $\beta_j=(\overline{y}|c_j\leq x <c_{j+1})-\overline{y}$, ou seja cada coeficiente que multiplica as funções indicadoras consiste na diferença entre a média das observações na divisão e a média geral. Ao final, o valor previsto consiste em uma constantre que é a média das observações de treino da região. Seja um conjunto de dados da concentração do químico GAG na urina de crianças de 0 a 17 anos. Um modelo de regressão por funções de passo considerando duas divisões na idade, 8 e 16 anos, é plotado abaixo.
 
 ```{r}
 #| message: false
@@ -76,7 +71,6 @@ pred_pas <- predict(lm_pas, newdata = data.frame(Age=x_grid))
 pred_pas <- data.frame(Age=x_grid,
                        GAG=pred_pas)
 ```
-
 
 ```{r}
 #| message: false
@@ -146,8 +140,7 @@ Obviamente modelos mais complexos podem ser considerados, por exemplo, modelos p
 
 ### Polinomios por partes
 
-Uma regressão polinomial cúbica por partes consiste em um modelo definido da seguinte forma:
-$$
+Uma regressão polinomial cúbica por partes consiste em um modelo definido da seguinte forma: $$
 y_i = \biggl\{ 
 \begin{matrix}
 \beta_{01} + \beta_{11}x + \beta_{21}x^2 + \beta_{31}x^3, x_i < \xi\\
@@ -156,6 +149,7 @@ y_i = \biggl\{
 $$
 
 onde $\xi$ consite em nó ou divisão no domnínio da variável regressora $x$ e os coeficientes diferem para cada uma das regiões obtidas. Para o exemplo de concentração de GAG em urina de adolescentes, um modelo de regressão polinomial cúbico por partes, considerando dois nós para idades de 6 e 12, pode ser plotado como segue.
+
 ```{r}
 #| message: false
 #| warning: false
@@ -194,22 +188,20 @@ pdata + geom_line(data=pred_l6, aes(x=Age,y=GAG),
             col = "blue", lwd=1) +
   geom_line(data=pred_g12, aes(x=Age,y=GAG), 
             col = "blue", lwd=1) +
-  geom_vline(xintercept = 8, lty=2,col="grey")
+  geom_vline(xintercept = c(6,12), lty=2,col="grey")
 ```
 
 Um problema deste modelo é a descontinuidade e falta de suavidade na2 divisões.
 
 ### Regressão por spline cúbica
 
-Considerando uma função de uma variável $f(x)$, $x$ $\in \mathbb{R}^1$, seja $h_m(x)$ a $m$-ésima transformação de $x$, $m=1, \ldots, M$. Um modelo considerando esta transformação pode ser representado conforme segue.
-$$
+Considerando uma função de uma variável $f(x)$, $x$ $\in \mathbb{R}^1$, seja $h_m(x)$ a $m$-ésima transformação de $x$, $m=1, \ldots, M$. Um modelo considerando esta transformação pode ser representado conforme segue. $$
 \begin{matrix}
 f(x) = \sum_{i=1}^M \beta_m h_m(x) \\
 \end{matrix}
 $$
 
-As funções de transformação $h_m(X)$ para um modelo de regressão por *spline* cúbico com, por exemplo, dois nós, são geralmente $h_1(x) = 1$, $h_2(x) = x$, $h_3(x) = x^2$, $h_4(x) = x^3$, $h_5(x) = (x - \xi_1)_+^3$, $h_6(x) = (x - \xi_2)_+^3$, onde $\xi_1$ e $\xi_2$ são nós e $t_+$ denota a parte positiva desses domínios, isto é:
-$$
+As funções de transformação $h_m(X)$ para um modelo de regressão por *spline* cúbico com, por exemplo, dois nós, são geralmente $h_1(x) = 1$, $h_2(x) = x$, $h_3(x) = x^2$, $h_4(x) = x^3$, $h_5(x) = (x - \xi_1)_+^3$, $h_6(x) = (x - \xi_2)_+^3$, onde $\xi_1$ e $\xi_2$ são nós e $t_+$ denota a parte positiva desses domínios, isto é: $$
 (x - \xi)_+^3 = \biggl\{ 
 \begin{matrix}
 \text{0,    }x< \xi\\
@@ -217,15 +209,11 @@ $$
 \end{matrix}
 $$
 
-Considerando essas transformações na Equação anterior, a função obtida é um polinômio cúbico por partes.
-Tal função, para três nós, pode ser escrita como segue, sendo uma função cúbica para todo o domínio adicionada de termos cúbicos para as divisões realizadas no domínio.
-$$
+Considerando essas transformações na Equação anterior, a função obtida é um polinômio cúbico por partes. Tal função, para três nós, pode ser escrita como segue, sendo uma função cúbica para todo o domínio adicionada de termos cúbicos para as divisões realizadas no domínio. $$
 \hat{y}=\beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x-\xi_1)_+^3 + \beta_5(x-\xi_2)_+^3 + \beta_6(x-\xi_3)_+^3 
 $$
 
-Para garantir a continuidade da função resultante nos nós e considerar os quatro parâmetros para cada uma das três regiões resultantes, podem ser definidas restrições de igualdade das funções nos nós. Para uma transição suave, a continuidade nas derivadas de primeira e segunda ordem também podem ser adicionadas.
-Para cada uma destas restrições adicionadas, um parâmetro do modelo pode ser diminuído. Portanto, neste caso, o modelo resultante terá seis parâmetros. Uma \textit{spline} cúbica terá $4 + g$ graus de liberdade, onde $g$ é o número de nós (JAMES et al., 2013). 
-Para o mesmo problema de previsão de GAG em urina de adolescentes, considerando três nós nas idades de 4, 8 e 12 anos, o gráfico a seguir plota uma estimativa por regressão via spline cúbica.
+Para garantir a continuidade da função resultante nos nós e considerar os quatro parâmetros para cada uma das três regiões resultantes, podem ser definidas restrições de igualdade das funções nos nós. Para uma transição suave, a continuidade nas derivadas de primeira e segunda ordem também podem ser adicionadas. Para cada uma destas restrições adicionadas, um parâmetro do modelo pode ser diminuído. Portanto, neste caso, o modelo resultante terá seis parâmetros. Uma \textit{spline} cúbica terá $4 + g$ graus de liberdade, onde $g$ é o número de nós (JAMES et al., 2013). Para o mesmo problema de previsão de GAG em urina de adolescentes, considerando três nós nas idades de 4, 8 e 12 anos, o gráfico a seguir plota uma estimativa por regressão via spline cúbica.
 
 ```{r}
 #| message: false
@@ -303,29 +291,21 @@ pdata + geom_line(data=pred_cub_, aes(x=Age,y=GAG),
 
 ### Suavização de modelos de regressão por *spline*
 
-A realização da estimativa de um modelo de regressão por *spline* é feita minimizando uma função perda quadrática, isto é,
-$$
+A realização da estimativa de um modelo de regressão por *spline* é feita minimizando uma função perda quadrática, isto é, $$
 L=\sum_{i=1}^N(y_i-f(x_i))^2\text{.}
-$$
-Porém, ao se utilizar de um modelo de regressão por *spline* é possível fazer tal função perda chegar a um valor nulo, interpolando todas observações de treino, o que implicará, obviamente em um alto ajuste. Para evitar tal problema, um termo de suavização é adicionado à função perda em otimização, isto é:
-$$
+$$ Porém, ao se utilizar de um modelo de regressão por *spline* é possível fazer tal função perda chegar a um valor nulo, interpolando todas observações de treino, o que implicará, obviamente em um alto ajuste. Para evitar tal problema, um termo de suavização é adicionado à função perda em otimização, isto é: $$
 L=\sum_{i=1}^N(y_i-f(x_i))^2 + \lambda\int f''(t)^2dt,
-$$
-onde o termo $\int f''(t)^2dt$ mede a soma da variação na inclinação da função, de forma a controlar o grau de rugosidade do modelo. Se $\lambda \rightarrow 0$, tem-se um modelo o mais rugoso que seria um modelo com $N$ nós, ou seja, um nó para cada observação de treino, apresentando $g+2$ graus de liberdade, o qual apresentará alta variância. Por outro lado, se $\lambda \rightarrow \infty$, tem-se um modelo linear que seria o mais suave possível, apresentando apenas dois termos e, portanto 2 graus de liberdade. O parâmetro de suavização $\lambda$ controla o grau de suavidade dõ modelo e, portanto, o número efetivo de graus de liberdade. A escolha de $\lambda$ deve ser realizada por validação cruzada (JAMES et al., 2013).
+$$ onde o termo $\int f''(t)^2dt$ mede a soma da variação na inclinação da função, de forma a controlar o grau de rugosidade do modelo. Se $\lambda \rightarrow 0$, tem-se um modelo o mais rugoso que seria um modelo com $N$ nós, ou seja, um nó para cada observação de treino, apresentando $g+2$ graus de liberdade, o qual apresentará alta variância. Por outro lado, se $\lambda \rightarrow \infty$, tem-se um modelo linear que seria o mais suave possível, apresentando apenas dois termos e, portanto 2 graus de liberdade. O parâmetro de suavização $\lambda$ controla o grau de suavidade dõ modelo e, portanto, o número efetivo de graus de liberdade. A escolha de $\lambda$ deve ser realizada por validação cruzada (JAMES et al., 2013).
 
 Existem outros métodos de regressão por *splines* os quais não serão abordados aqui. Dentre estes destacam-se a regressão local. O leitor é convidado a ler as referências utilizadas neste texto para mais informações.
 
 ## Modelos generalizados aditivos (GAM)
 
-Conforme visto, os modelos de regressão por *splines* são em função de uma variável. Os modelos generalizados aditivos visam a extensão dos modelos de regressão por *splines* para o caso de múltiplas variáveis regressoras de interesse. Os modelos generalizados aditivos visam extender os modelos de regressão múltipla,
-$$
+Conforme visto, os modelos de regressão por *splines* são em função de uma variável. Os modelos generalizados aditivos visam a extensão dos modelos de regressão por *splines* para o caso de múltiplas variáveis regressoras de interesse. Os modelos generalizados aditivos visam extender os modelos de regressão múltipla, $$
 \hat{y}=\beta_0+\beta_1x_1+\beta_2x_2+\ldots+\beta_kx_k,
-$$
-substituindo os coeficientes lineares $\beta_j$, por uma função não-linear do termo $x_j$, $f(x_j)$. Tal função pode ser, por exemplo, uma *spline* natural. Um modelo GAM pode ser descrito, portanto, conforme segue.
-$$
+$$ substituindo os coeficientes lineares $\beta_j$, por uma função não-linear do termo $x_j$, $f(x_j)$. Tal função pode ser, por exemplo, uma *spline* natural. Um modelo GAM pode ser descrito, portanto, conforme segue. $$
 \hat{y}=\beta_0+\beta_1f(x_1)+\beta_2f(x_2)+\ldots+\beta_kf(x_k),
-$$
-Seja um conjunto com 99 observações de distintos campos de Petróleo dos EUA contendo o preço médio do barril de petróleo e função do grau de pureza e do percentual de enxofre. Deseja-se prever o preço médio do barril em função de tais variáveis.
+$$ Seja um conjunto com 99 observações de distintos campos de Petróleo dos EUA contendo o preço médio do barril de petróleo e função do grau de pureza e do percentual de enxofre. Deseja-se prever o preço médio do barril em função de tais variáveis.
 
 ```{r}
 #| message: false
