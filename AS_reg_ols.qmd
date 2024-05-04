@@ -129,26 +129,44 @@ $$
 1 & x_{2}\\
 \vdots & \vdots \\
 1 & x_{N}\\
-\end{bmatrix} \\
+\end{bmatrix} =
+\begin{bmatrix}
+1 & 1.093\\
+1 & 4.106\\
+\vdots & \vdots \\
+1 & 96.206\\
+\end{bmatrix} 
 $$
 
 $$
 \mathbf{y} = 
 \begin{bmatrix}
-y_{11}\\
-y_{11}\\
+y_{1}\\
+y_{2}\\
 \vdots \\
-y_{1N}\\
-\end{bmatrix} \\
+y_{N}\\
+\end{bmatrix} =
+\begin{bmatrix}
+9.389\\
+29.786\\
+\vdots \\
+290.028\\
+\end{bmatrix}
 $$
 
 $$
 \mathbf{\varepsilon} = 
 \begin{bmatrix}
-\varepsilon_{11}\\
-\varepsilon_{11}\\
+\varepsilon_{1}\\
+\varepsilon_{2}\\
 \vdots \\
-\varepsilon_{1N}\\
+\varepsilon_{N}\\
+\end{bmatrix} = 
+\begin{bmatrix}
+-4.522\\
+7.653\\
+\vdots \\
+16.571\\
 \end{bmatrix}\text{,    e} \\
 $$
 
@@ -156,7 +174,10 @@ $$
 \mathbf{\beta}^T = 
 \begin{bmatrix}
 \beta_0 & \beta_1\\
-\end{bmatrix} \\
+\end{bmatrix} =
+\begin{bmatrix}
+10.928  & 2.729 \\
+\end{bmatrix}
 $$
 
 Tomando tal notação, a soma dos quadrados dos erros pode ser descrita como $\sum_{i=1}^{N}\varepsilon_i^2 = \mathbf{\varepsilon}^T\mathbf{\varepsilon}$. Desenvolvendo tal expressão tem-se:
@@ -240,7 +261,8 @@ MS_E = \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{N} \\
 \end{align}
 $$
 
-É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. O $MS_E$ da ANOVA relacionado aos dados de treinamento do modelo tem no denominador $N-k$, sendo, portanto, o número de graus de liberdade disponíveis para calcular o erro. Além do $R^2$, para os dados de treinamento, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, $R^2_{adj}$, isto é:
+É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. 
+Além do $R^2$, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, $R^2_{adj}$, isto é:
 
 $$
 R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}
@@ -257,7 +279,7 @@ H_1: \beta_j \neq 0, j = 1, ..., k\\
 \end{matrix}
 $$
 
-O teste é calculado conforme segue, onde $C_j$ é o valor da $j$-ésima linha e $j$-ésima coluna da matriz $(X^T)^{-1}$, correspondente a $\beta_j$. A hipótese nula é rejeitada se $t_{0j} > t_{[\alpha/2,N-k]}$, onde $\alpha$ é o nível de significância de interesse.
+O teste é calculado conforme segue, onde $C_j$ é o valor da $j$-ésima linha e $j$-ésima coluna da matriz $(\mathbf{X}^T\mathbf{X})^{-1}$, correspondente a $\beta_j$. A hipótese nula é rejeitada se $t_{0j} > t_{[\alpha/2,N-k]}$, onde $\alpha$ é o nível de significância de interesse.
 
 $$
 t_{0j} = \frac{\hat{\beta}_j}{\sqrt{C_jSS_E/(N-k)}}
@@ -319,7 +341,12 @@ O teste t para os coeficientes de regressão resultante é apresentado a seguir.
 #| message: false
 #| warning: false
 #| echo: false
-summary(model)
+data <- ThreeCars2017
+data$Age <- scale(data$Age)
+data$Mileage <- scale(data$Mileage)
+
+model2 <- lm(Price ~ Mileage+Age, data)
+summary(model2)
 ```
 
 A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.
@@ -328,7 +355,7 @@ A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.
 #| message: false
 #| warning: false
 #| echo: false
-data.frame(confint(model)) |> gt()
+data.frame(confint(model2)) |> gt()
 ```
 
 Além de considerar termos de múltiplas variáveis é possível considerar a interação entre estas, colocando na matriz $\mathbf{X}$ colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma $\beta_{ij}x_ix_j$ Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.
@@ -337,7 +364,7 @@ Além de considerar termos de múltiplas variáveis é possível considerar a in
 #| message: false
 #| warning: false
 #| echo: false
-model_int <- lm(Price ~ Mileage*Age, ThreeCars2017)
+model_int <- lm(Price ~ Mileage*Age, data)
 summary(model_int)
 ```
 
@@ -371,7 +398,7 @@ O modelo com estas variáveis e as duas consideradas anteriormente ficaria confo
 #| message: false
 #| warning: false
 #| echo: false
-model_dum <- lm(Price ~ Mileage+Age+Mazda6+Accord, ThreeCars2017)
+model_dum <- lm(Price ~ Mileage+Age+Mazda6+Accord, data)
 summary(model_dum)
 ```
 

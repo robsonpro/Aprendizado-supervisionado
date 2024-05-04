@@ -609,31 +609,52 @@ y_i = \beta_0 + \beta_1x_i + \varepsilon_i \\
 1 &amp; x_{2}\\
 \vdots &amp; \vdots \\
 1 &amp; x_{N}\\
-\end{bmatrix} \\
+\end{bmatrix} =
+\begin{bmatrix}
+1 &amp; 1.093\\
+1 &amp; 4.106\\
+\vdots &amp; \vdots \\
+1 &amp; 96.206\\
+\end{bmatrix}
 \]</span></p>
 <p><span class="math display">\[
 \mathbf{y} =
 \begin{bmatrix}
-y_{11}\\
-y_{11}\\
+y_{1}\\
+y_{2}\\
 \vdots \\
-y_{1N}\\
-\end{bmatrix} \\
+y_{N}\\
+\end{bmatrix} =
+\begin{bmatrix}
+9.389\\
+29.786\\
+\vdots \\
+290.028\\
+\end{bmatrix}
 \]</span></p>
 <p><span class="math display">\[
 \mathbf{\varepsilon} =
 \begin{bmatrix}
-\varepsilon_{11}\\
-\varepsilon_{11}\\
+\varepsilon_{1}\\
+\varepsilon_{2}\\
 \vdots \\
-\varepsilon_{1N}\\
+\varepsilon_{N}\\
+\end{bmatrix} =
+\begin{bmatrix}
+-4.522\\
+7.653\\
+\vdots \\
+16.571\\
 \end{bmatrix}\text{,    e} \\
 \]</span></p>
 <p><span class="math display">\[
 \mathbf{\beta}^T =
 \begin{bmatrix}
 \beta_0 &amp; \beta_1\\
-\end{bmatrix} \\
+\end{bmatrix} =
+\begin{bmatrix}
+10.928  &amp; 2.729 \\
+\end{bmatrix}
 \]</span></p>
 <p>Tomando tal notação, a soma dos quadrados dos erros pode ser descrita como <span class="math inline">\(\sum_{i=1}^{N}\varepsilon_i^2 = \mathbf{\varepsilon}^T\mathbf{\varepsilon}\)</span>. Desenvolvendo tal expressão tem-se:</p>
 <p><span class="math display">\[
@@ -698,7 +719,7 @@ MS_E = SS_E/N \\
 MS_E = \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{N} \\
 \end{align}
 \]</span></p>
-<p>É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. O <span class="math inline">\(MS_E\)</span> da ANOVA relacionado aos dados de treinamento do modelo tem no denominador <span class="math inline">\(N-k\)</span>, sendo, portanto, o número de graus de liberdade disponíveis para calcular o erro. Além do <span class="math inline">\(R^2\)</span>, para os dados de treinamento, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, <span class="math inline">\(R^2_{adj}\)</span>, isto é:</p>
+<p>É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. Além do <span class="math inline">\(R^2\)</span>, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, <span class="math inline">\(R^2_{adj}\)</span>, isto é:</p>
 <p><span class="math display">\[
 R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}
 \]</span></p>
@@ -710,7 +731,7 @@ H_0: \beta_j = 0 \\
 H_1: \beta_j \neq 0, j = 1, ..., k\\
 \end{matrix}
 \]</span></p>
-<p>O teste é calculado conforme segue, onde <span class="math inline">\(C_j\)</span> é o valor da <span class="math inline">\(j\)</span>-ésima linha e <span class="math inline">\(j\)</span>-ésima coluna da matriz <span class="math inline">\((X^T)^{-1}\)</span>, correspondente a <span class="math inline">\(\beta_j\)</span>. A hipótese nula é rejeitada se <span class="math inline">\(t_{0j} &gt; t_{[\alpha/2,N-k]}\)</span>, onde <span class="math inline">\(\alpha\)</span> é o nível de significância de interesse.</p>
+<p>O teste é calculado conforme segue, onde <span class="math inline">\(C_j\)</span> é o valor da <span class="math inline">\(j\)</span>-ésima linha e <span class="math inline">\(j\)</span>-ésima coluna da matriz <span class="math inline">\((\mathbf{X}^T\mathbf{X})^{-1}\)</span>, correspondente a <span class="math inline">\(\beta_j\)</span>. A hipótese nula é rejeitada se <span class="math inline">\(t_{0j} &gt; t_{[\alpha/2,N-k]}\)</span>, onde <span class="math inline">\(\alpha\)</span> é o nível de significância de interesse.</p>
 <p><span class="math display">\[
 t_{0j} = \frac{\hat{\beta}_j}{\sqrt{C_jSS_E/(N-k)}}
 \]</span></p>
@@ -740,7 +761,7 @@ t_{0j} = \frac{\hat{\beta}_j}{\sqrt{C_jSS_E/(N-k)}}
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Price ~ Mileage + Age, data = ThreeCars2017)
+lm(formula = Price ~ Mileage + Age, data = data)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
@@ -748,9 +769,9 @@ Residuals:
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 21.54308    0.47737  45.129  &lt; 2e-16 ***
-Mileage     -0.05315    0.01207  -4.404 3.02e-05 ***
-Age         -0.84235    0.11187  -7.530 4.42e-11 ***
+(Intercept)  13.7478     0.2483  55.364  &lt; 2e-16 ***
+Mileage      -1.9401     0.4406  -4.404 3.02e-05 ***
+Age          -3.3175     0.4406  -7.530 4.42e-11 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -1211,12 +1232,12 @@ F-statistic: 203.5 on 2 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
     </tr>
   </thead>
   <tbody class="gt_table_body">
-    <tr><td headers="X2.5.." class="gt_row gt_right">20.59426402</td>
-<td headers="X97.5.." class="gt_row gt_right">22.49189577</td></tr>
-    <tr><td headers="X2.5.." class="gt_row gt_right">-0.07713411</td>
-<td headers="X97.5.." class="gt_row gt_right">-0.02915842</td></tr>
-    <tr><td headers="X2.5.." class="gt_row gt_right">-1.06469602</td>
-<td headers="X97.5.." class="gt_row gt_right">-0.62000297</td></tr>
+    <tr><td headers="X2.5.." class="gt_row gt_right">13.254224</td>
+<td headers="X97.5.." class="gt_row gt_right">14.241331</td></tr>
+    <tr><td headers="X2.5.." class="gt_row gt_right">-2.815845</td>
+<td headers="X97.5.." class="gt_row gt_right">-1.064452</td></tr>
+    <tr><td headers="X2.5.." class="gt_row gt_right">-4.193231</td>
+<td headers="X97.5.." class="gt_row gt_right">-2.441839</td></tr>
   </tbody>
   
   
@@ -1229,18 +1250,18 @@ F-statistic: 203.5 on 2 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Price ~ Mileage * Age, data = ThreeCars2017)
+lm(formula = Price ~ Mileage * Age, data = data)
 
 Residuals:
     Min      1Q  Median      3Q     Max 
 -5.1277 -1.4495 -0.2671  1.7765  6.1130 
 
 Coefficients:
-             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 23.710878   0.855627  27.712  &lt; 2e-16 ***
-Mileage     -0.091109   0.017144  -5.314 8.32e-07 ***
-Age         -1.322828   0.192804  -6.861 9.95e-10 ***
-Mileage:Age  0.006151   0.002053   2.997  0.00357 ** 
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)  13.0272     0.3381  38.532  &lt; 2e-16 ***
+Mileage      -2.0909     0.4247  -4.924 4.06e-06 ***
+Age          -3.7683     0.4477  -8.417 7.55e-13 ***
+Mileage:Age   0.8844     0.2952   2.997  0.00357 ** 
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
@@ -2248,7 +2269,7 @@ F-statistic: 151.1 on 3 and 86 DF,  p-value: &lt; 2.2e-16</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Call:
-lm(formula = Price ~ Mileage + Age + Mazda6 + Accord, data = ThreeCars2017)
+lm(formula = Price ~ Mileage + Age + Mazda6 + Accord, data = data)
 
 Residuals:
    Min     1Q Median     3Q    Max 
@@ -2256,11 +2277,11 @@ Residuals:
 
 Coefficients:
             Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 22.14907    0.54666  40.517  &lt; 2e-16 ***
-Mileage     -0.05198    0.01158  -4.490 2.23e-05 ***
-Age         -0.81720    0.10799  -7.567 4.17e-11 ***
-Mazda6      -2.11582    0.57501  -3.680 0.000409 ***
-Accord      -0.32571    0.58733  -0.555 0.580651    
+(Intercept)  14.5616     0.4082  35.672  &lt; 2e-16 ***
+Mileage      -1.8975     0.4226  -4.490 2.23e-05 ***
+Age          -3.2185     0.4253  -7.567 4.17e-11 ***
+Mazda6       -2.1158     0.5750  -3.680 0.000409 ***
+Accord       -0.3257     0.5873  -0.555 0.580651    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
