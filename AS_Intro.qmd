@@ -18,7 +18,7 @@ Alguns métodos surgiram no subcampo da **Estatística** denominado **Aprendizad
 
 ## Um pouco de história
 
-Inicialmente serão citados alguns teóricos mais importantes para a estatística frequentista e paramétrica. Porém alguns métodos propostos, por exemplo a análise discriminante linear de Fisher é considerado um método iportante de aprendizado supervisionado para classificação.
+Inicialmente serão citados alguns teóricos mais importantes para a estatística frequentista e paramétrica. Porém alguns métodos propostos, por exemplo a análise discriminante linear de Fisher é utilizado até hoje como método de aprendizado supervisionado para classificação.
 
 -   Willian Gosset (Student), 1908-1909: criou o teste t e a distribuição t de Student quando trabalhava na cervejaria Guiness. Sua intenção era criar uma aproximação da distribuição normal para amostras de tamanhos limitados.
 
@@ -69,12 +69,12 @@ knitr::include_graphics("figs/guestrin.png")
 
 ### Aprendizado Supervisionado
 
-Seja um conjunto de variáveis de entrada, independentes ou preditores $x_1, x_2, ..., x_k$ e uma variável dependente ou supervisora $y$. Dado uma amostra de observações para tais variáveis, o aprendizado supervisionado visa prever o comportamento ou resultado de $y$, considerando valores futuros de $x_j$, $\forall j=i, ..., k$. O aprendizado supervisionado pode ser classificado em dois tipos:
+Seja um conjunto de variáveis de entrada, independentes ou preditores $x = [x_1, x_2, ..., x_k]^T$ e uma variável dependente ou supervisora $y$. Dado uma amostra de observações para tais variáveis, o aprendizado supervisionado visa prever o comportamento ou resultado de $y$, considerando valores futuros de $\mathbf{x}$, $\mathbf{x}_0$. O aprendizado supervisionado pode ser classificado em dois tipos:
 
--   Regressão, $y \in \mathbb{R}$, ou seja, quando a resposta ou supervisor pode ser medida em uma escala real (há casos para variáveis numéricas do conjunto dos números inteiros);
--   Classificação, $y \in \{A, B, C, ...\}$, ou seja, quando a resposta pertence a conjunto finito de categorias.
+-   Regressão, $y \in \mathbb{R}$, ou seja, quando a resposta ou supervisor pode ser medida em uma escala real (há casos para variáveis de processos de contagem em uma taxa média de ocorrência, entre outros);
+-   Classificação, $y \in \{A, B, C, ...\}$, ou seja, quando a resposta pertence a um conjunto finito de categorias.
 
-A seguir um exemplo de aplicação de regressão linear simples para prever consumo em função da renda. O modelo foi treinado com um conjunto de dados de 33 observações e aplicado em 11 observações de teste.
+A seguir um exemplo de aplicação de regressão linear simples para prever consumo em função da renda. O modelo foi treinado com um conjunto de dados de 33 observações e aplicado em 11 observações de teste. É importante observar uma boa aproximação do modelo aos dados, especialmente para os dados de teste ou futuros. Em casos de múltiplas variáveis, dada a dificuldade de visualização, algumas métricas de ajuste são utilizadas.
 
 ```{r}
 #| label: consumorenda
@@ -118,7 +118,13 @@ ggplot() +
 
 ```
 
-A seguir um exemplo do resultado gráfico de um modelo de regressão logística para classificação de pessoas com diabetes em relação a glicose, onde 1 = diabético e 0 = não diabético.
+A seguir um exemplo do resultado gráfico de um modelo de regressão logística para classificação de pessoas com diabetes em relação a glicose, onde "1" = diabético e "0" = não diabético. O modelo prevê a probabilidade de pertencer a classe 1, isto é, $P(y=1|x)$. A discriminação é realizada considerando a probabilidade intermediária, isto é, 
+$$
+\bigg\{\begin{matrix}
+y = 1, se p>0,5, \\
+y = 0, cc
+\end{matrix}
+$$
 
 ```{r}
 #| label: diabetes_glicose
@@ -207,9 +213,10 @@ ggplot() +
 
 ### Aprendizado Não-supervisionado
 
-Seja um conjunto de variáveis de entrada, independentes ou preditores $x_1, x_2, ..., x_k$. O aprendizado não-supervisionado visa obter informações a partir dos próprios dados de entrada, sem a necessidade de um supervisor ou variável dependente. Consitiu-se de técnicas de agrupamento e redução de dimensionalidade.
+Seja um conjunto de variáveis de entrada, independentes ou preditores, $\mathbf{x}_1$, $\mathbf{x}_2$, ..., $\mathbf{x}_N$, $\mathbf{x}=[x_1, x_2, ..., x_]^Tk$. O aprendizado não-supervisionado visa obter informações a partir dos próprios dados de entrada, sem a necessidade de um supervisor ou variável dependente. Constitui-se de técnicas de agrupamento e de redução de dimensionalidade.
 
-A seguir expõe-se um gráfico do resultado de um agrupamento por k-médias considerando assassinatos, assaltos, estupro e outros índices de criminalidade e demográficos nos EUA. São plotados os dois índices mais importantes.
+A seguir expõe-se um gráfico do resultado de um agrupamento por $k$-médias considerando assassinatos, assaltos, estupro e outros índices de criminalidade e demográficos nos EUA. São plotados os dois índices mais importantes.
+
 
 ```{r}
 #| label: kmeans
@@ -234,7 +241,7 @@ A seguir expõe-se um gráfico de dispersão para idade e peso de órgãos retir
 
 ```{r}
 #| label: pca
-#| fig-cap: "Análise de componentes principais para encontrar uma nova variável que represente o peso e a altura"
+#| fig-cap: "Análise de componentes principais para encontrar uma nova variável que represente o peso e a idade"
 #| message: false
 #| warning: false
 #| echo: false

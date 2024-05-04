@@ -109,7 +109,7 @@ ggplot(data, aes(x,y)) +
   theme_bw()
 ```
 
-Tomando um valor arbitrário de $x = x_0$, e $K$ conjuntos distintos de observações futuras, $d_k = (x_1,y_1)_k, ..., (x_n,y_n)_k$, $k=1, ..., K$, é possível medir o vício e a variância das estimativas obtidas por $\hat f(x)$ para um $x=x_0$ específico.
+Tomando um valor arbitrário de $x = x_0$, e $M$ conjuntos distintos de observações futuras, $d_1=(x_1,y_1)_1, ..., (x_n,y_n)_1$, $d_2=(x_1,y_1)_2, ..., (x_n,y_n)_2$, $\ldots, d_M=(x_1,y_1)_M, ..., (x_n,y_n)_M$, é possível medir o vício e a variância das estimativas obtidas por $\hat f(x)$ para um $x=x_0$ específico.
 
 ```{r}
 #| echo: false
@@ -184,7 +184,7 @@ ggplot(pred, aes(x=vicio, fill = as.factor(model))) +
 
 Pelos gráficos pode-se observar que o modelo linear apresenta maior vício e menor variância, enquanto o modelo polinomial de décima ordem apresenta menor vício, porém maior variância. Este exemplo ilustra o conflito entre vício e variância. Deve-se buscar um modelo que apresente equilíbrio entre ambas medidas.
 
-A seguir também são tabelados valores de vício e variância dos modelos segundo a ordem ou complexidade entre os mesmos. Observa-se que o modelo de menor grau e, portanto menor complexidade, apresenta alto vício, porém baixa variância. Já o modelo de maior grau, ou maior complexidade, apresenta baixo vício, porém alta variância.
+A seguir também são tabelados valores de vício e variância dos modelos segundo a ordem ou complexidade entre os mesmos. Observa-se que o modelo de menor grau e, portanto, menor complexidade, apresenta alto vício, porém baixa variância. Já o modelo de maior grau, ou maior complexidade, apresenta baixo vício, porém alta variância.
 
 ```{r}
 #| echo: false
@@ -293,7 +293,7 @@ Pode-se observar que para os dados de treino, à medida que se aumenta a complex
 
 Quando um modelo apresenta alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.
 
-O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que, no exemplo dado, seria o de terceira ordem.
+O melhor modelo seria aquele que apresenta mais proximidade entre os erros para os dados de treinamento e teste, que, no exemplo dado, seria o de terceira ordem.
 
 ### Referências
 

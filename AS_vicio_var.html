@@ -115,7 +115,7 @@ y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta
 <p><img src="AS_vicio_var_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Tomando um valor arbitrário de <span class="math inline">\(x = x_0\)</span>, e <span class="math inline">\(K\)</span> conjuntos distintos de observações futuras, <span class="math inline">\(d_k = (x_1,y_1)_k, ..., (x_n,y_n)_k\)</span>, <span class="math inline">\(k=1, ..., K\)</span>, é possível medir o vício e a variância das estimativas obtidas por <span class="math inline">\(\hat f(x)\)</span> para um <span class="math inline">\(x=x_0\)</span> específico.</p>
+<p>Tomando um valor arbitrário de <span class="math inline">\(x = x_0\)</span>, e <span class="math inline">\(M\)</span> conjuntos distintos de observações futuras, <span class="math inline">\(d_1=(x_1,y_1)_1, ..., (x_n,y_n)_1\)</span>, <span class="math inline">\(d_2=(x_1,y_1)_2, ..., (x_n,y_n)_2\)</span>, <span class="math inline">\(\ldots, d_M=(x_1,y_1)_M, ..., (x_n,y_n)_M\)</span>, é possível medir o vício e a variância das estimativas obtidas por <span class="math inline">\(\hat f(x)\)</span> para um <span class="math inline">\(x=x_0\)</span> específico.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_vicio_var_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
@@ -127,7 +127,7 @@ y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta
 </div>
 </div>
 <p>Pelos gráficos pode-se observar que o modelo linear apresenta maior vício e menor variância, enquanto o modelo polinomial de décima ordem apresenta menor vício, porém maior variância. Este exemplo ilustra o conflito entre vício e variância. Deve-se buscar um modelo que apresente equilíbrio entre ambas medidas.</p>
-<p>A seguir também são tabelados valores de vício e variância dos modelos segundo a ordem ou complexidade entre os mesmos. Observa-se que o modelo de menor grau e, portanto menor complexidade, apresenta alto vício, porém baixa variância. Já o modelo de maior grau, ou maior complexidade, apresenta baixo vício, porém alta variância.</p>
+<p>A seguir também são tabelados valores de vício e variância dos modelos segundo a ordem ou complexidade entre os mesmos. Observa-se que o modelo de menor grau e, portanto, menor complexidade, apresenta alto vício, porém baixa variância. Já o modelo de maior grau, ou maior complexidade, apresenta baixo vício, porém alta variância.</p>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -1070,7 +1070,7 @@ y_{10} = \beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4x^4 + ... + \beta
 </div>
 <p>Pode-se observar que para os dados de treino, à medida que se aumenta a complexidade do modelo ajustado o erro diminui. Entretanto, o mesmo não acontece para os dados futuros ou de teste do modelo.</p>
 <p>Quando um modelo apresenta alto erro tanto para os dados de treino quanto para os dados de teste, ele é considerado um modelo com baixo ajuste. Quando um modelo apresenta baixo erro para os dados de treino, mas alto erro para os dados de teste, ele é considerado um modelo com sobreajuste. É importante diagnosticar o sobreajuste uma vez que o bom ajuste aos dados de treino pode dar a ilusão de um modelo perfeito, porém, a avaliação do modelo em dados futuros confirma a dificuldade de generalização deste tipo de modelo.</p>
-<p>O melhor modelo seria aquele que apresenta mais proximidade entre os erros dos dados de treinamento e teste, que, no exemplo dado, seria o de terceira ordem.</p>
+<p>O melhor modelo seria aquele que apresenta mais proximidade entre os erros para os dados de treinamento e teste, que, no exemplo dado, seria o de terceira ordem.</p>
 <section id="referências" class="level3">
 <h3 class="anchored" data-anchor-id="referências">Referências</h3>
 <p>Bishop, Christopher M., and Hugh Bishop. “Deep learning: foundations and concepts.” (2024).</p>

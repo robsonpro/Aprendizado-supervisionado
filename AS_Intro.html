@@ -81,7 +81,7 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="um-pouco-de-história" class="level2">
 <h2 class="anchored" data-anchor-id="um-pouco-de-história">Um pouco de história</h2>
-<p>Inicialmente serão citados alguns teóricos mais importantes para a estatística frequentista e paramétrica. Porém alguns métodos propostos, por exemplo a análise discriminante linear de Fisher é considerado um método iportante de aprendizado supervisionado para classificação.</p>
+<p>Inicialmente serão citados alguns teóricos mais importantes para a estatística frequentista e paramétrica. Porém alguns métodos propostos, por exemplo a análise discriminante linear de Fisher é utilizado até hoje como método de aprendizado supervisionado para classificação.</p>
 <ul>
 <li><p>Willian Gosset (Student), 1908-1909: criou o teste t e a distribuição t de Student quando trabalhava na cervejaria Guiness. Sua intenção era criar uma aproximação da distribuição normal para amostras de tamanhos limitados.</p></li>
 <li><p>Ronald Fisher, 1920-1940: Criou vários testes e conceitos estatísticos importantes, como a ANOVA, análise discriminante linear, p-valor, entre outros. Seus principais desenvolvimentos foram realizados especialmente enquanto trabalhava na estação agrícola Rothamsted Research no Reino Unido.</p></li>
@@ -132,12 +132,12 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="aprendizado-supervisionado-versus-não-supervisionado">Aprendizado Supervisionado <em>versus</em> não supervisionado</h2>
 <section id="aprendizado-supervisionado" class="level3">
 <h3 class="anchored" data-anchor-id="aprendizado-supervisionado">Aprendizado Supervisionado</h3>
-<p>Seja um conjunto de variáveis de entrada, independentes ou preditores <span class="math inline">\(x_1, x_2, ..., x_k\)</span> e uma variável dependente ou supervisora <span class="math inline">\(y\)</span>. Dado uma amostra de observações para tais variáveis, o aprendizado supervisionado visa prever o comportamento ou resultado de <span class="math inline">\(y\)</span>, considerando valores futuros de <span class="math inline">\(x_j\)</span>, <span class="math inline">\(\forall j=i, ..., k\)</span>. O aprendizado supervisionado pode ser classificado em dois tipos:</p>
+<p>Seja um conjunto de variáveis de entrada, independentes ou preditores <span class="math inline">\(x = [x_1, x_2, ..., x_k]^T\)</span> e uma variável dependente ou supervisora <span class="math inline">\(y\)</span>. Dado uma amostra de observações para tais variáveis, o aprendizado supervisionado visa prever o comportamento ou resultado de <span class="math inline">\(y\)</span>, considerando valores futuros de <span class="math inline">\(\mathbf{x}\)</span>, <span class="math inline">\(\mathbf{x}_0\)</span>. O aprendizado supervisionado pode ser classificado em dois tipos:</p>
 <ul>
-<li>Regressão, <span class="math inline">\(y \in \mathbb{R}\)</span>, ou seja, quando a resposta ou supervisor pode ser medida em uma escala real (há casos para variáveis numéricas do conjunto dos números inteiros);</li>
-<li>Classificação, <span class="math inline">\(y \in \{A, B, C, ...\}\)</span>, ou seja, quando a resposta pertence a conjunto finito de categorias.</li>
+<li>Regressão, <span class="math inline">\(y \in \mathbb{R}\)</span>, ou seja, quando a resposta ou supervisor pode ser medida em uma escala real (há casos para variáveis de processos de contagem em uma taxa média de ocorrência, entre outros);</li>
+<li>Classificação, <span class="math inline">\(y \in \{A, B, C, ...\}\)</span>, ou seja, quando a resposta pertence a um conjunto finito de categorias.</li>
 </ul>
-<p>A seguir um exemplo de aplicação de regressão linear simples para prever consumo em função da renda. O modelo foi treinado com um conjunto de dados de 33 observações e aplicado em 11 observações de teste.</p>
+<p>A seguir um exemplo de aplicação de regressão linear simples para prever consumo em função da renda. O modelo foi treinado com um conjunto de dados de 33 observações e aplicado em 11 observações de teste. É importante observar uma boa aproximação do modelo aos dados, especialmente para os dados de teste ou futuros. Em casos de múltiplas variáveis, dada a dificuldade de visualização, algumas métricas de ajuste são utilizadas.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -148,7 +148,12 @@ ul.task-list li input[type="checkbox"] {
 </div>
 </div>
 </div>
-<p>A seguir um exemplo do resultado gráfico de um modelo de regressão logística para classificação de pessoas com diabetes em relação a glicose, onde 1 = diabético e 0 = não diabético.</p>
+<p>A seguir um exemplo do resultado gráfico de um modelo de regressão logística para classificação de pessoas com diabetes em relação a glicose, onde “1” = diabético e “0” = não diabético. O modelo prevê a probabilidade de pertencer a classe 1, isto é, <span class="math inline">\(P(y=1|x)\)</span>. A discriminação é realizada considerando a probabilidade intermediária, isto é, <span class="math display">\[
+\bigg\{\begin{matrix}
+y = 1, se p&gt;0,5, \\
+y = 0, cc
+\end{matrix}
+\]</span></p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -173,8 +178,8 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="aprendizado-não-supervisionado" class="level3">
 <h3 class="anchored" data-anchor-id="aprendizado-não-supervisionado">Aprendizado Não-supervisionado</h3>
-<p>Seja um conjunto de variáveis de entrada, independentes ou preditores <span class="math inline">\(x_1, x_2, ..., x_k\)</span>. O aprendizado não-supervisionado visa obter informações a partir dos próprios dados de entrada, sem a necessidade de um supervisor ou variável dependente. Consitiu-se de técnicas de agrupamento e redução de dimensionalidade.</p>
-<p>A seguir expõe-se um gráfico do resultado de um agrupamento por k-médias considerando assassinatos, assaltos, estupro e outros índices de criminalidade e demográficos nos EUA. São plotados os dois índices mais importantes.</p>
+<p>Seja um conjunto de variáveis de entrada, independentes ou preditores, <span class="math inline">\(\mathbf{x}_1\)</span>, <span class="math inline">\(\mathbf{x}_2\)</span>, …, <span class="math inline">\(\mathbf{x}_N\)</span>, <span class="math inline">\(\mathbf{x}=[x_1, x_2, ..., x_]^Tk\)</span>. O aprendizado não-supervisionado visa obter informações a partir dos próprios dados de entrada, sem a necessidade de um supervisor ou variável dependente. Constitui-se de técnicas de agrupamento e de redução de dimensionalidade.</p>
+<p>A seguir expõe-se um gráfico do resultado de um agrupamento por <span class="math inline">\(k\)</span>-médias considerando assassinatos, assaltos, estupro e outros índices de criminalidade e demográficos nos EUA. São plotados os dois índices mais importantes.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div class="quarto-figure quarto-figure-center">
@@ -191,7 +196,7 @@ ul.task-list li input[type="checkbox"] {
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="AS_Intro_files/figure-html/pca-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Análise de componentes principais para encontrar uma nova variável que represente o peso e a altura</figcaption>
+<figcaption class="figure-caption">Análise de componentes principais para encontrar uma nova variável que represente o peso e a idade</figcaption>
 </figure>
 </div>
 </div>

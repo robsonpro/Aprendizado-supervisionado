@@ -8,7 +8,7 @@
 
 <meta name="author" content="Robson Bruno Dutra Pereira">
 
-<title>Regressão por splines e modelos generalizados aditivos</title>
+<title>Regressão por splines e modelos aditivos generalizados</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -48,7 +48,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Regressão por splines e modelos generalizados aditivos</h1>
+<h1 class="title">Regressão por splines e modelos aditivos generalizados</h1>
 </div>
 
 
@@ -69,17 +69,17 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="regressão-por-splines-e-modelos-generalizados-aditivos" class="level2">
-<h2 class="anchored" data-anchor-id="regressão-por-splines-e-modelos-generalizados-aditivos">Regressão por splines e modelos generalizados aditivos</h2>
-<p>Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores dada sua flexibilidade em relação aos paramétricos. Dentre estes destacam-se os modelos aditivos generalizados (<em>generalized aditive models</em> - GAM). O GAM foi introduzido por Hastie et al.&nbsp;(1987) e consiste em uma extensão dos modelos lineares generalizados (<em>Generalized Linear Models</em> - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear. Para falar sobre modelos generalizados aditivos, é necessário primeiro introduzir os polinômios por partes e a regressão por .</p>
+<section id="regressão-por-splines" class="level2">
+<h2 class="anchored" data-anchor-id="regressão-por-splines">Regressão por splines</h2>
+<p>Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores dada sua flexibilidade em relação aos paramétricos. Dentre estes destacam-se os modelos aditivos generalizados (<em>generalized aditive models</em> - GAM). O GAM foi introduzido por Hastie et al.&nbsp;(1987) e consiste em uma extensão dos modelos lineares generalizados (<em>Generalized Linear Models</em> - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear. Para falar sobre modelos aditivos generalizados é necessário primeiro introduzir os polinômios por partes e a regressão por <em>splines</em>.</p>
 </section>
 <section id="polinômios-por-partes-regressão-por-splines" class="level2">
 <h2 class="anchored" data-anchor-id="polinômios-por-partes-regressão-por-splines">Polinômios por partes Regressão por splines</h2>
 <section id="regressão-por-funções-de-passo-ou-escada" class="level3">
 <h3 class="anchored" data-anchor-id="regressão-por-funções-de-passo-ou-escada">Regressão por funções de passo ou escada</h3>
 <p>Antes de explicar os polinômios por partes é preciso entender as funções por partes mais simples.</p>
-<p>A regressão por funções de passo ou escada consideram a divisão do domínio do preditor, estimando uma constante para cada divisão. É um modelo que se parece com uma regressão por árvore de decisão para uma variável, porém a forma de estimar e sua estrutura é completamente distinta.</p>
-<p>Para realizar a divisão no domínio pode-se utilizar de funções indicadoras <span class="math inline">\(I(.)\)</span> que recebem 1 caso a condição seja satisfeita e 0 caso contrário. São portanto criadas divisões a partir da definição de nós no espaço do preditor, <span class="math inline">\(\xi_1, \xi_2, \ldots, \xi_G\)</span>, onde <span class="math inline">\(G\)</span> é o número de nós (JAMES et al., 2013). Por exemplo, para dois nós:</p>
+<p>A regressão por funções de passo ou escada consideram a divisão do domínio do preditor, estimando uma constante para cada divisão. É um modelo que se parece com uma regressão por árvore de decisão para uma variável, porém os algortmos e, portanto, modelos obtidos são completamente distintos.</p>
+<p>Para realizar a divisão no domínio pode-se utilizar de funções indicadoras <span class="math inline">\(I(.)\)</span> que recebem 1 caso a condição seja satisfeita e 0 caso contrário. São, portanto, criadas divisões a partir da definição de nós no espaço do preditor, <span class="math inline">\(\xi_1, \xi_2, \ldots, \xi_G\)</span>, onde <span class="math inline">\(G\)</span> é o número de nós (JAMES et al., 2013). Por exemplo, para dois nós:</p>
 <p><span class="math display">\[
 \begin{matrix}
 C_1(x) = I(x&lt;\xi_1)\\
@@ -88,7 +88,7 @@ C_3(x) = I(\xi_2 \geq x)\\
 \end{matrix}
 \]</span> Para qualquer valor de <span class="math inline">\(x\)</span> é importante observar que <span class="math inline">\(C_1(x)+C_2(x)+C_3(x)=0\)</span>. Um modelo de regressão por funções de passo para dois nós pode ser definido conforme segue. Pode-se observar que o resultado estimado será <span class="math inline">\(\beta_0+\beta_1\)</span> ou <span class="math inline">\(\beta_0+\beta_2\)</span> ou <span class="math inline">\(\beta_0+\beta_3\)</span>, se <span class="math inline">\(C_1(x)\)</span> ou <span class="math inline">\(C_2(x)\)</span> ou <span class="math inline">\(C_3(x)\)</span> seja unitário (JAMES et al., 2013). <span class="math display">\[
 \hat{y}=\beta_0+\beta_1C_1(x)+\beta_2C_2(x)+\beta_3C_3(x)
-\]</span> Considerando <span class="math inline">\(\beta_0 = \overline{y}\)</span>, <span class="math inline">\(\beta_j=(\overline{y}|c_j\leq x &lt;c_{j+1})-\overline{y}\)</span>, ou seja cada coeficiente que multiplica as funções indicadoras consiste na diferença entre a média das observações na divisão e a média geral. Ao final, o valor previsto consiste em uma constantre que é a média das observações de treino da região. Seja um conjunto de dados da concentração do químico GAG na urina de crianças de 0 a 17 anos. Um modelo de regressão por funções de passo considerando duas divisões na idade, 8 e 16 anos, é plotado abaixo.</p>
+\]</span> Considerando <span class="math inline">\(\beta_0 = \overline{y}\)</span>, <span class="math inline">\(\beta_j=(\overline{y}|c_j\leq x &lt;c_{j+1})-\overline{y}\)</span>, ou seja, cada coeficiente que multiplica as funções indicadoras consiste na diferença entre a média das observações na divisão e a média geral. Ao final, o valor previsto consiste em uma constantre que é a média das observações de treino da região. Seja um conjunto de dados da concentração do químico GAG na urina de crianças de 0 a 17 anos. Um modelo de regressão por funções de passo considerando duas divisões na idade, 8 e 16 anos, é plotado abaixo.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_GAM_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
@@ -111,7 +111,7 @@ y_i = \biggl\{
 <p><img src="AS_GAM_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Um problema deste modelo é a descontinuidade e falta de suavidade na2 divisões.</p>
+<p>Um problema deste modelo é a descontinuidade e falta de suavidade nas divisões.</p>
 </section>
 <section id="regressão-por-spline-cúbica" class="level3">
 <h3 class="anchored" data-anchor-id="regressão-por-spline-cúbica">Regressão por spline cúbica</h3>
@@ -130,7 +130,7 @@ f(x) = \sum_{i=1}^M \beta_m h_m(x) \\
 <p>Considerando essas transformações na Equação anterior, a função obtida é um polinômio cúbico por partes. Tal função, para três nós, pode ser escrita como segue, sendo uma função cúbica para todo o domínio adicionada de termos cúbicos para as divisões realizadas no domínio. <span class="math display">\[
 \hat{y}=\beta_0 + \beta_1x + \beta_2x^2 + \beta_3x^3 + \beta_4(x-\xi_1)_+^3 + \beta_5(x-\xi_2)_+^3 + \beta_6(x-\xi_3)_+^3
 \]</span></p>
-<p>Para garantir a continuidade da função resultante nos nós e considerar os quatro parâmetros para cada uma das três regiões resultantes, podem ser definidas restrições de igualdade das funções nos nós. Para uma transição suave, a continuidade nas derivadas de primeira e segunda ordem também podem ser adicionadas. Para cada uma destas restrições adicionadas, um parâmetro do modelo pode ser diminuído. Portanto, neste caso, o modelo resultante terá seis parâmetros. Uma cúbica terá <span class="math inline">\(4 + g\)</span> graus de liberdade, onde <span class="math inline">\(g\)</span> é o número de nós (JAMES et al., 2013). Para o mesmo problema de previsão de GAG em urina de adolescentes, considerando três nós nas idades de 4, 8 e 12 anos, o gráfico a seguir plota uma estimativa por regressão via spline cúbica.</p>
+<p>Para garantir a continuidade da função resultante nos nós e considerar os quatro parâmetros para cada uma das três regiões resultantes, podem ser definidas restrições de igualdade das funções nos nós. Para uma transição suave, a continuidade nas derivadas de primeira e segunda ordem também podem ser adicionadas. Para cada uma destas restrições adicionadas, um parâmetro do modelo pode ser diminuído. Portanto, neste caso, o modelo resultante terá seis parâmetros. Uma <em>spline</em> cúbica terá <span class="math inline">\(4 + g\)</span> graus de liberdade, onde <span class="math inline">\(g\)</span> é o número de nós (JAMES et al., 2013). Para o mesmo problema de previsão de GAG em urina de adolescentes, considerando três nós nas idades de 4, 8 e 12 anos, o gráfico a seguir plota uma estimativa por regressão via spline cúbica.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_GAM_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
@@ -156,19 +156,19 @@ f(x) = \sum_{i=1}^M \beta_m h_m(x) \\
 <h3 class="anchored" data-anchor-id="suavização-de-modelos-de-regressão-por-spline">Suavização de modelos de regressão por <em>spline</em></h3>
 <p>A realização da estimativa de um modelo de regressão por <em>spline</em> é feita minimizando uma função perda quadrática, isto é, <span class="math display">\[
 L=\sum_{i=1}^N(y_i-f(x_i))^2\text{.}
-\]</span> Porém, ao se utilizar de um modelo de regressão por <em>spline</em> é possível fazer tal função perda chegar a um valor nulo, interpolando todas observações de treino, o que implicará, obviamente em um alto ajuste. Para evitar tal problema, um termo de suavização é adicionado à função perda em otimização, isto é: <span class="math display">\[
+\]</span> Porém, ao se utilizar de um modelo de regressão por <em>spline</em>, é possível fazer tal função perda chegar a um valor nulo, interpolando todas observações de treino, o que implicará, obviamente em um ajuste perfeito para os dados de treino. Porém, tal modelo apresentará alta variância e, consequentemente, baixo desempenho ao ser aplicado em dados futuros. Para evitar tal problema, um termo de suavização é adicionado à função perda em otimização, isto é: <span class="math display">\[
 L=\sum_{i=1}^N(y_i-f(x_i))^2 + \lambda\int f''(t)^2dt,
-\]</span> onde o termo <span class="math inline">\(\int f''(t)^2dt\)</span> mede a soma da variação na inclinação da função, de forma a controlar o grau de rugosidade do modelo. Se <span class="math inline">\(\lambda \rightarrow 0\)</span>, tem-se um modelo o mais rugoso que seria um modelo com <span class="math inline">\(N\)</span> nós, ou seja, um nó para cada observação de treino, apresentando <span class="math inline">\(g+2\)</span> graus de liberdade, o qual apresentará alta variância. Por outro lado, se <span class="math inline">\(\lambda \rightarrow \infty\)</span>, tem-se um modelo linear que seria o mais suave possível, apresentando apenas dois termos e, portanto 2 graus de liberdade. O parâmetro de suavização <span class="math inline">\(\lambda\)</span> controla o grau de suavidade dõ modelo e, portanto, o número efetivo de graus de liberdade. A escolha de <span class="math inline">\(\lambda\)</span> deve ser realizada por validação cruzada (JAMES et al., 2013).</p>
+\]</span> onde o termo <span class="math inline">\(\int f''(t)^2dt\)</span> mede a soma da variação na inclinação da função, de forma a controlar o grau de rugosidade do modelo. Se <span class="math inline">\(\lambda \rightarrow 0\)</span>, tem-se um modelo o mais rugoso que seria um modelo com <span class="math inline">\(N\)</span> nós, ou seja, um nó para cada observação de treino, apresentando <span class="math inline">\(g+2\)</span> graus de liberdade, o qual apresentará alta variância. Por outro lado, se <span class="math inline">\(\lambda \rightarrow \infty\)</span>, tem-se um modelo linear que seria o mais suave possível, apresentando apenas dois termos e, portanto 2 graus de liberdade. O parâmetro de suavização <span class="math inline">\(\lambda\)</span> controla o grau de suavidade do modelo e, portanto, o número efetivo de graus de liberdade. A escolha de <span class="math inline">\(\lambda\)</span> deve ser realizada por validação cruzada (JAMES et al., 2013).</p>
 <p>Existem outros métodos de regressão por <em>splines</em> os quais não serão abordados aqui. Dentre estes destacam-se a regressão local. O leitor é convidado a ler as referências utilizadas neste texto para mais informações.</p>
 </section>
 </section>
-<section id="modelos-generalizados-aditivos-gam" class="level2">
-<h2 class="anchored" data-anchor-id="modelos-generalizados-aditivos-gam">Modelos generalizados aditivos (GAM)</h2>
-<p>Conforme visto, os modelos de regressão por <em>splines</em> são em função de uma variável. Os modelos generalizados aditivos visam a extensão dos modelos de regressão por <em>splines</em> para o caso de múltiplas variáveis regressoras de interesse. Os modelos generalizados aditivos visam extender os modelos de regressão múltipla, <span class="math display">\[
+<section id="modelos-aditivos-generalizados-gam" class="level2">
+<h2 class="anchored" data-anchor-id="modelos-aditivos-generalizados-gam">Modelos aditivos generalizados (GAM)</h2>
+<p>Conforme visto, os modelos de regressão por <em>splines</em> são em função de uma variável. Os modelos aditivos generalizados visam a extensão dos modelos de regressão por <em>splines</em> para o caso de múltiplas variáveis regressoras de interesse. Os modelos aditivos generalizados visam extender os modelos de regressão múltipla, <span class="math display">\[
 \hat{y}=\beta_0+\beta_1x_1+\beta_2x_2+\ldots+\beta_kx_k,
 \]</span> substituindo os coeficientes lineares <span class="math inline">\(\beta_j\)</span>, por uma função não-linear do termo <span class="math inline">\(x_j\)</span>, <span class="math inline">\(f(x_j)\)</span>. Tal função pode ser, por exemplo, uma <em>spline</em> natural. Um modelo GAM pode ser descrito, portanto, conforme segue. <span class="math display">\[
 \hat{y}=\beta_0+\beta_1f(x_1)+\beta_2f(x_2)+\ldots+\beta_kf(x_k),
-\]</span> Seja um conjunto com 99 observações de distintos campos de Petróleo dos EUA contendo o preço médio do barril de petróleo e função do grau de pureza e do percentual de enxofre. Deseja-se prever o preço médio do barril em função de tais variáveis.</p>
+\]</span> Seja um conjunto com 99 observações de distintos campos de Petróleo dos EUA contendo o preço médio do barril de petróleo em função do grau de pureza e do percentual de enxofre. Deseja-se prever o preço médio do barril em função de tais variáveis.</p>
 <p>Considerando um GAM a partir de <em>splines</em> naturais em função dos dois parâmetros, pode-se estudar o efeito individual de cada uma no preço do barril do Petróleo.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -181,7 +181,7 @@ L=\sum_{i=1}^N(y_i-f(x_i))^2 + \lambda\int f''(t)^2dt,
 <p><img src="AS_GAM_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
-<p>Dentre algumas limitações dos modelos generalizados aditivos podem-se destacar a impossibilidade de incluir iretamente interações entre os preditores, uma vez que os modelos são aditivos. Entretanto, é possível gerar variáveis adicionais que consistem no produto de variáveis preditoras para avaliar a interação entre estas.</p>
+<p>Dentre algumas limitações dos modelos aditivos generalizados pode-se destacar a impossibilidade de incluir iretamente interações entre os preditores, uma vez que os modelos são aditivos. Entretanto, é possível gerar variáveis adicionais que consistem no produto de variáveis preditoras para avaliar a interação entre estas.</p>
 <section id="referências" class="level3">
 <h3 class="anchored" data-anchor-id="referências">Referências</h3>
 <p>Hastie, Trevor, and Robert Tibshirani. “Generalized additive models: some applications.” Journal of the American Statistical Association 82.398 (1987): 371-386.</p>
