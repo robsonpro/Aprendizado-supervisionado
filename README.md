@@ -56,6 +56,10 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_SVR.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_cv.html
 
-## Regressão por Modelos generalizados aditivos
+## Regressão por Modelos aditivos generalizados
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_GAM.html
+
+## Redes neurais para regressão
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_nnet.html
