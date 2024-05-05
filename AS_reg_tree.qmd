@@ -9,7 +9,7 @@ editor: visual
 
 ### Árvores de regressão
 
-As árvores de decisão foram inicialmente propostas para problemas de classificação, porém podem ser adaptadas de forma simples para problemas de regressão. A regressão por árvores de decisão ou simplesmente as árvores de regressão envolvem dividir o espaço preditor em várias regiões retangulares simples tomando como predição a média ou outra medida simples das observações de treinamento da região. O conjunto de regras de divisão usado para segmentar o espaço preditor pode ser resumido em um diagrama semelhante a uma árvore, conforme a Figura a seguir.
+As árvores de decisão foram inicialmente propostas para problemas de classificação, porém, podem ser adaptadas de forma simples para problemas de regressão. A regressão por árvores de decisão ou simplesmente as árvores de regressão envolvem dividir o espaço preditor em várias regiões retangulares simples tomando como predição a média ou outra medida simples das observações de treinamento da região. O conjunto de regras de divisão usado para segmentar o espaço preditor pode ser resumido em um diagrama semelhante a uma árvore, conforme a Figura a seguir.
 
 ```{r}
 #| message: false
@@ -79,7 +79,7 @@ ggplot(xys, aes(y = x2, x = x1)) +
   theme_bw()
 ```
 
-Sejam $k$ variáveis de entrada e uma resposta, ou seja, $(\mathbf{x}_i,y)$, com $\mathbf{x}_i = (x_{i1}, x_{i2},..., x_{iK})$, para $i=1,...,N$ observações de treino, o algoritmo de (*Classification and Regression Trees* - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores. Considerando $J$ regiões $R_1, R_2, ..., R_J$, o valor predito será uma constante $\gamma_j$, em cada região, $j=1,...,J$. Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, $\{R_j,\gamma_j\}, j=1,\ldots,J$, onde $I(\mathbf{x} \in R_j)$ é uma função indicativa que recebe 1 se $\mathbf{x}$ pertence à região $R_j$ e 0 caso contrário. O melhor $\gamma_j$ para minimizar a soma dos quadrados é a média das observações na região, para $y_i \in R_j$, $\hat{\gamma}_j = (\bar{y}_i | x_i \in R_j$).
+Sejam $k$ variáveis de entrada e uma resposta, ou seja, $(\mathbf{x}_i,y_i)$, com $\mathbf{x} = (x_{i1}, x_{i2},..., x_{iK})$, para $i=1,...,N$ observações de treino, o algoritmo de (*Classification and Regression Trees* - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores. Considerando $J$ regiões $R_1, R_2, ..., R_J$, o valor predito será uma constante $\gamma_j$, em cada região, $j=1,...,J$. Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, $\{R_j,\gamma_j\}, j=1,\ldots,J$, onde $I(\mathbf{x} \in R_j)$ é uma função indicativa que recebe 1 se $\mathbf{x}$ pertence à região $R_j$ e 0 caso contrário. O melhor $\gamma_j$ para minimizar a soma dos quadrados é a média das observações na região, $\hat{\gamma}_j = (\bar{y}_i | \mathbf{x}_i \in R_j$).
 
 $$
 \begin{aligned}
@@ -127,7 +127,7 @@ tree1 <- tree(Salary ~ ., dados, subset = treino)
 tree1
 ```
 
-O diagrama do modelo pode ser plotado conforme segue. Acima tem-se `CRBI<307.5` que consiste na primeira partição ou nó raiz. Qualquer subconjunto de partições interligadas da árvore pode ser chamado de sub-árvore. Cada partição gera duas regiões às quais podem ou não ser mais particionadas, as partições finais são chamadas de nós terminais ou folhas. Neste caso tem-se 10 nós terminais, ou seja, 10 valores previstos distintos para 10 regiões distintas do espaço de preditores. Por exemplo seguindo as seguintes partições `CRuns < 325.5 82  6125000  296.3` e `CRuns > 208.5 22   514100  498.8 *`, tem-se o valor previsto do salário do jogador igual a 498.8 unidades monetárias com soma dos quadrados dos erros igual a 514100.
+O diagrama do modelo pode ser plotado conforme segue. Acima tem-se `CRBI<307.5` que consiste na primeira partição ou nó raiz. Qualquer subconjunto de partições interligadas da árvore pode ser chamado de sub-árvore. Cada partição gera duas regiões às quais podem ou não ser mais particionadas. As partições finais são chamadas de nós terminais ou folhas. Neste caso tem-se 10 nós terminais, ou seja, 10 valores previstos distintos para 10 regiões distintas do espaço de preditores. Por exemplo, tomando as seguintes partições `CRuns < 325.5 82  6125000  296.3` e `CRuns > 208.5 22   514100  498.8 *`, tem-se o valor previsto do salário do jogador igual a 498.8 unidades monetárias com soma dos quadrados dos erros igual a 514100.
 
 ```{r}
 #| message: false
@@ -168,9 +168,105 @@ text(prune1, pretty = 0)
 
 ### *Bagged trees ou bagging*
 
-*Bagged trees ou bagging* ou, em português, "árvores ensacadas" é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore. O resultado final previsto para um determinado vetor de valores das variáveis preditoras é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens e, portanto, de árvores é obtido, obtendo-se um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome *bagging* vem de *bootstrap aggregated* ou agregação por bootstrap.
+*Bagged trees ou bagging* ou, em português, "árvores ensacadas" é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore para cada amostra "manipulada". O modelo final é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens é realizado e, portanto, um número alto de árvores é obtido, resultando em um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome *bagging* vem de *bootstrap aggregated* ou agregação por bootstrap.
 
-Para o conjunto de dados Hitters seja um modelo de regressão por *Bagging* considerando duas variáveis, `Cruns` e `RBI`. O modelo plotado é muito mais complexo e pretende apresentar uma melhor acuracidade que um modelo baseado em árvore por justamente congregar diversas árvores baseadas na reamostragem dos dados de treino. Porém, Como tais modelos apresentam maior variância que os modelos de árvore para regressão,é importante avaliar se há sobreajuste.
+Considere um conjunto de dados com três preditores e uma variável independente, com $N = 10$ observações, exibido integralmente a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(gt)
+
+set.seed(8)
+x1 <- rnorm(10)
+x2 <- rnorm(10, 2)
+x3 <- rnorm(10, 3)
+y <- x1+x2+x3+rnorm(10,1,0.2)
+
+dat <- round(data.frame(i = 1:10, x1,x2,x3,y),2)
+
+dat |> gt() |>
+  data_color(
+    columns = i,
+    target_column = everything(),
+    method = "numeric")
+
+```
+
+Um *bootstrap* deste conjunto de dados pode resultar na reamostragem exibida a seguir. Pode-se observar que as observações 4, 5, 6 e 9 foram sorteadas duas vezes, enquanto as observações 1, 3, 7 e 8 não foram sorteadas.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(gt)
+
+dat1 <- dat[sample(1:10, 10, T),]
+
+dat1 |> gt() |>
+  data_color(
+    columns = i,
+    target_column = everything(),
+    method = "numeric")
+
+```
+
+Abaixo é exibido o diagrama de uma árvore de decisão para a amostra obtida via *bootstrap*. O *bagging* repete este processso diversas vezes, reamostrando os dados por *bootstrap* e estimando para cada "nova" amostra uma nova árvore. Ao final é tomada como predição a média de todas as árvores.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+tr1 <- tree(y ~ .-i, dat1)
+plot(tr1)
+text(tr1, pretty = 0)
+```
+
+Para o mesmo conjunto de dados, sejam 6 árvores obtidas após reamostragem dos dados via *bootstrap* exibidas a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+x10 <- rnorm(1)
+x20 <- rnorm(1, 2)
+x30 <- rnorm(1, 3)
+
+x0 <- round(data.frame(x1=x10,x2=x20,x3=x30),2)
+
+pred_tree <- numeric(6)
+par(mfrow=c(2,3))
+for (i in 1:6){
+  dat1 <- dat[sample(1:10, 10, T),]
+  tr1 <- tree(y ~ .-i, dat1)
+  plot(tr1)
+  text(tr1, pretty = 0, col = i)
+  pred_tree[i] <- predict(tr1, newdata = x0)
+  }
+```
+
+Seja uma observação futura arbitrária com valores exibidos à seguir:
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+x0 |> gt()
+```
+
+Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal observação são: 5.060, 7.028, 6.608, 6.378, 7.210 e 7.036. O modelo *bagging* retorna como resultado a média das previsões das árvores, isto é, $\hat{y} = \frac{1}{6}\sum_{i=b}^6 T(\mathbf{x}_0)$ = 6.55.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+# pred_tree
+```
+
+
+Para o conjunto de dados Hitters seja um modelo de regressão por *Bagging* considerando duas variáveis, `Cruns` e `RBI`. O modelo plotado é muito mais complexo e pretende apresentar uma melhor acuracidade que um modelo baseado em árvore por justamente congregar diversas árvores baseadas na reamostragem dos dados de treino. Porém, Como tais modelos apresentam maior variância que os modelos de árvore para regressão, é importante avaliar se há sobreajuste.
 
 ```{r}
 #| message: false
@@ -202,9 +298,9 @@ persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed',
 
 ### Floresta aleatória
 
-O modelo de floresta aleatória consiste em uma melhoria ao modelo *bagging* com a finalidade de diminuir a variância. Basicamente, em casos onde há multicolineariedade ou redundância entre variáves regressoras, o bagging pode acarretar na seleção de apenas alguns dos preditores disponíveis durante o particionamento binário recursivo, de forma que as árvores geradas considerando a reamostragem das observações de treino possam apresentar alta correlação entre si, acarretando em alta variabilidade das previsões finais. No modelo de floresta aleatória antes de cada partição são selecionadas aleatoriamente $m$ variáveis regressoras, $m<k$, às quais serão consideradas no processo de particionamento binário. Geralmente para regressão recomenda-se $m=k/3$.
+O modelo de floresta aleatória consiste em uma evolução do modelo *bagging* com a finalidade de diminuir a variância destes. Basicamente, em casos onde há multicolineariedade ou redundância entre as variáves regressoras, o *bagging* pode acarretar na seleção de apenas alguns dos preditores disponíveis durante o particionamento binário recursivo, de forma que as árvores geradas considerando a reamostragem das observações de treino possam apresentar alta correlação entre si, acarretando em alta variabilidade das previsões finais. No modelo de floresta aleatória, antes de cada partição, são selecionadas aleatoriamente $m$ variáveis regressoras, $m<k$, às quais serão consideradas no processo de particionamento binário. Geralmente para regressão recomenda-se $m=k/3$.
 
-A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, $k=2$, `Cruns` e `RBI`. Para cada particionamento considerou-se $m=2/3 \simeq 1$
+A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, $k=2$, `Cruns` e `RBI`. Para cada particionamento considerou-se $m=2/3 \simeq 1$.
 
 ```{r}
 #| message: false

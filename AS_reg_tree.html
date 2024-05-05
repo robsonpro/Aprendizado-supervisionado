@@ -73,7 +73,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="regressão-por-árvores-de-decisão-e-floresta-aleatória">Regressão por árvores de decisão e floresta aleatória</h2>
 <section id="árvores-de-regressão" class="level3">
 <h3 class="anchored" data-anchor-id="árvores-de-regressão">Árvores de regressão</h3>
-<p>As árvores de decisão foram inicialmente propostas para problemas de classificação, porém podem ser adaptadas de forma simples para problemas de regressão. A regressão por árvores de decisão ou simplesmente as árvores de regressão envolvem dividir o espaço preditor em várias regiões retangulares simples tomando como predição a média ou outra medida simples das observações de treinamento da região. O conjunto de regras de divisão usado para segmentar o espaço preditor pode ser resumido em um diagrama semelhante a uma árvore, conforme a Figura a seguir.</p>
+<p>As árvores de decisão foram inicialmente propostas para problemas de classificação, porém, podem ser adaptadas de forma simples para problemas de regressão. A regressão por árvores de decisão ou simplesmente as árvores de regressão envolvem dividir o espaço preditor em várias regiões retangulares simples tomando como predição a média ou outra medida simples das observações de treinamento da região. O conjunto de regras de divisão usado para segmentar o espaço preditor pode ser resumido em um diagrama semelhante a uma árvore, conforme a Figura a seguir.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid" width="672"></p>
@@ -91,7 +91,7 @@ ul.task-list li input[type="checkbox"] {
 <p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Sejam <span class="math inline">\(k\)</span> variáveis de entrada e uma resposta, ou seja, <span class="math inline">\((\mathbf{x}_i,y)\)</span>, com <span class="math inline">\(\mathbf{x}_i = (x_{i1}, x_{i2},..., x_{iK})\)</span>, para <span class="math inline">\(i=1,...,N\)</span> observações de treino, o algoritmo de (<em>Classification and Regression Trees</em> - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores. Considerando <span class="math inline">\(J\)</span> regiões <span class="math inline">\(R_1, R_2, ..., R_J\)</span>, o valor predito será uma constante <span class="math inline">\(\gamma_j\)</span>, em cada região, <span class="math inline">\(j=1,...,J\)</span>. Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, <span class="math inline">\(\{R_j,\gamma_j\}, j=1,\ldots,J\)</span>, onde <span class="math inline">\(I(\mathbf{x} \in R_j)\)</span> é uma função indicativa que recebe 1 se <span class="math inline">\(\mathbf{x}\)</span> pertence à região <span class="math inline">\(R_j\)</span> e 0 caso contrário. O melhor <span class="math inline">\(\gamma_j\)</span> para minimizar a soma dos quadrados é a média das observações na região, para <span class="math inline">\(y_i \in R_j\)</span>, <span class="math inline">\(\hat{\gamma}_j = (\bar{y}_i | x_i \in R_j\)</span>).</p>
+<p>Sejam <span class="math inline">\(k\)</span> variáveis de entrada e uma resposta, ou seja, <span class="math inline">\((\mathbf{x}_i,y_i)\)</span>, com <span class="math inline">\(\mathbf{x} = (x_{i1}, x_{i2},..., x_{iK})\)</span>, para <span class="math inline">\(i=1,...,N\)</span> observações de treino, o algoritmo de (<em>Classification and Regression Trees</em> - CART) para regressão define a cada iteração a variável preditora e o seu nível para particionar o espaço dos preditores. Considerando <span class="math inline">\(J\)</span> regiões <span class="math inline">\(R_1, R_2, ..., R_J\)</span>, o valor predito será uma constante <span class="math inline">\(\gamma_j\)</span>, em cada região, <span class="math inline">\(j=1,...,J\)</span>. Portanto, o modelo de árvore de regressão pode ser definido conforme a Equação a seguir, <span class="math inline">\(\{R_j,\gamma_j\}, j=1,\ldots,J\)</span>, onde <span class="math inline">\(I(\mathbf{x} \in R_j)\)</span> é uma função indicativa que recebe 1 se <span class="math inline">\(\mathbf{x}\)</span> pertence à região <span class="math inline">\(R_j\)</span> e 0 caso contrário. O melhor <span class="math inline">\(\gamma_j\)</span> para minimizar a soma dos quadrados é a média das observações na região, <span class="math inline">\(\hat{\gamma}_j = (\bar{y}_i | \mathbf{x}_i \in R_j\)</span>).</p>
 <p><span class="math display">\[
 \begin{aligned}
 f(\mathbf{x}) = T(\mathbf{x},R_j,\gamma_j) = \sum_{j=1}^J \gamma_jI(\mathbf{x} \in R_j)
@@ -139,7 +139,7 @@ f(\mathbf{x}) = T(\mathbf{x},R_j,\gamma_j) = \sum_{j=1}^J \gamma_jI(\mathbf{x} \
       7) RBI &gt; 103 6  1797000 1571.0 *</code></pre>
 </div>
 </div>
-<p>O diagrama do modelo pode ser plotado conforme segue. Acima tem-se <code>CRBI&lt;307.5</code> que consiste na primeira partição ou nó raiz. Qualquer subconjunto de partições interligadas da árvore pode ser chamado de sub-árvore. Cada partição gera duas regiões às quais podem ou não ser mais particionadas, as partições finais são chamadas de nós terminais ou folhas. Neste caso tem-se 10 nós terminais, ou seja, 10 valores previstos distintos para 10 regiões distintas do espaço de preditores. Por exemplo seguindo as seguintes partições <code>CRuns &lt; 325.5 82  6125000  296.3</code> e <code>CRuns &gt; 208.5 22   514100  498.8 *</code>, tem-se o valor previsto do salário do jogador igual a 498.8 unidades monetárias com soma dos quadrados dos erros igual a 514100.</p>
+<p>O diagrama do modelo pode ser plotado conforme segue. Acima tem-se <code>CRBI&lt;307.5</code> que consiste na primeira partição ou nó raiz. Qualquer subconjunto de partições interligadas da árvore pode ser chamado de sub-árvore. Cada partição gera duas regiões às quais podem ou não ser mais particionadas. As partições finais são chamadas de nós terminais ou folhas. Neste caso tem-se 10 nós terminais, ou seja, 10 valores previstos distintos para 10 regiões distintas do espaço de preditores. Por exemplo, tomando as seguintes partições <code>CRuns &lt; 325.5 82  6125000  296.3</code> e <code>CRuns &gt; 208.5 22   514100  498.8 *</code>, tem-se o valor previsto do salário do jogador igual a 498.8 unidades monetárias com soma dos quadrados dos erros igual a 514100.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid" width="672"></p>
@@ -174,21 +174,1521 @@ f(\mathbf{x}) = T(\mathbf{x},R_j,\gamma_j) = \sum_{j=1}^J \gamma_jI(\mathbf{x} \
 </section>
 <section id="bagged-trees-ou-bagging" class="level3">
 <h3 class="anchored" data-anchor-id="bagged-trees-ou-bagging"><em>Bagged trees ou bagging</em></h3>
-<p><em>Bagged trees ou bagging</em> ou, em português, “árvores ensacadas” é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore. O resultado final previsto para um determinado vetor de valores das variáveis preditoras é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens e, portanto, de árvores é obtido, obtendo-se um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome <em>bagging</em> vem de <em>bootstrap aggregated</em> ou agregação por bootstrap.</p>
-<p>Para o conjunto de dados Hitters seja um modelo de regressão por <em>Bagging</em> considerando duas variáveis, <code>Cruns</code> e <code>RBI</code>. O modelo plotado é muito mais complexo e pretende apresentar uma melhor acuracidade que um modelo baseado em árvore por justamente congregar diversas árvores baseadas na reamostragem dos dados de treino. Porém, Como tais modelos apresentam maior variância que os modelos de árvore para regressão,é importante avaliar se há sobreajuste.</p>
+<p><em>Bagged trees ou bagging</em> ou, em português, “árvores ensacadas” é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore para cada amostra “manipulada”. O modelo final é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens é realizado e, portanto, um número alto de árvores é obtido, resultando em um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome <em>bagging</em> vem de <em>bootstrap aggregated</em> ou agregação por bootstrap.</p>
+<p>Considere um conjunto de dados com três preditores e uma variável independente, com <span class="math inline">\(N = 10\)</span> observações, exibido integralmente a seguir.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid" width="768"></p>
+
+<div id="soylobktip" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#soylobktip table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#soylobktip thead, #soylobktip tbody, #soylobktip tfoot, #soylobktip tr, #soylobktip td, #soylobktip th {
+  border-style: none;
+}
+
+#soylobktip p {
+  margin: 0;
+  padding: 0;
+}
+
+#soylobktip .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#soylobktip .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#soylobktip .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#soylobktip .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#soylobktip .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#soylobktip .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#soylobktip .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#soylobktip .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#soylobktip .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#soylobktip .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#soylobktip .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#soylobktip .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#soylobktip .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#soylobktip .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#soylobktip .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#soylobktip .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#soylobktip .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#soylobktip .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#soylobktip .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#soylobktip .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#soylobktip .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#soylobktip .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#soylobktip .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#soylobktip .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#soylobktip .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#soylobktip .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#soylobktip .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#soylobktip .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#soylobktip .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#soylobktip .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#soylobktip .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#soylobktip .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#soylobktip .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#soylobktip .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#soylobktip .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#soylobktip .gt_left {
+  text-align: left;
+}
+
+#soylobktip .gt_center {
+  text-align: center;
+}
+
+#soylobktip .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#soylobktip .gt_font_normal {
+  font-weight: normal;
+}
+
+#soylobktip .gt_font_bold {
+  font-weight: bold;
+}
+
+#soylobktip .gt_font_italic {
+  font-style: italic;
+}
+
+#soylobktip .gt_super {
+  font-size: 65%;
+}
+
+#soylobktip .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#soylobktip .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#soylobktip .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#soylobktip .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#soylobktip .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#soylobktip .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#soylobktip .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="i">i</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x1">x1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x2">x2</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x3">x3</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="y">y</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">-0.08</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1.24</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">4.28</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">6.74</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">2</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">0.84</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">2.29</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">2.99</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">7.32</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">3</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">-0.46</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">2.42</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">2.60</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">5.25</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">4</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">-0.55</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">0.71</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">3.02</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">4.02</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">5</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">0.74</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">2.07</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">4.74</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">8.80</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">6</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">-0.11</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">1.19</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">1.89</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">4.06</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">7</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">-0.17</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">3.51</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">1.94</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">6.45</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">8</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">-1.09</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">1.73</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">4.95</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">6.45</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">9</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">-3.01</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">3.56</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">3.60</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">5.14</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">10</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">-0.59</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">1.76</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">0.98</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">3.24</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Um <em>bootstrap</em> deste conjunto de dados pode resultar na reamostragem exibida a seguir. Pode-se observar que as observações 4, 5, 6 e 9 foram sorteadas duas vezes, enquanto as observações 1, 3, 7 e 8 não foram sorteadas.</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="ltryuryrvd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ltryuryrvd table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ltryuryrvd thead, #ltryuryrvd tbody, #ltryuryrvd tfoot, #ltryuryrvd tr, #ltryuryrvd td, #ltryuryrvd th {
+  border-style: none;
+}
+
+#ltryuryrvd p {
+  margin: 0;
+  padding: 0;
+}
+
+#ltryuryrvd .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ltryuryrvd .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ltryuryrvd .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ltryuryrvd .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ltryuryrvd .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ltryuryrvd .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ltryuryrvd .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ltryuryrvd .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ltryuryrvd .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ltryuryrvd .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ltryuryrvd .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ltryuryrvd .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ltryuryrvd .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ltryuryrvd .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ltryuryrvd .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ltryuryrvd .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ltryuryrvd .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ltryuryrvd .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ltryuryrvd .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ltryuryrvd .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ltryuryrvd .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ltryuryrvd .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ltryuryrvd .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ltryuryrvd .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ltryuryrvd .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ltryuryrvd .gt_left {
+  text-align: left;
+}
+
+#ltryuryrvd .gt_center {
+  text-align: center;
+}
+
+#ltryuryrvd .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ltryuryrvd .gt_font_normal {
+  font-weight: normal;
+}
+
+#ltryuryrvd .gt_font_bold {
+  font-weight: bold;
+}
+
+#ltryuryrvd .gt_font_italic {
+  font-style: italic;
+}
+
+#ltryuryrvd .gt_super {
+  font-size: 65%;
+}
+
+#ltryuryrvd .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ltryuryrvd .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ltryuryrvd .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ltryuryrvd .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ltryuryrvd .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ltryuryrvd .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ltryuryrvd .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="i">i</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x1">x1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x2">x2</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x3">x3</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="y">y</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">9</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">-3.01</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">3.56</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">3.60</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">5.14</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">6</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">-0.11</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">1.19</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">1.89</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">4.06</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">10</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">-0.59</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">1.76</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">0.98</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">3.24</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">9</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">-3.01</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">3.56</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">3.60</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #ECC234; color: #000000;">5.14</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">4</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">-0.55</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">0.71</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">3.02</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">4.02</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">5</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">0.74</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">2.07</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">4.74</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">8.80</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">4</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">-0.55</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">0.71</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">3.02</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #92B758; color: #000000;">4.02</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">5</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">0.74</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">2.07</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">4.74</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #5CACB1; color: #FFFFFF;">8.80</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">6</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">-0.11</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">1.19</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">1.89</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #2FBCE6; color: #000000;">4.06</td></tr>
+    <tr><td headers="i" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">2</td>
+<td headers="x1" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">0.84</td>
+<td headers="x2" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">2.29</td>
+<td headers="x3" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">2.99</td>
+<td headers="y" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">7.32</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Abaixo é exibido o diagrama de uma árvore de decisão para a amostra obtida via <em>bootstrap</em>. O <em>bagging</em> repete este processso diversas vezes, reamostrando os dados por <em>bootstrap</em> e estimando para cada “nova” amostra uma nova árvore. Ao final é tomada como predição a média de todas as árvores.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Para o mesmo conjunto de dados, sejam 6 árvores obtidas após reamostragem dos dados via <em>bootstrap</em> exibidas a seguir.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Seja uma observação futura arbitrária com valores exibidos à seguir:</p>
+<div class="cell">
+<div class="cell-output-display">
+
+<div id="lgseusefjy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lgseusefjy table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#lgseusefjy thead, #lgseusefjy tbody, #lgseusefjy tfoot, #lgseusefjy tr, #lgseusefjy td, #lgseusefjy th {
+  border-style: none;
+}
+
+#lgseusefjy p {
+  margin: 0;
+  padding: 0;
+}
+
+#lgseusefjy .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lgseusefjy .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lgseusefjy .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lgseusefjy .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lgseusefjy .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lgseusefjy .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lgseusefjy .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lgseusefjy .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lgseusefjy .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#lgseusefjy .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lgseusefjy .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lgseusefjy .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lgseusefjy .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lgseusefjy .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lgseusefjy .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lgseusefjy .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lgseusefjy .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lgseusefjy .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#lgseusefjy .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lgseusefjy .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lgseusefjy .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lgseusefjy .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lgseusefjy .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lgseusefjy .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lgseusefjy .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lgseusefjy .gt_left {
+  text-align: left;
+}
+
+#lgseusefjy .gt_center {
+  text-align: center;
+}
+
+#lgseusefjy .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lgseusefjy .gt_font_normal {
+  font-weight: normal;
+}
+
+#lgseusefjy .gt_font_bold {
+  font-weight: bold;
+}
+
+#lgseusefjy .gt_font_italic {
+  font-style: italic;
+}
+
+#lgseusefjy .gt_super {
+  font-size: 65%;
+}
+
+#lgseusefjy .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#lgseusefjy .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lgseusefjy .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lgseusefjy .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lgseusefjy .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lgseusefjy .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lgseusefjy .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x1">x1</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x2">x2</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="x3">x3</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="x1" class="gt_row gt_right">0.14</td>
+<td headers="x2" class="gt_row gt_right">3.27</td>
+<td headers="x3" class="gt_row gt_right">4.57</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal observação são: 5.060, 7.028, 6.608, 6.378, 7.210 e 7.036. O modelo <em>bagging</em> retorna como resultado a média das previsões das árvores, isto é, <span class="math inline">\(\hat{y} = \frac{1}{6}\sum_{i=b}^6 T(\mathbf{x}_0)\)</span> = 6.55.</p>
+<p>Para o conjunto de dados Hitters seja um modelo de regressão por <em>Bagging</em> considerando duas variáveis, <code>Cruns</code> e <code>RBI</code>. O modelo plotado é muito mais complexo e pretende apresentar uma melhor acuracidade que um modelo baseado em árvore por justamente congregar diversas árvores baseadas na reamostragem dos dados de treino. Porém, Como tais modelos apresentam maior variância que os modelos de árvore para regressão, é importante avaliar se há sobreajuste.</p>
+<div class="cell">
+<div class="cell-output-display">
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
 <section id="floresta-aleatória" class="level3">
 <h3 class="anchored" data-anchor-id="floresta-aleatória">Floresta aleatória</h3>
-<p>O modelo de floresta aleatória consiste em uma melhoria ao modelo <em>bagging</em> com a finalidade de diminuir a variância. Basicamente, em casos onde há multicolineariedade ou redundância entre variáves regressoras, o bagging pode acarretar na seleção de apenas alguns dos preditores disponíveis durante o particionamento binário recursivo, de forma que as árvores geradas considerando a reamostragem das observações de treino possam apresentar alta correlação entre si, acarretando em alta variabilidade das previsões finais. No modelo de floresta aleatória antes de cada partição são selecionadas aleatoriamente <span class="math inline">\(m\)</span> variáveis regressoras, <span class="math inline">\(m&lt;k\)</span>, às quais serão consideradas no processo de particionamento binário. Geralmente para regressão recomenda-se <span class="math inline">\(m=k/3\)</span>.</p>
-<p>A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, <span class="math inline">\(k=2\)</span>, <code>Cruns</code> e <code>RBI</code>. Para cada particionamento considerou-se <span class="math inline">\(m=2/3 \simeq 1\)</span></p>
+<p>O modelo de floresta aleatória consiste em uma evolução do modelo <em>bagging</em> com a finalidade de diminuir a variância destes. Basicamente, em casos onde há multicolineariedade ou redundância entre as variáves regressoras, o <em>bagging</em> pode acarretar na seleção de apenas alguns dos preditores disponíveis durante o particionamento binário recursivo, de forma que as árvores geradas considerando a reamostragem das observações de treino possam apresentar alta correlação entre si, acarretando em alta variabilidade das previsões finais. No modelo de floresta aleatória, antes de cada partição, são selecionadas aleatoriamente <span class="math inline">\(m\)</span> variáveis regressoras, <span class="math inline">\(m&lt;k\)</span>, às quais serão consideradas no processo de particionamento binário. Geralmente para regressão recomenda-se <span class="math inline">\(m=k/3\)</span>.</p>
+<p>A seguir apresenta-se o gráfico de superfície de um modelo de floresta aleatória para o conjunto de dados Hitters considerando duas variáveis, <span class="math inline">\(k=2\)</span>, <code>Cruns</code> e <code>RBI</code>. Para cada particionamento considerou-se <span class="math inline">\(m=2/3 \simeq 1\)</span>.</p>
 <div class="cell">
 <div class="cell-output-display">
-<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid" width="768"></p>
+<p><img src="AS_reg_tree_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="768"></p>
 </div>
 </div>
 </section>
