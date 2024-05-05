@@ -71,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="regressão-por-vetores-de-suporte" class="level2">
 <h2 class="anchored" data-anchor-id="regressão-por-vetores-de-suporte">Regressão por vetores de suporte</h2>
-<p>Drucker et al.&nbsp;(1996) propuseram as máquinas de vetores de suporte para regressão (<em>Support Vector Regression</em> - SVR), um método que confirma os conceitos da teoria de aprendizado estatístico de Vapnik (VAPNIK, 1999). O processo de aprendizado com SVR é realizado no espaço de um subconjunto dos dados de treinamento, chamados de vetores de suporte. Sejam os dados de treinamento <span class="math inline">\((\mathbf{x}_1, y_1), (\mathbf{x}_2, y_2), ..., (\mathbf{x}_N, y_N)\)</span>, <span class="math inline">\(i = 1, . .., N\)</span>, com <span class="math inline">\(\mathbf{x}_i = [x_{i1}, x_{i2}, ..., x_{ik}]^T\)</span>. O SVR busca uma função com desvio máximo <span class="math inline">\(\varepsilon\)</span> para os dados de treinamento. A Figura a seguir ilustra à esquerda a função perda <span class="math inline">\(\varepsilon\)</span>-insensitiva ou insensitiva ao erro, enquanto à direita ilustra-se a idéia geral da regressão por vetores de suporte para o caso linerar simples.</p>
+<p>Drucker et al.&nbsp;(1996) propuseram as máquinas de vetores de suporte para regressão (<em>Support Vector Regression</em> - SVR), um método que confirma os conceitos da teoria de aprendizado estatístico de Vapnik (VAPNIK, 1999). O processo de aprendizado com SVR é realizado no espaço de um subconjunto dos dados de treinamento, chamados de vetores de suporte. Sejam os dados de treinamento <span class="math inline">\(\{(\mathbf{x}_1, y_1), (\mathbf{x}_2, y_2), ..., (\mathbf{x}_N, y_N)\}\)</span>, <span class="math inline">\(i = 1, . .., N\)</span>, com <span class="math inline">\(\mathbf{x}_i = (x_{i1}, x_{i2}, ..., x_{ik})\)</span>. O SVR busca uma função com desvio máximo <span class="math inline">\(\varepsilon\)</span> para os dados de treinamento. A Figura a seguir ilustra à esquerda a função perda <span class="math inline">\(\varepsilon\)</span>-insensitiva ou insensitiva ao erro, enquanto à direita ilustra-se a idéia geral da regressão por vetores de suporte para o caso linerar simples.</p>
 <p>A linha central do modelo SVR consiste na linha de regressão, <span class="math inline">\(\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b\)</span>, enquanto as duas outras linhas paralelas e simétricas são chamadas de margens, <span class="math inline">\(\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b \pm \varepsilon\)</span> e os pontos que coincidem ou estão para fora desta linha são chamados de vetores de suporte e apresentam valor na função perda maior ou igual a zero, <span class="math inline">\(\xi_i \geq 0\)</span> para os vetores de suporte.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -101,7 +101,7 @@ C\sum_{i=1}^N L(y_i, \hat{y}_i) + \mathbf{w}^T\mathbf{w}
 L = \Biggl\{
 \begin{matrix}
 0 \text{, se } \lvert y_i - \hat{y}_i \rvert &lt; \varepsilon\\
-      \lvert y_i - \hat{y}_i \rvert - \varepsilon \text{, c.c.}
+      \lvert y_i - \hat{y}_i \rvert - \varepsilon \text{, cc.}
 \end{matrix}
 \end{aligned}
 \]</span></p>
@@ -139,7 +139,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
 <p><span class="math display">\[
 \begin{aligned}
     \text{Max}\ &amp;\begin{Bmatrix}
-    -\frac{1}{2}\sum_{i,j}^N(\alpha_i - \alpha_i^*)(\alpha_j - \alpha_j^*)\mathbf{x}_i\mathbf{x}_j \\
+    -\frac{1}{2}\sum_{i,j}^N(\alpha_i - \alpha_i^*)(\alpha_j - \alpha_j^*)\mathbf{x}_i\mathbf{x} \\
     -\varepsilon\sum_{i=1}^N(\alpha_i - \alpha_i^*)
     + \sum_{i=1}^N y_i(\alpha_i - \alpha_i^*) \end{Bmatrix}\\
     \textrm{s.t.: } \Biggl\{
@@ -149,7 +149,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
   \end{matrix}
 \end{aligned}
 \]</span></p>
-<p>Nesta formulação dual, <span class="math inline">\(\mathbf{w}\)</span> é reescrito como uma combinação linear das observações de treinamento, <span class="math inline">\(\mathbf{x}_i\mathbf{x}_j\)</span>. Na formulação dual, <span class="math inline">\(\eta_i\)</span> e <span class="math inline">\(\eta_i^*\)</span> foram descritos em função de <span class="math inline">\(C\)</span>, <span class="math inline">\(\alpha_i\)</span> e <span class="math inline">\(\alpha_i^*\)</span>, sendo esses eliminados. Além disso, <span class="math inline">\(\mathbf{w} = \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i\)</span>. Na regressão por vetores de suporte, o modelo inicial apresentado na Equação <span class="math inline">\(\ref{eq:lin_func}\)</span> é reescrito como combinações lineares dos dados de treinamento, segundo o modelo a seguir. No entanto, o modelo inclui apenas os vetores de suporte, ou seja, <span class="math inline">\(\mathbf{x}_i\)</span> tal que <span class="math inline">\(\alpha_i &gt; 0\)</span> ou <span class="math inline">\(\alpha_i^* &gt; 0\)</span>, <span class="math inline">\(i = 1, ..., N\)</span>, com <span class="math inline">\(\xi_i\)</span> definindo a folga ou erro para além da margem. A SVR aumenta a dimensionalidade no espaço dos vetores de suporte ao invés do espaço dos preditores (VAPNIK, 2013).</p>
+<p>Nesta formulação dual, <span class="math inline">\(\mathbf{w}\)</span> é reescrito como uma combinação linear das observações de treinamento, <span class="math inline">\(\mathbf{x}_i\mathbf{x}\)</span>. Na formulação dual, <span class="math inline">\(\eta_i\)</span> e <span class="math inline">\(\eta_i^*\)</span> foram descritos em função de <span class="math inline">\(C\)</span>, <span class="math inline">\(\alpha_i\)</span> e <span class="math inline">\(\alpha_i^*\)</span>, sendo esses eliminados. Além disso, <span class="math inline">\(\mathbf{w} = \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i\)</span>. Na regressão por vetores de suporte, o modelo inicial apresentado no modelo inicial, $_i = _i^T + b$, é reescrito como combinações lineares dos dados de treinamento, segundo o modelo a seguir. No entanto, o modelo inclui apenas os vetores de suporte, ou seja, <span class="math inline">\(\mathbf{x}_i\)</span> tal que <span class="math inline">\(\alpha_i &gt; 0\)</span> ou <span class="math inline">\(\alpha_i^* &gt; 0\)</span>, <span class="math inline">\(i = 1, ..., N\)</span>, com <span class="math inline">\(\xi_i\)</span> definindo a folga ou erro para além da margem. A SVR aumenta a dimensionalidade no espaço dos vetores de suporte ao invés do espaço dos preditores (VAPNIK, 2013).</p>
 <p><span class="math display">\[
 \hat{y} = \sum_{i=1}^N(\alpha_i - \alpha_i^*)\mathbf{x}_i\mathbf{x} + b
 \]</span></p>
@@ -157,7 +157,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
 <p><span class="math display">\[
 \hat{y} = \sum_{i=1}^N(\alpha_i - \alpha_i^*)k(\mathbf{x}_i,\mathbf{x}) + b
 \]</span></p>
-<p>A seguir plota-se um modelo SVR para um caso de regressão simples, sendo utilizado um <em>kernel</em> linear. Pode-se destacar em verde as observações que são vetores de suporte.</p>
+<p>A seguir plota-se um modelo SVR em linha preta contínua para um caso de regressão simples, sendo utilizado um <em>kernel</em> linear. Pode-se destacar em verde as observações que são vetores de suporte. O modelo plotado em linha pontilhada azul consiste em um modelo de regressão linear simples obtido por mínimos quadrados.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code> Setting default kernel parameters  </code></pre>
@@ -168,7 +168,7 @@ L = \frac{1}{2}\mathbf{w}^T\mathbf{w} + C\sum_{i=1}^N(\xi_i + \xi_i^*) - \sum_{i
 <p><img src="AS_SVR_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Outros casos mais complexos como o seguinte podem ser aproximados por SVR com a aplicação do <em>kernel</em> adequado. No exemplo a seguir foi utilizado um <em>kernel</em> radial.</p>
+<p>Outros casos mais complexos como o seguinte podem ser aproximados por SVR com a aplicação do <em>kernel</em> adequado. No exemplo a seguir foi utilizado um <em>kernel</em> radial. A função considerada para simular os dados é plotada em cinza e o modelo em preto.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_SVR_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid" width="672"></p>

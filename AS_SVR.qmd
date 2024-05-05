@@ -7,7 +7,7 @@ editor: visual
 
 ## Regressão por vetores de suporte
 
-Drucker et al. (1996) propuseram as máquinas de vetores de suporte para regressão (*Support Vector Regression* - SVR), um método que confirma os conceitos da teoria de aprendizado estatístico de Vapnik (VAPNIK, 1999). O processo de aprendizado com SVR é realizado no espaço de um subconjunto dos dados de treinamento, chamados de vetores de suporte. Sejam os dados de treinamento $(\mathbf{x}_1, y_1), (\mathbf{x}_2, y_2), ..., (\mathbf{x}_N, y_N)$, $i = 1, . .., N$, com $\mathbf{x}_i = [x_{i1}, x_{i2}, ..., x_{ik}]^T$. O SVR busca uma função com desvio máximo $\varepsilon$ para os dados de treinamento. A Figura a seguir ilustra à esquerda a função perda $\varepsilon$-insensitiva ou insensitiva ao erro, enquanto à direita ilustra-se a idéia geral da regressão por vetores de suporte para o caso linerar simples.
+Drucker et al. (1996) propuseram as máquinas de vetores de suporte para regressão (*Support Vector Regression* - SVR), um método que confirma os conceitos da teoria de aprendizado estatístico de Vapnik (VAPNIK, 1999). O processo de aprendizado com SVR é realizado no espaço de um subconjunto dos dados de treinamento, chamados de vetores de suporte. Sejam os dados de treinamento $\{(\mathbf{x}_1, y_1), (\mathbf{x}_2, y_2), ..., (\mathbf{x}_N, y_N)\}$, $i = 1, . .., N$, com $\mathbf{x}_i = (x_{i1}, x_{i2}, ..., x_{ik})$. O SVR busca uma função com desvio máximo $\varepsilon$ para os dados de treinamento. A Figura a seguir ilustra à esquerda a função perda $\varepsilon$-insensitiva ou insensitiva ao erro, enquanto à direita ilustra-se a idéia geral da regressão por vetores de suporte para o caso linerar simples.
 
 A linha central do modelo SVR consiste na linha de regressão, $\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b$, enquanto as duas outras linhas paralelas e simétricas são chamadas de margens, $\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b \pm \varepsilon$ e os pontos que coincidem ou estão para fora desta linha são chamados de vetores de suporte e apresentam valor na função perda maior ou igual a zero, $\xi_i \geq 0$ para os vetores de suporte.
 
@@ -45,7 +45,7 @@ $$
 L = \Biggl\{
 \begin{matrix} 
 0 \text{, se } \lvert y_i - \hat{y}_i \rvert < \varepsilon\\
-      \lvert y_i - \hat{y}_i \rvert - \varepsilon \text{, c.c.}
+      \lvert y_i - \hat{y}_i \rvert - \varepsilon \text{, cc.}
 \end{matrix}
 \end{aligned}
 $$
@@ -91,7 +91,7 @@ Substituindo os resultados das derivadas na formulação primal, obtém-se a for
 $$
 \begin{aligned}
     \text{Max}\ &\begin{Bmatrix}
-    -\frac{1}{2}\sum_{i,j}^N(\alpha_i - \alpha_i^*)(\alpha_j - \alpha_j^*)\mathbf{x}_i\mathbf{x}_j \\
+    -\frac{1}{2}\sum_{i,j}^N(\alpha_i - \alpha_i^*)(\alpha_j - \alpha_j^*)\mathbf{x}_i\mathbf{x} \\
     -\varepsilon\sum_{i=1}^N(\alpha_i - \alpha_i^*) 
     + \sum_{i=1}^N y_i(\alpha_i - \alpha_i^*) \end{Bmatrix}\\
     \textrm{s.t.: } \Biggl\{
@@ -102,7 +102,7 @@ $$
 \end{aligned}
 $$
 
-Nesta formulação dual, $\mathbf{w}$ é reescrito como uma combinação linear das observações de treinamento, $\mathbf{x}_i\mathbf{x}_j$. Na formulação dual, $\eta_i$ e $\eta_i^*$ foram descritos em função de $C$, $\alpha_i$ e $\alpha_i^*$, sendo esses eliminados. Além disso, $\mathbf{w} = \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i$. Na regressão por vetores de suporte, o modelo inicial apresentado na Equação \ref{eq:lin_func} é reescrito como combinações lineares dos dados de treinamento, segundo o modelo a seguir. No entanto, o modelo inclui apenas os vetores de suporte, ou seja, $\mathbf{x}_i$ tal que $\alpha_i > 0$ ou $\alpha_i^* > 0$, $i = 1, ..., N$, com $\xi_i$ definindo a folga ou erro para além da margem. A SVR aumenta a dimensionalidade no espaço dos vetores de suporte ao invés do espaço dos preditores (VAPNIK, 2013).
+Nesta formulação dual, $\mathbf{w}$ é reescrito como uma combinação linear das observações de treinamento, $\mathbf{x}_i\mathbf{x}$. Na formulação dual, $\eta_i$ e $\eta_i^*$ foram descritos em função de $C$, $\alpha_i$ e $\alpha_i^*$, sendo esses eliminados. Além disso, $\mathbf{w} = \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i$. Na regressão por vetores de suporte, o modelo inicial apresentado no modelo inicial, \$\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b\$, é reescrito como combinações lineares dos dados de treinamento, segundo o modelo a seguir. No entanto, o modelo inclui apenas os vetores de suporte, ou seja, $\mathbf{x}_i$ tal que $\alpha_i > 0$ ou $\alpha_i^* > 0$, $i = 1, ..., N$, com $\xi_i$ definindo a folga ou erro para além da margem. A SVR aumenta a dimensionalidade no espaço dos vetores de suporte ao invés do espaço dos preditores (VAPNIK, 2013).
 
 $$
  \hat{y} = \sum_{i=1}^N(\alpha_i - \alpha_i^*)\mathbf{x}_i\mathbf{x} + b
@@ -114,7 +114,7 @@ $$
 \hat{y} = \sum_{i=1}^N(\alpha_i - \alpha_i^*)k(\mathbf{x}_i,\mathbf{x}) + b
 $$
 
-A seguir plota-se um modelo SVR para um caso de regressão simples, sendo utilizado um *kernel* linear. Pode-se destacar em verde as observações que são vetores de suporte.
+A seguir plota-se um modelo SVR em linha preta contínua para um caso de regressão simples, sendo utilizado um *kernel* linear. Pode-se destacar em verde as observações que são vetores de suporte. O modelo plotado em linha pontilhada azul consiste em um modelo de regressão linear simples obtido por mínimos quadrados.
 
 ```{r}
 #| message: false
@@ -155,22 +155,23 @@ ggplot() +
   theme_bw()
 ```
 
-Outros casos mais complexos como o seguinte podem ser aproximados por SVR com a aplicação do *kernel* adequado. No exemplo a seguir foi utilizado um *kernel* radial.
+Outros casos mais complexos como o seguinte podem ser aproximados por SVR com a aplicação do *kernel* adequado. No exemplo a seguir foi utilizado um *kernel* radial. A função considerada para simular os dados é plotada em cinza e o modelo em preto.
 
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
-set.seed(5)
-x1 <- runif(100, -7, 7)
-y1 <- sin(x1)/x1 + rnorm(100, sd=0.1)
+set.seed(50)
+x1 <- runif(150, -7, 7)
+y1 <- sin(x1)/x1 + rnorm(150, sd=0.1)
 data1 <- data.frame(x1,y1)
 
 xseq1 <- seq(-7, 7, length=100)
-m1 <- ksvm(x1, y1, data=data1)
+m1 <- ksvm(x1, y1, data=data1,
+           kernel="rbfdot", C=10,  epsilon = .5)
 new1 <- predict(m1, xseq1)
 
-data1$sup <- as.factor(ifelse(1:100 %in% m1@alphaindex, 1, 0))
+data1$sup <- as.factor(ifelse(1:150 %in% m1@alphaindex, 1, 0))
 ```
 
 ```{r}
@@ -180,10 +181,12 @@ data1$sup <- as.factor(ifelse(1:100 %in% m1@alphaindex, 1, 0))
 
 library(ggplot2)
 data_pred1 <- data.frame(x=xseq1,
-                         y=new1)
+                         y_=new1, 
+                         y=sin(xseq1)/xseq1)
 ggplot() +
   geom_point(data=data1, aes(x1,y1,col=sup)) +
-  geom_line(data=data_pred1, aes(x,y)) + 
+  geom_line(data=data_pred1, aes(x,y_), col = "black") + 
+  geom_line(data=data_pred1, aes(x,y), col = "grey") + 
   theme_bw()
 ```
 
@@ -200,7 +203,7 @@ dados <- na.omit(Hitters)
 set.seed(1)
 tr <- round(0.5*nrow(dados))
 treino <- sample(1:nrow(dados), tr, replace = F)
-svr1 <- ksvm(Salary ~ CRuns+RBI, dados[treino,])
+svr1 <- ksvm(Salary ~ CRuns+RBI, dados[treino,], C=10,  epsilon = .9)
 xs <- seq(min(dados$CRuns), max(dados$CRuns), length = 40)
 ys <- seq(min(dados$RBI), max(dados$RBI), length = 40)
 xys <- expand.grid(xs,ys)
@@ -210,11 +213,25 @@ n.cols <- 100
 palette <- colorRampPalette(c("gold", "violetred"))(n.cols)
 zfacet <- zs[-1, -1] + zs[-1, -20] + zs[-20, -1] + zs[-20, -20]
 facetcol <- cut(zfacet, n.cols)
+
 p1 <- persp(x=xs, y=ys, z=zs, theta=-40, phi=30, ticktype='detailed', 
             xlab="CRuns", ylab="RBI", zlab="Salary", 
-            col = palette[facetcol])
-with(dados[svr1@alphaindex,], points(trans3d(CRuns, RBI, Salary,p1), pch=19, cex= 0.5, col = "green3"))
-with(dados[-svr1@alphaindex,], points(trans3d(CRuns, RBI, Salary,p1), pch=19, cex= 0.5, col = "blue"))
+            col = palette[facetcol],
+            zlim = c(min(dados$Salary),max(dados$Salary)))
+
+obs <- with(dados[svr1@alphaindex,], trans3d(CRuns, RBI, Salary,p1))
+pred<-  with(dados[svr1@alphaindex,], 
+             trans3d(CRuns, RBI, (svr1@fitted*sd(dados$Salary)+mean(dados$Salary))[svr1@alphaindex],p1))
+
+# obs2 <- with(dados[-svr1@alphaindex,], trans3d(CRuns, RBI, Salary,p1))
+# pred2 <- with(dados[-svr1@alphaindex,], trans3d(CRuns, RBI, (svr1@fitted*sd(dados$Salary)+mean(dados$Salary))[-svr1@alphaindex],p1))
+
+points(obs, col = "green2", pch = 16)
+# segments(obs$x, obs$y, pred$x, pred$y)
+
+# points(obs2, col = "blue", pch = 16)
+# segments(obs2$x, obs2$y, pred2$x, pred2$y)
+
 ```
 
 Independente do caso é importante lembrar de se utilizar de validação cruzada e *grid search* para definir os níveis adequados dos hiperparâmetros $\varepsilon$, $C$, tipo de *kernel* e outros hiperparâmetros relacionados ao *kernel* adequado a cada caso.
