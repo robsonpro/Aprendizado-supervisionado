@@ -170,7 +170,7 @@ text(prune1, pretty = 0)
 
 *Bagged trees ou bagging* ou, em português, "árvores ensacadas" é um método baseado em árvore de decisão que pode ser aplicado tanto para regressão quanto para classificação. O método consiste em agregar várias árvores de decisão as quais são estimadas a partir de reamostragem por reposição dos dados de treino. Ou seja, antes de estimar cada árvore, realiza-se um sorteio por reposição dos dados de treino, procedimento este chamado de bootstrap e, posteriormente estima-se a árvore para cada amostra "manipulada". O modelo final é a média de todas as árvores obtidas via bootstrap. Geralmente um número alto de reamostragens é realizado e, portanto, um número alto de árvores é obtido, resultando em um modelo com maior flexibilidade, porém mais difícil de interpretar. O nome *bagging* vem de *bootstrap aggregated* ou agregação por bootstrap.
 
-Considere um conjunto de dados com três preditores e uma variável independente, com $N = 10$ observações, exibido integralmente a seguir.
+Considere um conjunto de dados com $N = 10$ observações, com três preditores e uma variável independente, exibido integralmente a seguir.
 
 ```{r}
 #| message: false
@@ -238,6 +238,8 @@ x0 <- round(data.frame(x1=x10,x2=x20,x3=x30),2)
 
 pred_tree <- numeric(6)
 par(mfrow=c(2,3))
+
+set.seed(11)
 for (i in 1:6){
   dat1 <- dat[sample(1:10, 10, T),]
   tr1 <- tree(y ~ .-i, dat1)
@@ -256,13 +258,16 @@ Seja uma observação futura arbitrária com valores exibidos à seguir:
 x0 |> gt()
 ```
 
-Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal observação são: 5.060, 7.028, 6.608, 6.378, 7.210 e 7.036. O modelo *bagging* retorna como resultado a média das previsões das árvores, isto é, $\hat{y} = \frac{1}{6}\sum_{i=b}^6 T(\mathbf{x}_0)$ = 6.55.
+Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal observação são: 7.302, 5.730, 6.732, 7.680, 7.680 e 5.490. O modelo *bagging* retorna como resultado a média das previsões das árvores, isto é, $\hat{y} = \frac{1}{6}\sum_{i=b}^6 T(\mathbf{x}_0)$ = 6.769.
 
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 # pred_tree
+# mean(pred_tree)
+# 7.302 5.730 6.732 7.680 7.680 5.490
+# 6.769
 ```
 
 
