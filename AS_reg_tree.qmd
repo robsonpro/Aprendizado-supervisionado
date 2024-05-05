@@ -258,7 +258,7 @@ Seja uma observação futura arbitrária com valores exibidos à seguir:
 x0 |> gt()
 ```
 
-Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal observação são: 7.302, 5.730, 6.732, 7.680, 7.680 e 5.490. O modelo *bagging* retorna como resultado a média das previsões das árvores, isto é, $\hat{y} = \frac{1}{6}\sum_{i=b}^6 T(\mathbf{x}_0)$ = 6.769.
+Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal observação são: 7.302, 5.730, 6.732, 7.680, 7.680 e 5.490. O modelo *bagging* retorna como resultado a média das previsões das árvores, isto é, $\hat{y} = \frac{1}{6}\sum_{i=b}^6 T(\mathbf{x}_0)$ = 6.774.
 
 ```{r}
 #| message: false
@@ -266,8 +266,8 @@ Considerando as 6 árvores obtidas anteriormente, as previsãos destas para tal 
 #| echo: false
 # pred_tree
 # mean(pred_tree)
-# 7.302 5.730 6.732 7.680 7.680 5.490
-# 6.769
+# 6.774 7.15 6.122 7.796 6.022 6.442
+# 6.774
 ```
 
 
