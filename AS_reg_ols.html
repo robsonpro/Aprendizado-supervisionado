@@ -109,7 +109,7 @@ y_i = \hat{y}_i + \varepsilon_i \\
 y_i = \beta_0 + \beta_1x_i + \varepsilon_i \\
 \end{aligned}
 \]</span></p>
-<p>Tomando <span class="math inline">\(N\)</span> observações retiradas da população de interesse, <span class="math inline">\((x_1, y_1), (x_2, y_2), ..., (x_N, y_N)\)</span>, pode-se pensar em um modelo que minimize os erros de previsão para a amostra disponível. Uma vez que o erro é normalmente distribuído, com média nula e variância <span class="math inline">\(\sigma_\varepsilon^2\)</span>, <span class="math inline">\(\varepsilon \sim N(0,\sigma_\varepsilon^2)\)</span>, pode-se trabalhar a minimização da soma dos quadrados dos erros de previsão, <span class="math inline">\(\sum_{i=1}^{N}\varepsilon_i^2\)</span>.</p>
+<p>Tomando <span class="math inline">\(N\)</span> observações retiradas da população de interesse, <span class="math inline">\((x_1, y_1), (x_2, y_2), ..., (x_N, y_N)\)</span>, pode-se pensar em um modelo que minimize os erros de previsão para a amostra disponível. Uma vez que o erro é normalmente distribuído, com média nula e variância <span class="math inline">\(\sigma_\varepsilon^2\)</span>, sendo os resíduos normalmente distribuídos, com média nula e variância igual a <span class="math inline">\(\sigma_\varepsilon^2\)</span>, <span class="math inline">\(\varepsilon \sim N(0,\sigma_\varepsilon^2)\)</span>, pode-se trabalhar a minimização da soma dos quadrados dos erros de previsão, <span class="math inline">\(\sum_{i=1}^{N}\varepsilon_i^2\)</span>.</p>
 <p>A seguir observam-se algumas das observações para os dados plotados anteriormente, bem como os valores preditos e erros associados.</p>
 <div class="cell">
 <div class="cell-output-display">
@@ -671,7 +671,7 @@ L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \
 \end{aligned}
 \]</span></p>
 <p>Tal solução constitui as chamadas equações normais de mínimos quadrados.</p>
-<p>Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos. Tais pressuposições implicam que o modelo o obtido por mínimos quadrados é paramétrico, uma vez que implicam em uma distribuição para os resíduos. Neste curso de aprendizado não supervisionado, serão vistos diversos modelos que não implicam qualquer distribuição acerca dos resíduos ou dados sendo, portanto, livres de distribuição e ditos não-paramétricos.</p>
+<p>Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos. Tais pressuposições implicam que o modelo o obtido por mínimos quadrados é paramétrico, uma vez que pressupõe-se uma distribuição para os resíduos. Neste curso de aprendizado não supervisionado, serão estudados diversos modelos que não implicam qualquer distribuição acerca dos resíduos ou dados sendo, portanto, livres de distribuição e ditos não-paramétricos.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_ols_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid" width="672"></p>
@@ -697,7 +697,7 @@ L(\mathbf{\beta}) = \mathbf{\varepsilon}^T\mathbf{\varepsilon} = (\mathbf{y} - \
 1 &amp; x_{21} &amp; x_{22} &amp; \cdots &amp; x_{2k} \\
 \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots\\
 1 &amp; x_{N1} &amp; x_{N2} &amp; \cdots &amp; x_{Nk} \\
-\end{bmatrix} e\\
+\end{bmatrix}, e\\
 \]</span></p>
 <p><span class="math display">\[
 \mathbf{\beta}^T =
@@ -712,14 +712,7 @@ R^2 = 1- SS_{E}/SS_T \\
 R^2 = 1- \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{\sum_{i=1}^{N}(y_i-\overline{y}_i)^2},
 \end{align}
 \]</span></p>
-<p>ou utilizando a média dos quadrados dos erros, <span class="math inline">\(MS_E\)</span>, ou outra métrica de erro.</p>
-<p><span class="math display">\[
-\begin{align}
-MS_E = SS_E/N \\
-MS_E = \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{N} \\
-\end{align}
-\]</span></p>
-<p>É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. Além do <span class="math inline">\(R^2\)</span>, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, <span class="math inline">\(R^2_{adj}\)</span>, isto é:</p>
+<p>ou utilizando outras métricas de ajuste. É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. Além do <span class="math inline">\(R^2\)</span>, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, <span class="math inline">\(R^2_{adj}\)</span>, isto é:</p>
 <p><span class="math display">\[
 R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}
 \]</span></p>
@@ -1245,7 +1238,7 @@ F-statistic: 203.5 on 2 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
-<p>Além de considerar termos de múltiplas variáveis é possível considerar a interação entre estas, colocando na matriz <span class="math inline">\(\mathbf{X}\)</span> colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma <span class="math inline">\(\beta_{ij}x_ix_j\)</span> Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.</p>
+<p>Além de considerar termos de múltiplas variáveis, é possível considerar a interação entre estas, colocando na matriz <span class="math inline">\(\mathbf{X}\)</span> colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma <span class="math inline">\(\beta_{ij}x_ix_j\)</span>. Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1758,7 +1751,24 @@ F-statistic: 151.1 on 3 and 86 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
 </div>
-<p>Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis <em>dummy</em> também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis <em>dummy</em> seriam suficientes. Observe a seguir que ao criar uma coluna denominada <em>Mazda6</em>, com 1, se <em>Mazda6</em> e 0, caso contrário e, de forma análoga, uma coluna para <em>Accord</em>, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no <em>Maxima</em>.</p>
+<p>Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis <em>dummy</em> também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis <em>dummy</em> seriam suficientes. Ao criar uma coluna denominada <code>Mazda6</code>, com 1, se <code>Mazda6</code> e 0, caso contrário e, de forma análoga, uma coluna para <code>Accord</code>, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no <code>Maxima</code>.</p>
+<p>Seja <span class="math inline">\(x_1\)</span> o ano, <span class="math inline">\(x_2\)</span> a quiometragem, <span class="math display">\[
+x_3 = \bigg\{
+\begin{matrix}
+1, \text{ se Mazda6} \\
+0, \text{ cc}\\
+\end{matrix}
+\]</span> e <span class="math display">\[
+x_4 = \bigg\{
+\begin{matrix}
+1, \text{ se Accord} \\
+0, \text{ cc}\\
+\end{matrix}
+\]</span></p>
+<p>O modelo de regressão pode ser escrito conforme segue. <span class="math display">\[
+\hat{y}_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \beta_3x_{i3} + \beta_4x_{i4}
+\]</span></p>
+<p>Fica claro que, neste tipo de modelo, o coeficiente <span class="math inline">\(\beta_3\)</span> é uma constante adicionada a <span class="math inline">\(\beta_0\)</span> caso o modelo do carro seja <code>Mazda6</code>. Uma explicação análoga pode ser feita para <span class="math inline">\(\beta_4\)</span>. Portanto, tais termos não mudam a inclinação do modelo, apenas o intercepto. É possível adicionar termos de interação entre variáveis dicotômicas e variáveis contínuas, o que na prática serviria para mudar a inclinação ou coeficientes das variáveis contínuas. Retomando a criação de variáveis dicotômicas para o exemplo em questão, tem-se as colunas com tais variáveis criadas a seguir.</p>
 <div class="cell">
 <div class="cell-output-display">
 
@@ -2313,7 +2323,7 @@ F-statistic:   122 on 4 and 85 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><img src="AS_reg_ols_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Considerando um modelo linear para tais dados, os resíduos obtidos ão plotados conforme segue. Pode-se observar claramente um padrão de não linearidade nos resíduos em relação aos valores ajustados, indicando o ajuste de um modelo não linear.</p>
+<p>Considerando um modelo linear para tais dados, os resíduos obtidos são plotados conforme segue. Pode-se observar claramente um padrão de não linearidade nos resíduos em relação aos valores ajustados, indicando o ajuste de um modelo não linear.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_ols_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid" width="672"></p>
@@ -2349,13 +2359,13 @@ Multiple R-squared:  0.9981,    Adjusted R-squared:  0.998
 F-statistic: 1.287e+04 on 2 and 49 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>Os resíduos para os modelos quadráticos são plotados abaixo.</p>
+<p>Os resíduos para o modelo quadrático são plotados abaixo.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_reg_ols_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Finalmente, tal modelo estimado pode ser escrito conforme segue.</p>
+<p>Finalmente, tal modelo pode ser escrito conforme segue.</p>
 <p><span class="math display">\[
 \hat{y} = 183,3 -0,456x + 6,930\times10^{-4}x^2
 \]</span></p>

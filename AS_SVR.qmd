@@ -30,7 +30,7 @@ $$
 \end{aligned}
 $$
 
-Para estimar os parâmetros deste modelo, pode-se otimizar uma função perda mais um termo de regularização, conforme a Equação a seguir, onde $C$ é uma constante de regularização. Este problema é similar ao problema de regressão rígida. No entanto, a constante de regularização aqui multiplica a função perda, $\sum_i L$, e não a soma dos quadrados dos termos do modelo, $\mathbf{w}^T\mathbf{w}$.
+Para estimar os parâmetros deste modelo, pode-se otimizar uma função perda mais um termo de regularização, conforme a Equação a seguir, onde $C$ é uma constante de regularização. Este problema é similar ao problema de regressão rígida. No entanto, a constante de regularização aqui multiplica a função perda, $\sum_i L$, e não a soma dos quadrados dos termos do modelo, $\mathbf{w}^T\mathbf{w} = \sum_{i=1}^N w_i^2$.
 
 $$
 \begin{aligned}
@@ -66,7 +66,7 @@ $$
 \end{aligned}
 $$
 
-Para resolver este problema mais facilmente, a formulação dual pode ser considerada. Além disso, a formulação dual permitirá a extensão da regressão do vetor de suporte para problemas não lineares. Porém, antes, é adequado apresentar a formulação lagrangeana para o problema SVR primal, conforme a formulação abaixo, onde $\alpha_i$, $\alpha_i^*$, $\eta_i$ e $\eta_i^*$ são os multiplicadores de Lagrange, que devem ser não-negativos (VAPNIK, 1999; 2013).
+Para resolver este problema mais facilmente, a formulação dual pode ser considerada. Além disso, a formulação dual permitirá a extensão da regressão por vetores de suporte para problemas não lineares. Porém, antes, é adequado apresentar a formulação lagrangeana para o problema SVR primal, conforme segue, onde $\alpha_i$, $\alpha_i^*$, $\eta_i$ e $\eta_i^*$ são os multiplicadores de Lagrange, que devem ser não-negativos (VAPNIK, 1999; 2013).
 
 $$
 \begin{split}
@@ -102,7 +102,7 @@ $$
 \end{aligned}
 $$
 
-Nesta formulação dual, $\mathbf{w}$ é reescrito como uma combinação linear das observações de treinamento, $\mathbf{x}_i\mathbf{x}$. Na formulação dual, $\eta_i$ e $\eta_i^*$ foram descritos em função de $C$, $\alpha_i$ e $\alpha_i^*$, sendo esses eliminados. Além disso, $\mathbf{w} = \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i$. Na regressão por vetores de suporte, o modelo inicial apresentado no modelo inicial, \$\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b\$, é reescrito como combinações lineares dos dados de treinamento, segundo o modelo a seguir. No entanto, o modelo inclui apenas os vetores de suporte, ou seja, $\mathbf{x}_i$ tal que $\alpha_i > 0$ ou $\alpha_i^* > 0$, $i = 1, ..., N$, com $\xi_i$ definindo a folga ou erro para além da margem. A SVR aumenta a dimensionalidade no espaço dos vetores de suporte ao invés do espaço dos preditores (VAPNIK, 2013).
+Nesta formulação dual, $\mathbf{w}$ é reescrito como uma combinação linear das observações de treinamento, $\mathbf{x}_i\mathbf{x}$. Na formulação dual, $\eta_i$ e $\eta_i^*$ foram descritos em função de $C$, $\alpha_i$ e $\alpha_i^*$, sendo esses eliminados. Além disso, $\mathbf{w} = \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i$. Na regressão por vetores de suporte, o modelo inicial apresentado no modelo inicial, $\hat{y}_i = \mathbf{x}_i^T \mathbf{w} + b$, é reescrito como combinações lineares dos dados de treinamento, segundo o modelo a seguir. No entanto, o modelo inclui apenas os vetores de suporte, ou seja, $\mathbf{x}_i$ tal que $\alpha_i > 0$ ou $\alpha_i^* > 0$, $i = 1, ..., N$, com $\xi_i$ definindo a folga ou erro para além da margem. A SVR aumenta a dimensionalidade no espaço dos vetores de suporte ao invés do espaço dos preditores (VAPNIK, 2013).
 
 $$
  \hat{y} = \sum_{i=1}^N(\alpha_i - \alpha_i^*)\mathbf{x}_i\mathbf{x} + b

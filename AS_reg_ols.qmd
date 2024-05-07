@@ -96,7 +96,7 @@ y_i = \beta_0 + \beta_1x_i + \varepsilon_i \\
 \end{aligned}
 $$
 
-Tomando $N$ observações retiradas da população de interesse, $(x_1, y_1), (x_2, y_2), ..., (x_N, y_N)$, pode-se pensar em um modelo que minimize os erros de previsão para a amostra disponível. Uma vez que o erro é normalmente distribuído, com média nula e variância $\sigma_\varepsilon^2$, $\varepsilon \sim N(0,\sigma_\varepsilon^2)$, pode-se trabalhar a minimização da soma dos quadrados dos erros de previsão, $\sum_{i=1}^{N}\varepsilon_i^2$.
+Tomando $N$ observações retiradas da população de interesse, $(x_1, y_1), (x_2, y_2), ..., (x_N, y_N)$, pode-se pensar em um modelo que minimize os erros de previsão para a amostra disponível. Uma vez que o erro é normalmente distribuído, com média nula e variância $\sigma_\varepsilon^2$, sendo os resíduos normalmente distribuídos, com média nula e variância igual a $\sigma_\varepsilon^2$, $\varepsilon \sim N(0,\sigma_\varepsilon^2)$, pode-se trabalhar a minimização da soma dos quadrados dos erros de previsão, $\sum_{i=1}^{N}\varepsilon_i^2$.
 
 A seguir observam-se algumas das observações para os dados plotados anteriormente, bem como os valores preditos e erros associados.
 
@@ -200,7 +200,7 @@ $$
 
 Tal solução constitui as chamadas equações normais de mínimos quadrados.
 
-Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos. Tais pressuposições implicam que o modelo o obtido por mínimos quadrados é paramétrico, uma vez que implicam em uma distribuição para os resíduos. Neste curso de aprendizado não supervisionado, serão vistos diversos modelos que não implicam qualquer distribuição acerca dos resíduos ou dados sendo, portanto, livres de distribuição e ditos não-paramétricos.
+Ao obter um modelo de regressão é sempre importante observar os resíduos, os quais devem ser normalmente distribuídos, independentes e homocedásticos. Tais pressuposições implicam que o modelo o obtido por mínimos quadrados é paramétrico, uma vez que pressupõe-se uma distribuição para os resíduos. Neste curso de aprendizado não supervisionado, serão estudados diversos modelos que não implicam qualquer distribuição acerca dos resíduos ou dados sendo, portanto, livres de distribuição e ditos não-paramétricos.
 
 ```{r}
 #| message: false
@@ -233,7 +233,7 @@ $$
 1 & x_{21} & x_{22} & \cdots & x_{2k} \\
 \vdots & \vdots & \vdots & \ddots & \vdots\\
 1 & x_{N1} & x_{N2} & \cdots & x_{Nk} \\
-\end{bmatrix} e\\ 
+\end{bmatrix}, e\\ 
 $$
 
 $$
@@ -252,17 +252,7 @@ R^2 = 1- \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{\sum_{i=1}^{N}(y_i-\overline{y}_
 \end{align}
 $$
 
-ou utilizando a média dos quadrados dos erros, $MS_E$, ou outra métrica de erro.
-
-$$
-\begin{align}
-MS_E = SS_E/N \\
-MS_E = \frac{\sum_{i=1}^{N}(y_i-\hat{y}_i)^2}{N} \\
-\end{align}
-$$
-
-É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. 
-Além do $R^2$, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, $R^2_{adj}$, isto é:
+ou utilizando outras métricas de ajuste. É interessante que tais métricas sejam também calculadas para dados futuros ou de teste, de forma a evitar sobreajuste do modelo. Uma observação importante é relacionada à utilização da ANOVA para obtenção de tais métricas. Além do $R^2$, ao se utilizar a ANOVA, há a possibilidade de calcular o coeficiente de determinação ajustado, $R^2_{adj}$, isto é:
 
 $$
 R^2_{adj} = 1 - \frac{SS_{E}/(N-k)}{SS_T/(N-1)}
@@ -358,7 +348,7 @@ A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.
 data.frame(confint(model2)) |> gt()
 ```
 
-Além de considerar termos de múltiplas variáveis é possível considerar a interação entre estas, colocando na matriz $\mathbf{X}$ colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma $\beta_{ij}x_ix_j$ Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.
+Além de considerar termos de múltiplas variáveis, é possível considerar a interação entre estas, colocando na matriz $\mathbf{X}$ colunas com multiplicação ou produto de colunas das variáveis de interesse e no modelo termos da forma $\beta_{ij}x_ix_j$. Para o caso em estudo um modelo de regressão múltipla com interação ficaria conforme segue.
 
 ```{r}
 #| message: false
@@ -379,7 +369,31 @@ Retomando o problema de regressão do preço de revenda de carros considerando o
 ThreeCars2017[c(1:2,50:51,70:71),c(1,2,4,3)] |> gt()
 ```
 
-Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis *dummy* também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis *dummy* seriam suficientes. Observe a seguir que ao criar uma coluna denominada *Mazda6*, com 1, se *Mazda6* e 0, caso contrário e, de forma análoga, uma coluna para *Accord*, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no *Maxima*.
+Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis *dummy* também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis *dummy* seriam suficientes. Ao criar uma coluna denominada `Mazda6`, com 1, se `Mazda6` e 0, caso contrário e, de forma análoga, uma coluna para `Accord`, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no `Maxima`.
+
+Seja $x_1$ o ano, $x_2$ a quiometragem, 
+$$
+x_3 = \bigg\{
+\begin{matrix}
+1, \text{ se Mazda6} \\
+0, \text{ cc}\\
+\end{matrix}
+$$
+e
+$$
+x_4 = \bigg\{
+\begin{matrix}
+1, \text{ se Accord} \\
+0, \text{ cc}\\
+\end{matrix}
+$$
+
+O modelo de regressão pode ser escrito conforme segue.
+$$
+\hat{y}_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \beta_3x_{i3} + \beta_4x_{i4}
+$$
+
+Fica claro que, neste tipo de modelo, o coeficiente $\beta_3$ é uma constante adicionada a $\beta_0$ caso o modelo do carro seja `Mazda6`. Uma explicação análoga pode ser feita para $\beta_4$. Portanto, tais termos não mudam a inclinação do modelo, apenas o intercepto. É possível adicionar termos de interação entre variáveis dicotômicas e variáveis contínuas, o que na prática serviria para mudar a inclinação ou coeficientes das variáveis contínuas. Retomando a criação de variáveis dicotômicas para o exemplo em questão, tem-se as colunas com tais variáveis criadas a seguir.
 
 ```{r}
 #| message: false
@@ -441,7 +455,7 @@ ggplot(rehab, aes(x = Days, y = Weight)) +
   ylab("Peso") + theme_bw()
 ```
 
-Considerando um modelo linear para tais dados, os resíduos obtidos ão plotados conforme segue. Pode-se observar claramente um padrão de não linearidade nos resíduos em relação aos valores ajustados, indicando o ajuste de um modelo não linear.
+Considerando um modelo linear para tais dados, os resíduos obtidos são plotados conforme segue. Pode-se observar claramente um padrão de não linearidade nos resíduos em relação aos valores ajustados, indicando o ajuste de um modelo não linear.
 
 ```{r}
 #| message: false
@@ -476,7 +490,7 @@ lm2 <- lm(Weight ~ Days + I(Days^2), rehab)
 summary(lm2)
 ```
 
-Os resíduos para os modelos quadráticos são plotados abaixo.
+Os resíduos para o modelo quadrático são plotados abaixo.
 
 ```{r}
 #| message: false
@@ -486,7 +500,7 @@ par(mfrow=c(2,2))
 plot(lm2)
 ```
 
-Finalmente, tal modelo estimado pode ser escrito conforme segue.
+Finalmente, tal modelo pode ser escrito conforme segue.
 
 $$
 \hat{y} = 183,3 -0,456x + 6,930\times10^{-4}x^2 
