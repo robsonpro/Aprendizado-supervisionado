@@ -325,7 +325,7 @@ $$
 \hat{y} = 21,543 - 0,0531x_1 - 0,842x_2
 $$
 
-O teste t para os coeficientes de regressão resultante é apresentado a seguir. Como $|t_{\alpha/2,N-k}|$ = 1.987, tem-se que todos os coeficientes são significativos, uma vez que $t_{0j} > t_{\alpha/2,N-k}$, $\forall j = 1, ..., k$. Pode-se também considerar o $p-value$ que é a probabilidade de erro na rejeição da hipótese nula, $H_0$, associada ao valor calculado $t_0$. Se $p-value < \alpha$, rejeita-se $H_0$.
+O teste t para os coeficientes de regressão resultante é apresentado a seguir. As duas variáveis regressoras foram antes padronizadas para evitar efeito de escala e unidade de medida. Como $|t_{\alpha/2,N-k}|$ = 1.987, tem-se que todos os coeficientes são significativos, uma vez que $t_{0j} > t_{\alpha/2,N-k}$, $\forall j = 1, ..., k$. Pode-se também considerar o $p-value$ que é a probabilidade de erro na rejeição da hipótese nula, $H_0$, associada ao valor calculado $t_0$. Se $p-value < \alpha$, rejeita-se $H_0$.
 
 ```{r}
 #| message: false
@@ -339,7 +339,7 @@ model2 <- lm(Price ~ Mileage+Age, data)
 summary(model2)
 ```
 
-A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.
+A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes codificados.
 
 ```{r}
 #| message: false
@@ -371,16 +371,13 @@ ThreeCars2017[c(1:2,50:51,70:71),c(1,2,4,3)] |> gt()
 
 Para trabalhar com a variável modelo e qualquer outra variável qualitativa ou categórica em regressão múltipla, pode-se utilizar de variáveis *dummy* também conhecidas como indicativas ou binárias. No caso de três categorias, como no exemplo acima, duas variáveis *dummy* seriam suficientes. Ao criar uma coluna denominada `Mazda6`, com 1, se `Mazda6` e 0, caso contrário e, de forma análoga, uma coluna para `Accord`, caso uma determinada observação receba 0 em ambas colunas, o modelo do carro consiste no `Maxima`.
 
-Seja $x_1$ o ano, $x_2$ a quiometragem, 
-$$
+Seja $x_1$ o ano, $x_2$ a quiometragem, $$
 x_3 = \bigg\{
 \begin{matrix}
 1, \text{ se Mazda6} \\
 0, \text{ cc}\\
 \end{matrix}
-$$
-e
-$$
+$$ e $$
 x_4 = \bigg\{
 \begin{matrix}
 1, \text{ se Accord} \\
@@ -388,8 +385,7 @@ x_4 = \bigg\{
 \end{matrix}
 $$
 
-O modelo de regressão pode ser escrito conforme segue.
-$$
+O modelo de regressão pode ser escrito conforme segue. $$
 \hat{y}_i = \beta_0 + \beta_1x_{i1} + \beta_2x_{i2} + \beta_3x_{i3} + \beta_4x_{i4}
 $$
 

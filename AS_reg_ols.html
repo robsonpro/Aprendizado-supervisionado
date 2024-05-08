@@ -749,7 +749,7 @@ t_{0j} = \frac{\hat{\beta}_j}{\sqrt{C_jSS_E/(N-k)}}
 <p><span class="math display">\[
 \hat{y} = 21,543 - 0,0531x_1 - 0,842x_2
 \]</span></p>
-<p>O teste t para os coeficientes de regressão resultante é apresentado a seguir. Como <span class="math inline">\(|t_{\alpha/2,N-k}|\)</span> = 1.987, tem-se que todos os coeficientes são significativos, uma vez que <span class="math inline">\(t_{0j} &gt; t_{\alpha/2,N-k}\)</span>, <span class="math inline">\(\forall j = 1, ..., k\)</span>. Pode-se também considerar o <span class="math inline">\(p-value\)</span> que é a probabilidade de erro na rejeição da hipótese nula, <span class="math inline">\(H_0\)</span>, associada ao valor calculado <span class="math inline">\(t_0\)</span>. Se <span class="math inline">\(p-value &lt; \alpha\)</span>, rejeita-se <span class="math inline">\(H_0\)</span>.</p>
+<p>O teste t para os coeficientes de regressão resultante é apresentado a seguir. As duas variáveis regressoras foram antes padronizadas para evitar efeito de escala e unidade de medida. Como <span class="math inline">\(|t_{\alpha/2,N-k}|\)</span> = 1.987, tem-se que todos os coeficientes são significativos, uma vez que <span class="math inline">\(t_{0j} &gt; t_{\alpha/2,N-k}\)</span>, <span class="math inline">\(\forall j = 1, ..., k\)</span>. Pode-se também considerar o <span class="math inline">\(p-value\)</span> que é a probabilidade de erro na rejeição da hipótese nula, <span class="math inline">\(H_0\)</span>, associada ao valor calculado <span class="math inline">\(t_0\)</span>. Se <span class="math inline">\(p-value &lt; \alpha\)</span>, rejeita-se <span class="math inline">\(H_0\)</span>.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -773,7 +773,7 @@ Multiple R-squared:  0.8239,    Adjusted R-squared:  0.8198
 F-statistic: 203.5 on 2 and 87 DF,  p-value: &lt; 2.2e-16</code></pre>
 </div>
 </div>
-<p>A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes.</p>
+<p>A seguir apresentam-se intervalos de confiança de 0.95 para os coeficientes codificados.</p>
 <div class="cell">
 <div class="cell-output-display">
 
