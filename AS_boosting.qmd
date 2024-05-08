@@ -207,7 +207,7 @@ boost1 <- gbm(wage~., data = dados, distribution = "gaussian",
 # summary(boost1)
 ```
 
-Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. Considerando um modelo obtido via GBM 8000 árvores e $\lambda = 0.2$, pode-se plotar um gráfico de superfície considerando como variáveis independentes escolaridade  anos de experiência conforme segue.   
+Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se ele trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. Considerando um modelo obtido via GBM com 8000 árvores e $\lambda = 0.2$, pode-se plotar um gráfico de superfície considerando como variáveis independentes a escolaridade e anos de experiência conforme segue.
 
 ```{r}
 #| message: false
