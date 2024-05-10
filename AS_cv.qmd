@@ -7,54 +7,37 @@ editor: visual
 
 ## Validação cruzada e *grid search*
 
-Seja a modelagem de uma resposta $y$ a qual supõe-se dependente de um vetor de variáveis de entrada ou preditoras $\mathbf{x} = [x_1, ..., x_k]^T$.
-Um modelo desconhecido pode ser denotado $f(\mathbf{\mathbf{x}, \mathbf{\alpha}})$, onde $\mathbf{\alpha}$ consiste em um (ou um vetor de) hyperparâmetro que minimiza o erro de previsão.
-Um conjunto de observações de treino, $\mathcal{T} = (\mathbf{x}_1,y_1), ..., (\mathbf{x}_N,y_N)$, obtidos da distribuição de probabilidade conjunta de $\mathbf{x},y$, $P(\mathbf{x},y)$, está disponível para o propósito de estimativas. 
-O modelo estimado, $\hat{f}(\mathbf{x}, \mathbf{\alpha})$, é obtido pela minimização de uma função perda, que mede a distância entre o modelo e as observações de treino.
-No caso de problemas de regressão, $y \in \mathcal{R}^1$,a escolha mais comum é a função perda quadrática, $L(y,\hat{f}(\mathbf{x}, \mathbf{\alpha})) = (y-\hat{f}(\mathbf{x}, \mathbf{\alpha}))^2$. 
-Em casos de problemas de classificação binária, $y \in [0,1]$, quando deseja-se modelar probabilidades de pertencer a uma das classes, $p(\mathbf{x}) = Pr(y|\mathbf{x})$, a função perda de entropia cruzada é a escolha mais comum, $L(y,\hat{h}(\mathbf{x}, \mathbf{\alpha})) = -2(y log(p(\mathbf{x}))+(1-y)log(1-p(\mathbf{x})))$.
-O erro de generalização ou de teste pode ser calculado segundo a Equação a seguir, onde $(\mathbf{x}_0,y_0)$ é uma nova observação.
-$$
+Seja a modelagem de uma resposta $y$ a qual supõe-se dependente de um vetor de variáveis de entrada ou preditoras $\mathbf{x} = [x_1, ..., x_k]^T$. Um modelo desconhecido pode ser denotado $f(\mathbf{\mathbf{x}, \mathbf{\alpha}})$, onde $\mathbf{\alpha}$ consiste em um (ou um vetor de) hyperparâmetro que minimiza o erro de previsão. Um conjunto de observações de treino, $\mathcal{T} = (\mathbf{x}_1,y_1), ..., (\mathbf{x}_N,y_N)$, obtidos da distribuição de probabilidade conjunta de $\mathbf{x},y$, $P(\mathbf{x},y)$, está disponível para o propósito de estimativas. O modelo estimado, $\hat{f}(\mathbf{x}, \mathbf{\alpha})$, é obtido pela minimização de uma função perda, que mede a distância entre o modelo e as observações de treino. No caso de problemas de regressão, $y \in \mathcal{R}^1$,a escolha mais comum é a função perda quadrática, $L(y,\hat{f}(\mathbf{x}, \mathbf{\alpha})) = (y-\hat{f}(\mathbf{x}, \mathbf{\alpha}))^2$. O erro de generalização ou de teste pode ser calculado segundo a Equação a seguir, onde $(\mathbf{x}_0,y_0)$ é uma nova observação. $$
     Err_\mathcal{T} = E[L(y_0,\hat{f}(\mathbf{x}_0, \mathbf{\alpha}))|\mathcal{T}]
-$$
-O erro de treino, $\overline{err} =  (1/N)\sum_{i=1}^{N}L(y,\hat{h}(\mathbf{x}, \mathbf{\alpha}))$, sempre será maior que o erro de generalização, $Err_\mathcal{T}$.
-O erro esperado de generalização pode ser calculado como $Err = E[L(y_0,\hat{f}(\mathbf{x}_0, \mathbf{\alpha}))] = E[Err_\mathcal{T}]$. A forma mais eficiente e prática de estimar o erro esperado de previsão é através da validação cruzada (HASTIE et al., 2009).
+$$ O erro de treino, $\overline{err} = (1/N)\sum_{i=1}^{N}L(y,\hat{h}(\mathbf{x}, \mathbf{\alpha}))$, sempre será maior que o erro de generalização, $Err_\mathcal{T}$. A forma mais eficiente e prática de estimar o erro de generalização é através da validação cruzada (HASTIE et al., 2009).
 
 ### Validação cruzada por dados de treino e teste
 
 A validação cruzada por dados de treino e teste é basicamente o que foi feito nos métodos aprendidos até aqui. As $N$ observações de treino disponíveis, $\mathcal{T}$, são divididas em observações de treino e teste. O modelo é estimado usando as observações de treino e testado nas observações de teste. Conforme explicado, a própria função perda pode ser usada para avaliar a capacidade de generalização do modelo, mas, na prática, algumas outras métricas podem ser úteis para avaliar o erro em dados de teste que visa estimar o erro do modelo em dados futuros ou sua capacidade de generalização.
 
-A métrica $R^2$, $R^2 \in [0,1]$, denominada coeficiente de determinação, consiste na proporção da variabilidade dos dados explicados pelo modelo.
-Quanto maior é o valor de $R^2$ para os dados de teste, maior a capacidade de generalização do modelo.
-$$
+A métrica $R^2$, $R^2 \in [0,1]$, denominada coeficiente de determinação, consiste na proporção da variabilidade dos dados explicados pelo modelo. Quanto maior é o valor de $R^2$ para os dados de teste, maior a capacidade de generalização do modelo. $$
     R^2(y,\hat{y})  = 1 - \frac{\sum_{i=1}^{n}{(y_i - \hat{y}_i)}^2}{\sum_{i=1}^{n}{(y_i - \bar{y})}^2}
 $$
 
-Se o modelo for pior do que um modelo simples que prevê a média, $\hat{y} = \overline{y}$, o $R^2$ pode ser negativo. Isso ocorre porque o denominador, que representa a variabilidade total da resposta, pode ser menor do que o numerador, que expressa a variabilidade explicada pelo modelo. Essa situação pode ocorrer na validação cruzada, na qual os modelos são testados em dados futuros, e, posteriormente, a métrica é calculada. 
+Se o modelo for pior do que um modelo simples que prevê a média, $\hat{y} = \overline{y}$, o $R^2$ pode ser negativo. Isso ocorre porque o denominador, que representa a variabilidade total da resposta, pode ser menor do que o numerador, que expressa a variabilidade explicada pelo modelo. Essa situação pode ocorrer na validação cruzada, na qual os modelos são testados em dados futuros, e, posteriormente, a métrica é calculada.
 
-O erro médio absoluto (*mean absolute error* -  MAE) mede a média dos valores absolutos das diferenças entre o valor real e o valor predito. Essa métrica é mais robusta a \textit{outliers}. 
-$$
+O erro médio absoluto (*mean absolute error* - MAE) mede a média dos valores absolutos das diferenças entre o valor real e o valor predito. Essa métrica é mais robusta a \textit{outliers}. $$
     MAE (y,\hat{y})  = \frac{1}{n} \sum_{i=1}^{n}\left|y_i - \hat{y}_i\right|
 $$
 
-A raiz do erro quadrático médio (*root mean square error* - RMSE) consiste na raiz da média dos quadrados dos erros de previsão de teste. O RMSE tem a mesma unidade da resposta em estudo, porém é mais impactado por *outliers*, demonstrando a influência destes no erro de previsão. Esta métrica é uma boa opção quando deseja-se mensurar o erro na mesma unidade da resposta.
-$$
+A raiz do erro quadrático médio (*root mean square error* - RMSE) consiste na raiz da média dos quadrados dos erros de previsão de teste. O RMSE tem a mesma unidade da resposta em estudo, porém é mais impactado por *outliers*, demonstrando a influência destes no erro de previsão. Esta métrica é uma boa opção quando deseja-se mensurar o erro na mesma unidade da resposta. $$
     RMSE (y,\hat{y})  = \sqrt{\frac{1}{n} \sum_{i=1}^{n}{(y_i - \hat{y}_i)}^2}
 $$
 
-Há dois problemas mais latentes na abordagem treino e teste. O erro estimado nos dados de teste apresentam alta variabilidade dependendo das observações que foram sorteadas para treino e teste. Devido uma parte significativa das observações ser separada para teste, geralmente a abordagem em questão tende a superestimar o erro do modelo quando aplicado em todo conjunto de dados (GARETH et al., 2013). 
+Há dois problemas mais latentes na abordagem treino e teste. O erro estimado nos dados de teste apresentam alta variabilidade dependendo das observações que foram sorteadas para treino e teste. Devido uma parte significativa das observações ser separada para teste, geralmente a abordagem em questão tende a superestimar o erro do modelo quando aplicado em todo conjunto de dados (GARETH et al., 2013).
 
 ### Validação cruzada por $k$-dobras
 
-A validação cruzada via $k$-dobras (*$k$-fold cross-validation*) é a abordagem mais usada dadas suas propriedades e simplicidade.
-Particionando os dados disponíveis em $K$ folds, $k = 1, ..., K$, com aproximadamente  mesmo número de observações em cada partição, $n_k \sim N/K$, para a $k$-ésima partição o modelo é estimado usando os dados das outras $K-1$ partições ou dobras, e o erro é estimado na $k$-ésima dobra. 
-Seja a função aproximada com a $k$-ésima dobra excluída, $\hat{f}^{-k(i)}(\mathbf{x}_i,\alpha)$.
-O erro de generalização ou teste é calculado via validação cruzada segundo a Equação a seguir.
-Mais detalhes podem ser encontrados em Hastie et al. (2009).
+A validação cruzada via $k$-dobras ($k$-fold cross-validation) é a abordagem mais usada dadas suas propriedades e simplicidade. Particionando os dados disponíveis em $K$ folds, $k = 1, ..., K$, com aproximadamente mesmo número de observações em cada partição, $n_k \sim N/K$, para a $k$-ésima partição o modelo é estimado usando os dados das outras $K-1$ partições ou dobras, e o erro é estimado na $k$-ésima dobra. Seja a função aproximada com a $k$-ésima dobra excluída, $\hat{f}^{-k(i)}(\mathbf{x}_i,\alpha)$. O erro de generalização ou teste é calculado via validação cruzada segundo a Equação a seguir. Mais detalhes podem ser encontrados em Hastie et al. (2009).
 
 $$
     CV(\hat{h}, \alpha) = \frac{1}{N} \sum_{i=1}^N L(y_i, \hat{h}^{-k(i)}(\mathbf{x}_i,\alpha))
-$$ 
+$$
 
 A Figura a seguir ilustra a validação cruzada por $k$-dobras para $K=5$ dobras.
 
@@ -68,7 +51,6 @@ A Figura a seguir ilustra a validação cruzada por $k$-dobras para $K=5$ dobras
 #| fig-height: 10
 knitr::include_graphics("figs/kfold.png")
 ```
-
 
 ### Validação cruzada por *leave-one-out*
 
@@ -112,13 +94,11 @@ library(GGally)
 ggpairs(dados) + theme_bw()
 ```
 
-Devido ao número baixo de observações e a alta correlação entre os preditores, uma escolha razoável para modelagem seria a regressão rígida, de forma a buscar-se encolher os coeficientes em razão de uma possível inflação decorrente da multicolineariedade dos preditores. Neste método é importante realizar a escolha do hiperparâmetro de encolhimento $\lambda$. Uma vez que deve-se selecionar o nível ideal deste hiperparâmetro para garantir melhor genaralização, na validação cruzada via $k$-dobras, é importante testar um conjunto de funções, $\hat{f}^{-k(i)}(\mathbf{x}_i,\lambda_l)$, onde $\lambda_l$ seria o nível do hiperparâmetro a ser testado, considerando um vetor ou *grid* de níveis tentativos, $l=1,...,L$. Devse-se testar cada modelo em cada partição ou dobra, ou seja, serão testados ao final $K\times L$ modelos, sendo o melhor valor de $\lambda$ escolhido comparando o valor médio do erro obtido na validação, 
-$$
+Devido ao número baixo de observações e a alta correlação entre os preditores, uma escolha razoável para modelagem seria a regressão rígida, de forma a buscar-se encolher os coeficientes em razão de uma possível inflação decorrente da multicolineariedade dos preditores. Neste método é importante realizar a escolha do hiperparâmetro de encolhimento $\lambda$. Uma vez que deve-se selecionar o nível ideal deste hiperparâmetro para garantir melhor genaralização, na validação cruzada via $k$-dobras, é importante testar um conjunto de funções, $\hat{f}^{-k(i)}(\mathbf{x}_i,\lambda_l)$, onde $\lambda_l$ seria o nível do hiperparâmetro a ser testado, considerando um vetor ou *grid* de níveis tentativos, $l=1,...,L$. Devse-se testar cada modelo em cada partição ou dobra, ou seja, serão testados ao final $K\times L$ modelos, sendo o melhor valor de $\lambda$ escolhido comparando o valor médio do erro obtido na validação, $$
     CV_l(\hat{h}, \lambda_l) = \frac{1}{N} \sum_{i=1}^N L(y_i, \hat{h}^{-k(i)}(\mathbf{x}_i,\lambda_l))
-$$ 
-para todo $l=1,...,L$.
+$$ para todo $l=1,...,L$.
 
-Tomando o conjunto de dados, inicialmente faz-se o sorteio das observações de cada partição. Neste caso, para $N=30$ e tomando $K=10$ dobras, tem-se exatamente $n_k=30/10=3$. A seguir todo  conjunto de dados é exposto considerando o particionamento realizado de forma aleatória.
+Tomando o conjunto de dados, inicialmente faz-se o sorteio das observações de cada partição. Neste caso, para $N=30$ e tomando $K=10$ dobras, tem-se exatamente $n_k=30/10=3$. A seguir todo conjunto de dados é exposto considerando o particionamento realizado de forma aleatória.
 
 ```{r}
 #| message: false
@@ -277,7 +257,7 @@ ggplot(perf, aes(x=grid,y=RMSE,col=as.factor(fold))) +
   theme(legend.position = "none")
 ```
 
-A variação em RMSE observada entre as dobras está relacionada ao número baixo de observações no exemplo em questão. Entretanto, fica claro que um $\lambda$ mais baixo apresentará melhor desempenho. Conforme já esclarecido, deve-se tomar a média do erro de teste para todos as dobras ou partições, conforme plotado abaixo com intervalo de confiança. 
+A variação em RMSE observada entre as dobras está relacionada ao número baixo de observações no exemplo em questão. Entretanto, fica claro que um $\lambda$ mais baixo apresentará melhor desempenho. Conforme já esclarecido, deve-se tomar a média do erro de teste para todos as dobras ou partições, conforme plotado abaixo com intervalo de confiança.
 
 ```{r}
 #| message: false
