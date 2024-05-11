@@ -73,7 +73,7 @@ ul.task-list li input[type="checkbox"] {
 <h2 class="anchored" data-anchor-id="validação-cruzada-e-grid-search">Validação cruzada e <em>grid search</em></h2>
 <p>Seja a modelagem de uma resposta <span class="math inline">\(y\)</span> a qual supõe-se dependente de um vetor de variáveis de entrada ou preditoras <span class="math inline">\(\mathbf{x} = [x_1, ..., x_k]^T\)</span>. Um modelo desconhecido pode ser denotado <span class="math inline">\(f(\mathbf{\mathbf{x}, \mathbf{\alpha}})\)</span>, onde <span class="math inline">\(\mathbf{\alpha}\)</span> consiste em um (ou um vetor de) hyperparâmetro que minimiza o erro de previsão. Um conjunto de observações de treino, <span class="math inline">\(\mathcal{T} = (\mathbf{x}_1,y_1), ..., (\mathbf{x}_N,y_N)\)</span>, obtidos da distribuição de probabilidade conjunta de <span class="math inline">\(\mathbf{x},y\)</span>, <span class="math inline">\(P(\mathbf{x},y)\)</span>, está disponível para o propósito de estimativas. O modelo estimado, <span class="math inline">\(\hat{f}(\mathbf{x}, \mathbf{\alpha})\)</span>, é obtido pela minimização de uma função perda, que mede a distância entre o modelo e as observações de treino. No caso de problemas de regressão, <span class="math inline">\(y \in \mathcal{R}^1\)</span>,a escolha mais comum é a função perda quadrática, <span class="math inline">\(L(y,\hat{f}(\mathbf{x}, \mathbf{\alpha})) = (y-\hat{f}(\mathbf{x}, \mathbf{\alpha}))^2\)</span>. O erro de generalização ou de teste pode ser calculado segundo a Equação a seguir, onde <span class="math inline">\((\mathbf{x}_0,y_0)\)</span> é uma nova observação. <span class="math display">\[
     Err_\mathcal{T} = E[L(y_0,\hat{f}(\mathbf{x}_0, \mathbf{\alpha}))|\mathcal{T}]
-\]</span> O erro de treino, <span class="math inline">\(\overline{err} = (1/N)\sum_{i=1}^{N}L(y,\hat{h}(\mathbf{x}, \mathbf{\alpha}))\)</span>, sempre será maior que o erro de generalização, <span class="math inline">\(Err_\mathcal{T}\)</span>. A forma mais eficiente e prática de estimar o erro de generalização é através da validação cruzada (HASTIE et al., 2009).</p>
+\]</span> O erro de treino, <span class="math inline">\(\overline{err} = (1/N)\sum_{i=1}^{N}L(y_i,\hat{h}(\mathbf{x}_i, \mathbf{\alpha}))\)</span>, sempre será maior que o erro de generalização, <span class="math inline">\(Err_\mathcal{T}\)</span>. A forma mais eficiente e prática de estimar o erro de generalização é através da validação cruzada (HASTIE et al., 2009).</p>
 <section id="validação-cruzada-por-dados-de-treino-e-teste" class="level3">
 <h3 class="anchored" data-anchor-id="validação-cruzada-por-dados-de-treino-e-teste">Validação cruzada por dados de treino e teste</h3>
 <p>A validação cruzada por dados de treino e teste é basicamente o que foi feito nos métodos aprendidos até aqui. As <span class="math inline">\(N\)</span> observações de treino disponíveis, <span class="math inline">\(\mathcal{T}\)</span>, são divididas em observações de treino e teste. O modelo é estimado usando as observações de treino e testado nas observações de teste. Conforme explicado, a própria função perda pode ser usada para avaliar a capacidade de generalização do modelo, mas, na prática, algumas outras métricas podem ser úteis para avaliar o erro em dados de teste que visa estimar o erro do modelo em dados futuros ou sua capacidade de generalização.</p>
@@ -119,23 +119,23 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="lbieinpihd" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#lbieinpihd table {
+<div id="rommjxhbyy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#rommjxhbyy table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#lbieinpihd thead, #lbieinpihd tbody, #lbieinpihd tfoot, #lbieinpihd tr, #lbieinpihd td, #lbieinpihd th {
+#rommjxhbyy thead, #rommjxhbyy tbody, #rommjxhbyy tfoot, #rommjxhbyy tr, #rommjxhbyy td, #rommjxhbyy th {
   border-style: none;
 }
 
-#lbieinpihd p {
+#rommjxhbyy p {
   margin: 0;
   padding: 0;
 }
 
-#lbieinpihd .gt_table {
+#rommjxhbyy .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -161,12 +161,12 @@ ul.task-list li input[type="checkbox"] {
   border-left-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_caption {
+#rommjxhbyy .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#lbieinpihd .gt_title {
+#rommjxhbyy .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -178,7 +178,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-width: 0;
 }
 
-#lbieinpihd .gt_subtitle {
+#rommjxhbyy .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -190,7 +190,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-width: 0;
 }
 
-#lbieinpihd .gt_heading {
+#rommjxhbyy .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -202,13 +202,13 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_bottom_border {
+#rommjxhbyy .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_col_headings {
+#rommjxhbyy .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -223,7 +223,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_col_heading {
+#rommjxhbyy .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -243,7 +243,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#lbieinpihd .gt_column_spanner_outer {
+#rommjxhbyy .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -255,15 +255,15 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 4px;
 }
 
-#lbieinpihd .gt_column_spanner_outer:first-child {
+#rommjxhbyy .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#lbieinpihd .gt_column_spanner_outer:last-child {
+#rommjxhbyy .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#lbieinpihd .gt_column_spanner {
+#rommjxhbyy .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -275,11 +275,11 @@ ul.task-list li input[type="checkbox"] {
   width: 100%;
 }
 
-#lbieinpihd .gt_spanner_row {
+#rommjxhbyy .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#lbieinpihd .gt_group_heading {
+#rommjxhbyy .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -305,7 +305,7 @@ ul.task-list li input[type="checkbox"] {
   text-align: left;
 }
 
-#lbieinpihd .gt_empty_group_heading {
+#rommjxhbyy .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -320,15 +320,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 
-#lbieinpihd .gt_from_md > :first-child {
+#rommjxhbyy .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#lbieinpihd .gt_from_md > :last-child {
+#rommjxhbyy .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#lbieinpihd .gt_row {
+#rommjxhbyy .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -347,7 +347,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#lbieinpihd .gt_stub {
+#rommjxhbyy .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -360,7 +360,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#lbieinpihd .gt_stub_row_group {
+#rommjxhbyy .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -374,15 +374,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: top;
 }
 
-#lbieinpihd .gt_row_group_first td {
+#rommjxhbyy .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#lbieinpihd .gt_row_group_first th {
+#rommjxhbyy .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#lbieinpihd .gt_summary_row {
+#rommjxhbyy .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -392,16 +392,16 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#lbieinpihd .gt_first_summary_row {
+#rommjxhbyy .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_first_summary_row.thick {
+#rommjxhbyy .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#lbieinpihd .gt_last_summary_row {
+#rommjxhbyy .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -411,7 +411,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_grand_summary_row {
+#rommjxhbyy .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -421,7 +421,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#lbieinpihd .gt_first_grand_summary_row {
+#rommjxhbyy .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -431,7 +431,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_last_grand_summary_row_top {
+#rommjxhbyy .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -441,11 +441,11 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_striped {
+#rommjxhbyy .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#lbieinpihd .gt_table_body {
+#rommjxhbyy .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -454,7 +454,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_footnotes {
+#rommjxhbyy .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -468,7 +468,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_footnote {
+#rommjxhbyy .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -477,7 +477,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#lbieinpihd .gt_sourcenotes {
+#rommjxhbyy .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -491,7 +491,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#lbieinpihd .gt_sourcenote {
+#rommjxhbyy .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -499,63 +499,63 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#lbieinpihd .gt_left {
+#rommjxhbyy .gt_left {
   text-align: left;
 }
 
-#lbieinpihd .gt_center {
+#rommjxhbyy .gt_center {
   text-align: center;
 }
 
-#lbieinpihd .gt_right {
+#rommjxhbyy .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#lbieinpihd .gt_font_normal {
+#rommjxhbyy .gt_font_normal {
   font-weight: normal;
 }
 
-#lbieinpihd .gt_font_bold {
+#rommjxhbyy .gt_font_bold {
   font-weight: bold;
 }
 
-#lbieinpihd .gt_font_italic {
+#rommjxhbyy .gt_font_italic {
   font-style: italic;
 }
 
-#lbieinpihd .gt_super {
+#rommjxhbyy .gt_super {
   font-size: 65%;
 }
 
-#lbieinpihd .gt_footnote_marks {
+#rommjxhbyy .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#lbieinpihd .gt_asterisk {
+#rommjxhbyy .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#lbieinpihd .gt_indent_1 {
+#rommjxhbyy .gt_indent_1 {
   text-indent: 5px;
 }
 
-#lbieinpihd .gt_indent_2 {
+#rommjxhbyy .gt_indent_2 {
   text-indent: 10px;
 }
 
-#lbieinpihd .gt_indent_3 {
+#rommjxhbyy .gt_indent_3 {
   text-indent: 15px;
 }
 
-#lbieinpihd .gt_indent_4 {
+#rommjxhbyy .gt_indent_4 {
   text-indent: 20px;
 }
 
-#lbieinpihd .gt_indent_5 {
+#rommjxhbyy .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
