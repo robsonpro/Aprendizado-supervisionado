@@ -68,6 +68,6 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_nnet.html
 
 # Classificação
 
-# Introdução a classificação
+## Introdução a classificação
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_class.html
