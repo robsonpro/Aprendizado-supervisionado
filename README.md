@@ -4,7 +4,7 @@ Repositório para a disciplina "Aprendizado supervisionado" oferecida no curso d
 
 A seguir são disponibilizados breves notas de aulas teóricas e notebooks das aulas práticas em R. Os notebooks das aulas práticas em python são disponibilizados acima em *.ipynb.
 
-## Introdução
+# Introdução
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_Intro.html
 
@@ -19,6 +19,8 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_vicio_var.html
 ### Laboratório 2
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab2.html
+
+# Regressão
 
 ## Regressão linear simples, múltipla e polinomial
 
@@ -63,3 +65,9 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_GAM.html
 ## Redes neurais para regressão
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_nnet.html
+
+# Classificação
+
+# Introdução a classificação
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_class.html
