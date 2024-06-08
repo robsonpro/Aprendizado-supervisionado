@@ -1,0 +1,100 @@
+---
+title: "Introdução a classificação"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Teoria da decisão
+
+Seja o problema de previsão de uma variável dependente ou supervisor, $y$, em função de um vetor $k$-dimensional de variáveis independentes, $\mathbf{x}=[x_1,x_2,...x_k]^T$. Um problema de classificação é aquele no qual o supervisor é uma variável qualitativa ou categórica $y \in \{c_1,c_2, ..., c_Q\}$, ond $Q$ é o número de classes. Tomando o caso mais simples, $Q=2$, tem-se um problema de classificação binária, $y \in \{c_1,c_2\}$. Nestes casos, para alguns métodos, pode ser apropriado codificar as classes em 0 e 1, $c_1=1$ e $c_2=0$, enquanto outros métodos adotam a codificação em -1 e 1, $c_1=-1$ e $c_2=+1$.
+
+Existem diversas abordagens usadas para problemas de classificação. Alguns métodos de classificação visam estimar uma função discriminante que assinala diretamente a $i$-ésima observação a uma classe $c_q$, $q=1,..., Q$. Outros visam estimar as probabilidades condicionais, $p(y=c_q|\mathbf{x})$, isto é, a probabilidade condicional de pertencer a uma determinada classe $c_q$, dado um determinado $\mathbf{x}$. A partir de tais probabilidades as decisões são tomadas. Os métodos que buscam modelar tais probabilidades ainda se dividem em duas abordagens: No primeiro caso as probabilidades condicionais, $p(y=c_q|\mathbf{x})$, são modeladas de forma direta, por exemplo, a partir de um modelo paramétrico, sendo os parâmetros do modelo estimados a partir dos dados de treino. No segundo caso tais probabilidades são modeladas usando o teorema de Bayes para calcular a probabilidade posterior dadas uma distribuição à priori, $p(\theta)$, e a verossimilhança ou probabilidade condicional, $p(y=c_q|\mathbf{x})$.
+
+### Estimador de máxima verossimilhança
+
+Seja um conjunto com $N$ observações de treino do vetor de variáveis independentes e do supervisor, $\mathcal{T} = (\mathbf{x}_1,y_1), ..., (\mathbf{x}_N,y_N)$. Seja $\theta$ um hiperparâmetro do modelo a ser estimado, podendo ser escalar ou vetor a depender do método. Assume-se que as observações de treino disponíveis foram coletadas de forma independente a partir da distribuição populacional, sendo *iid*, pode-se definir a função densidade conjunta para os dados conforme segue. $$
+p(\mathcal{T}|\theta) = p(y_1|\mathbf{x}_1,\theta)p(y_2|\mathbf{x}_2\theta)... p(y_N|\mathbf{x}_N,\theta)
+$$
+
+A função de verossimilhança, $L(\theta)$, é definida conforme segue. $$
+L(\theta) = p(\mathcal{T}|\theta) =\prod_{i=1}^Np(y_i|\mathbf{x}_i,\theta)
+$$ É comum trabalhar com o logarítimo da verossimilhança, $l(\theta)$, de forma a facilitar os cálculos em diversas aplicações. $$
+l(\theta) = \text{log } \prod_{i=1}^Np(y_i|\mathbf{x}_i,\theta)=  \sum_{i=1}^N \text{log } p(y_i|\mathbf{x}_i,\theta)
+$$ O estimador de máxima verossimilhança (condicional) de $\theta$ pode ser obtido pela maximização de $l(\theta|\mathbf{x})$. $$
+\theta^*= \underset{\theta}{\mathrm{argmax}} \sum_{i=1}^N \text{log } p(y_i|\mathbf{x}_i,\theta)\\
+$$
+
+Considerando o uso de um algoritmo de minimização, pode-se trabalhar com a minimização do negativo do log da verossimilhança, conforme segue. $$
+\theta^*= \underset{\theta}{\mathrm{argmin}} \bigg\{-\sum_{i=1}^N \text{log } p(y_i|\mathbf{x}_i,\theta)\bigg\}\\
+$$
+
+O estimador de máxima verossimilhança é utilizado em alguns métodos de classificação para estimativa do modelo probabilístico, por exemplo na regressão logística.
+
+### Máximo à posteriori
+
+Considerando um vetor de variáveis independentes, $\mathbf{x}$, um supervisor, $y$, e um parâmetro ou hiperparâmetro de uma função a ser estimada para aproximar $y$ em função de $\mathbf{x}$, o teorema de Bayes pode ser expressado conforme segue, onde $p(\theta|y,\mathbf{x})$ é a distribuição posterior ou *a posteriori* de $\theta$ dado $\{\mathbf{x},y\}$, $p(y|\mathbf{x},\theta)$ a função de verossimilhança de $\theta$, $p(\theta)$ é a distribuição a priori do parâmetro e $p(y,\mathbf{x})$ é a distribuição ou função densidade de origem dos dados.
+
+$$
+p(\theta|y,\mathbf{x})=\frac{p(y|\mathbf{x},\theta)p(\theta)}{p(y,\mathbf{x})} \propto p(y|\mathbf{x},\theta)p(\theta)
+$$
+
+Como o denominador não depende de $\theta$ ele pode ser desconsiderado no problema de estimação. Tomando $N$ observações de treino disponíveis, pode-se escrever:
+
+$$
+\prod_{i=1}^Np(\theta|y_i,\mathbf{x}_i)=\prod_{i=1}^N p(y_i|\mathbf{x}_i,\theta)p(\theta).
+$$ Aplicando o logaritmo tem-se: $$
+\text{log} \prod_{i=1}^Np(\theta|y_i,\mathbf{x}_i)=\text{log} \prod_{i=1}^N p(y_i|\mathbf{x}_i,\theta)p(\theta)
+$$ Resultando em: $$
+\begin{matrix}
+\text{log} \prod_{i=1}^Np(\theta|y_i,\mathbf{x}_i)=\sum_{i=1}^N \text{log } [p(y_i|\mathbf{x}_i,\theta)p(\theta)]\\
+\text{log} \prod_{i=1}^Np(\theta|y_i,\mathbf{x}_i)=\sum_{i=1}^N \text{log } p(y_i|\mathbf{x}_i,\theta) +\text{log } p(\theta)
+\end{matrix}
+$$ Finalmente o estimador de máximo a posteriori de $\theta$ é obtido pela resolução do seguinte problema. $$
+\theta^*=\underset{\theta}{\mathrm{argmax}} \bigg\{\text{log } p(\theta) + \sum_{i=1}^N \text{log } p(y_i|\mathbf{x}_i,\theta)\bigg\}
+$$
+
+### O classificador de Bayes
+
+Considere $\mathbf{x}=[x_1, x_2, ..., x_k]^T$ um vetor de níveis ou valores conhecidos das variáveis independentes e $c_q$, $q=1,\ldots,Q$, uma das possíveis classes para a resposta $y$. Considerando tais observações para cada uma das $k$ variáves independentes, pode-se inferir que: $$
+p(x_1,x_2,\ldots,x_k)=p(x_1)p(x_2)\ldots p(x_k)
+$$ Considerando a probabilidade condicional de cada variável regressora dado $y=c_q$, tem-se: $$
+p(x_1,x_2,\ldots,x_k|c_q)=p(x_1|c_q)p(x_2|c_q)\ldots p(x_k|c_q).
+$$
+
+Tomando o teorema de Bayes, pode-se estimar $p(y=c_q|x_1,x_2,\ldots,x_k)$ conforme segue. $$
+p(c_q|x_1,x_2,\ldots,x_k)=\frac{p(x_1,x_2,\ldots,x_k|c_q)p(c_q)}{p(x_1,x_2,\ldots,x_k)}
+$$ Considerando a independência entre as observações de cada variável regressora, tem-se: $$
+p(c_q|x_1,x_2,\ldots,x_k)=\frac{p(x_1|c_q)p(x_2|c_q)\ldots p(x_k|c_q)p(c_q)}{p(x_1)p(x_2)\ldots p(x_k)},
+$$ resultando em. $$
+p(c_q|x_1,x_2,\ldots,x_k)=\frac{\prod_{j=1}^k p(x_j|c_q)p(c_q)}{\prod_{j=1}^kp(x_j)}
+$$
+
+Como o denominador será constante e independente da classe de interesse, $c_q$, este pode ser desconsiderado. $$
+p(c_q|x_1,x_2,\ldots,x_k)=\frac{\prod_{j=1}^k p(x_j|c_q)p(c_q)}{\prod_{j=1}^kp(x_j)}\propto \prod_{j=1}^k p(x_j|c_q)p(c_q)
+$$
+
+Logo o classificador de Bayes é expresso a seguir. $$
+p(c_q|x_1,x_2,\ldots,x_k)= \prod_{j=1}^k p(x_j|c_q)p(c_q)
+$$
+
+Por exemplo, para o caso binário, $q=\{1,2\}$, para um vetor de níveis de interesse de $\mathbf{x}$, o classificador de Bayes elege aquele que resultar em maior robabilidade para cada classe, isto é: $$
+y = \bigg\{
+\begin{matrix}
+c_1,\text{  se }p(c_1|x_1,x_2,\ldots,x_k) > p(c_2|x_1,x_2,\ldots,x_k)\\
+c_2, cc.
+\end{matrix}
+$$
+
+### Minimização empírica do erro
+
+A função perda mais simples para problemas de classificação é a 0-1, onde $I(\hat{y} \neq y)$ é uma função indicativa que recebe 1 se verdadeira e 0 caso contrário. Ou seja, se $I(\hat{y}_i \neq y_i)$ = 0, a iésima observação é classificada de forma correta. Logo, a função perda fica: $$
+L_{01}=I(\hat{y} \neq y) = \bigg\{ \begin{matrix} 
+0,\text{ se } \hat{y} = y\\
+1,\text{ se } \hat{y} \neq y \\
+\end{matrix}
+$$ A minimização empírica do risco visa estimar o modelo a partir da minimização da média de classificações erradas, que consiste na taxa de classificações erradas para os dados de treino, conforme segue. $$
+\overline{err} =\frac{1}{N}\sum_{i=1}^NI(\hat{y} \neq y)=p(\hat{y} \neq y)
+$$
+
+Entretanto, assim como nos problemas de regressão, deve-se na prática buscar um modelo que minimize o erro de classificação para observações futuras, ou o erro de generalização, $Err_\mathcal{T} = E[I(\hat{y}_0 \neq y_0)]$. Para tal, deve-se utilizar de validação cruzada.
