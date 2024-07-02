@@ -71,3 +71,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_nnet.html
 ## Introdução a classificação
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_class.html
+
+## Regressão logística
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_logreg.html
