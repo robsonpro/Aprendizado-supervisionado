@@ -79,20 +79,20 @@ Derivando a função Lagrangeana em relação às variáveis do problema primal,
 
 $$
 \begin{aligned}
-&\frac{\partial L}{\partial b} = \sum_{i=1}^N(\alpha_i + \alpha_i^*) = 0 \\
-&\frac{\partial L}{\partial \mathbf{w}} = \mathbf{w} - \sum_{i=1}^N(\alpha_i + \alpha_i^*)\mathbf{x}_i = 0 \\
+&\frac{\partial L}{\partial b} = \sum_{i=1}^N(\alpha_i - \alpha_i^*) = 0 \\
+&\frac{\partial L}{\partial \mathbf{w}} = \mathbf{w} - \sum_{i=1}^N(\alpha_i - \alpha_i^*)\mathbf{x}_i = 0 \\
 &\frac{\partial L}{\partial \xi_i} = C - \alpha_i - \eta_i = 0 \\
 &\frac{\partial L}{\partial \xi_i^*} = C - \alpha_i^* - \eta_i^* = 0 \\
 \end{aligned}
 $$
 
-Substituindo os resultados das derivadas na formulação primal, obtém-se a formulação dual do problema de SVR, conforme segue (VAPNIK, 1999; DRUCKER, 1996; SMOLA e BERNHARD, 2004).
+Substituindo os resultados das derivadas na formulação lagrangeana, obtém-se a formulação dual do problema de SVR, conforme segue (VAPNIK, 1999; DRUCKER, 1996; SMOLA e BERNHARD, 2004).
 
 $$
 \begin{aligned}
     \text{Max}\ &\begin{Bmatrix}
-    -\frac{1}{2}\sum_{i,j}^N(\alpha_i - \alpha_i^*)(\alpha_j - \alpha_j^*)\mathbf{x}_i\mathbf{x} \\
-    -\varepsilon\sum_{i=1}^N(\alpha_i - \alpha_i^*) 
+    -\frac{1}{2}\sum_{i,j}^N(\alpha_i - \alpha_i^*)(\alpha_j - \alpha_j^*)\mathbf{x}_i\mathbf{x}_j \\
+    -\varepsilon\sum_{i=1}^N(\alpha_i + \alpha_i^*) 
     + \sum_{i=1}^N y_i(\alpha_i - \alpha_i^*) \end{Bmatrix}\\
     \textrm{s.t.: } \Biggl\{
 &\begin{matrix} 
