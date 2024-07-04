@@ -71,7 +71,7 @@ ul.task-list li input[type="checkbox"] {
 
 <section id="máquinas-de-reforço-de-gradiente" class="level2">
 <h2 class="anchored" data-anchor-id="máquinas-de-reforço-de-gradiente">Máquinas de reforço de gradiente</h2>
-<p>As máquinas de reforço de gradiente (<em>gradient boosting machines</em> - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsõ a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.</p>
+<p>As máquinas de reforço de gradiente (<em>gradient boosting machines</em> - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsão a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.</p>
 <p>Um algoritmo GBM simplista do método GBM para regressão é apresentado à seguir:</p>
 <ol type="1">
 <li>Defina <span class="math inline">\(\hat{f}(\mathbf{x})=0\)</span> e <span class="math inline">\(\varepsilon_i = y_i\)</span> para todos dados de treino.</li>
@@ -87,8 +87,8 @@ ul.task-list li input[type="checkbox"] {
 <ol start="3" type="1">
 <li>Atualize o modelo “impulsionado” ou “reforçado”: <span class="math inline">\(\hat{f}(\mathbf{x}) = \sum_{m=1}^M\lambda\hat{f}_m(\mathbf{x})\)</span></li>
 </ol>
-<p>O número de iterações ou árvores consideradas, <span class="math inline">\(M\)</span>, pode ser definido por validação cruzada. A taxa de aprendizado, <span class="math inline">\(\lambda\)</span>, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor <span class="math inline">\(\lambda\)</span>, maior o número de árvores, <span class="math inline">\(B\)</span>, necessário para uma boa aproximação.</p>
-<p>Geralmente <span class="math inline">\(\hat{f}(\mathbf{x})\)</span> é um modelo de árvore com apenas uma partição e portanto dois nós terminais ou regiões, sendo portanto um aprendiz fraco (<em>weak leaner</em>). Em alguns casos pode ser interessante modelos com árvores com duas partições, o que de certa forma implica em modelos com interação.</p>
+<p>O número de iterações ou árvores consideradas, <span class="math inline">\(M\)</span>, pode ser definido por validação cruzada. A taxa de aprendizado, <span class="math inline">\(\lambda\)</span>, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor <span class="math inline">\(\lambda\)</span>, maior o número de árvores, <span class="math inline">\(M\)</span>, necessário para uma boa aproximação.</p>
+<p>Geralmente <span class="math inline">\(\hat{f}_m(\mathbf{x})\)</span> é um modelo de árvore com apenas uma partição e portanto dois nós terminais ou regiões, sendo portanto um aprendiz fraco (<em>weak leaner</em>). Em alguns casos pode ser interessante modelos com árvores com duas partições, o que de certa forma implica em modelos com interação.</p>
 <p>Considerando a função perda quadrática comumente usada em problemas de regressão:</p>
 <p><span class="math display">\[
 \begin{aligned}
@@ -3194,7 +3194,7 @@ L = \frac{1}{2}(y - \hat{f}(\mathbf{x}))^2
 </div>
 </div>
 <p>Obviamente, o processo poderia seguir para melhorar as previsões. Conforme já elucidado, pode-se definir o número de iterações por validação cruzada. Quanto maior o número de árvores estipulado, recomenda-se que menor seja a taxa de aprendizagem.</p>
-<p>Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se ele trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. Considerando um modelo obtido via GBM com 8000 árvores e <span class="math inline">\(\lambda = 0.2\)</span>, pode-se plotar um gráfico de superfície considerando como variáveis independentes a escolaridade e anos de experiência conforme segue.</p>
+<p>Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se ele trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. Considerando um modelo obtido via GBM com 8000 árvores e <span class="math inline">\(\lambda = 0,1\)</span>, pode-se plotar um gráfico de superfície considerando como variáveis independentes a escolaridade e anos de experiência conforme segue.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_boosting_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid" width="768"></p>

@@ -7,7 +7,7 @@ editor: visual
 
 ## Máquinas de reforço de gradiente
 
-As máquinas de reforço de gradiente (*gradient boosting machines* - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsõ a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.
+As máquinas de reforço de gradiente (*gradient boosting machines* - GBM) foram propostas por Gerome Friedman e consistem em um método de aprendizado por reforço que visa aproximar o gradiente da função perda, ou de forma mais simples, visa aproximar o erro de previsão e diminuir este a cada iteração do método. O conceito de aprendizado por reforço está relacionado ao fato de o método de certa forma aprender através do erro, uma vez que vai melhorando a previsão a cada tentativa ou iteração a partir dos valores residuais ou de erro observados. O método foi proposto inicialmente considerando árvores de decisão ou regressão, mas poderia ser utilizado também no caso de regressão por mínimos quadrados.
 
 Um algoritmo GBM simplista do método GBM para regressão é apresentado à seguir:
 
@@ -24,9 +24,9 @@ iii) Atualize os resíduos, isto é $\varepsilon_i \leftarrow \varepsilon_i - \l
 
 3.  Atualize o modelo "impulsionado" ou "reforçado": $\hat{f}(\mathbf{x}) = \sum_{m=1}^M\lambda\hat{f}_m(\mathbf{x})$
 
-O número de iterações ou árvores consideradas, $M$, pode ser definido por validação cruzada. A taxa de aprendizado, $\lambda$, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor $\lambda$, maior o número de árvores, $B$, necessário para uma boa aproximação.
+O número de iterações ou árvores consideradas, $M$, pode ser definido por validação cruzada. A taxa de aprendizado, $\lambda$, geralmente é um valor real muito pequeno, por exemplo 0,01 ou 0,001 e define a taxa que o modelo por refroço aprende, isto é, melhora sua previsão. Quanto menor $\lambda$, maior o número de árvores, $M$, necessário para uma boa aproximação.
 
-Geralmente $\hat{f}(\mathbf{x})$ é um modelo de árvore com apenas uma partição e portanto dois nós terminais ou regiões, sendo portanto um aprendiz fraco (*weak leaner*). Em alguns casos pode ser interessante modelos com árvores com duas partições, o que de certa forma implica em modelos com interação.
+Geralmente $\hat{f}_m(\mathbf{x})$ é um modelo de árvore com apenas uma partição e portanto dois nós terminais ou regiões, sendo portanto um aprendiz fraco (*weak leaner*). Em alguns casos pode ser interessante modelos com árvores com duas partições, o que de certa forma implica em modelos com interação.
 
 Considerando a função perda quadrática comumente usada em problemas de regressão:
 
@@ -46,7 +46,7 @@ $$
 
 Portanto, em cada iteração, o algoritmo GBM, ao aproximar uma árvore considerando $N$ observações das variáveis regressoras, $\mathbf{x}_i$, em relação à $N$ valores residuais, $\varepsilon_i$, $i=1,...,N$, aproxima o gradiente da função perda que, no caso da função perda quadrática, é o valor residual ou erro, $\varepsilon$.
 
-Para entender melhor o algoritmo GBM, considere o conjunto arbitrário de dados de treino a seguir, com duas variáveis independentes, $x_1$ e $x_2$, e uma dependente contínua, $y$. 
+Para entender melhor o algoritmo GBM, considere o conjunto arbitrário de dados de treino a seguir, com duas variáveis independentes, $x_1$ e $x_2$, e uma dependente contínua, $y$.
 
 ```{r}
 #| message: false
@@ -64,7 +64,7 @@ dat <- round(data.frame(x1,x2,y),2)
 dat |> gt()
 ```
 
-Consideremos para fins didáticos uma taxa de aprendizagem alta,  $\lambda$ = 0.5, e um número pequeno de iterações, $M = 4$ árvores. O algoritmo inicia fazendo $\hat{f}(x_1,x_2)=0$ e $\varepsilon_i = y_i$, isto é (a penúltima coluna seriam os valores previstos do modelo inicial, $\hat{f} = f$, e a última coluna seria o erro, $\varepsilon = e$):
+Consideremos para fins didáticos uma taxa de aprendizagem alta, $\lambda$ = 0.5, e um número pequeno de iterações, $M = 4$ árvores. O algoritmo inicia fazendo $\hat{f}(x_1,x_2)=0$ e $\varepsilon_i = y_i$, isto é (a penúltima coluna seriam os valores previstos do modelo inicial, $\hat{f} = f$, e a última coluna seria o erro, $\varepsilon = e$):
 
 ```{r}
 #| message: false
@@ -107,7 +107,6 @@ dat |> gt()
 ```
 
 Tomando $m=2$, repete-se o processo, obtendo-se uma nova árvore para os resíduos e atualizando as previsões e os resíduos.
-
 
 ```{r}
 #| message: false
@@ -154,7 +153,6 @@ dat |> gt()
 ```
 
 Finalmente, para $m=4$, obtém-se o modelo "reforçado" final que consiste na soma ponderada pela taxa de aprendizagem de todos os modelos, isto é, $\hat{f}(\mathbf{x}) = \sum_{m=1}^M\lambda\hat{f}_m(\mathbf{x})$.
-
 
 ```{r}
 #| message: false
@@ -203,11 +201,11 @@ treino <- sample(nrow(dados), tr, replace = F)
 library(gbm)
 
 boost1 <- gbm(wage~., data = dados, distribution = "gaussian", 
-              n.trees = 8000, bag.fraction = 0.7, interaction.depth = 11, shrinkage = 0.2)
+              n.trees = 8000, bag.fraction = 0.7, interaction.depth = 11, shrinkage = 0.1)
 # summary(boost1)
 ```
 
-Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se ele trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. Considerando um modelo obtido via GBM com 8000 árvores e $\lambda = 0.2$, pode-se plotar um gráfico de superfície considerando como variáveis independentes a escolaridade e anos de experiência conforme segue.
+Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se ele trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. Considerando um modelo obtido via GBM com 8000 árvores e $\lambda = 0,1$, pode-se plotar um gráfico de superfície considerando como variáveis independentes a escolaridade e anos de experiência conforme segue.
 
 ```{r}
 #| message: false
