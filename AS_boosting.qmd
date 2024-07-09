@@ -201,7 +201,8 @@ treino <- sample(nrow(dados), tr, replace = F)
 library(gbm)
 
 boost1 <- gbm(wage~., data = dados, distribution = "gaussian", 
-              n.trees = 8000, bag.fraction = 0.7, interaction.depth = 11, shrinkage = 0.1)
+              n.trees = 8000, bag.fraction = 0.7, 
+              interaction.depth = 2, shrinkage = 0.1)
 # summary(boost1)
 ```
 
