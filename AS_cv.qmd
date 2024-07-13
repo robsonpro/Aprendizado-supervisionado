@@ -15,8 +15,7 @@ $$ O erro de treino, $\overline{err} = (1/N)\sum_{i=1}^{N}L(y_i,\hat{h}(\mathbf{
 
 A validação cruzada por dados de treino e teste é basicamente o que foi feito nos métodos aprendidos até aqui. As $N$ observações de treino disponíveis, $\mathcal{T}$, são divididas em observações de treino e teste. O modelo é estimado usando as observações de treino e testado nas observações de teste. Conforme explicado, a própria função perda pode ser usada para avaliar a capacidade de generalização do modelo, mas, na prática, algumas outras métricas podem ser úteis para avaliar o erro em dados de teste.
 
-A métrica $R^2$, $R^2 \in [0,1]$, denominada coeficiente de determinação, consiste na proporção da variabilidade dos dados explicados pelo modelo. Quanto maior é o valor de $R^2$ para os dados de teste, maior a capacidade de generalização do modelo. 
-$$
+A métrica $R^2$, $R^2 \in [0,1]$, denominada coeficiente de determinação, consiste na proporção da variabilidade dos dados explicados pelo modelo. Quanto maior é o valor de $R^2$ para os dados de teste, maior a capacidade de generalização do modelo. $$
     R^2(y,\hat{y})  = 1 - \frac{\sum_{i=1}^{n}{(y_i - \hat{y}_i)}^2}{\sum_{i=1}^{n}{(y_i - \bar{y})}^2}
 $$
 
@@ -57,8 +56,40 @@ knitr::include_graphics("figs/kfold.png")
 
 O método *leave-one-out* (LOO) é um caso particular do $k$-dobras para $k = N$, ou seja, considera uma observação em cada partição. É geralmente utilizado para tamanhos amostrais limitados. Por exemplo para a primeira dobra, dobra um modelo é estimado para as $N-1$ observações remanescentes e testado na primeira observação. Tomando por exemplo a métrica $MSE$, o erro é estimado como $(y_1-\hat{y}_1)^2$, uma estimativa com pouco viés mas com alta variância devido o tamanho amostral unitário, portanto limitado.
 
-A maior vantagem do $k$-dobras para o LOO é o tempo compuational. Tomando $k=10$, por exemplo, serão estimados 10 modelos, enquanto a validação via LOO estimará $N$, o que pode implicar em alto tempo computacional para tamanhos amostrais grandes, especialmente para métodos de aprendizado mais complexos (GARETH et al., 2013).
-Para métodos de origem na estatística, como os modelos de regressão por mínimos quadrados, é possível estimar o erro via LOO sem necessariamente fazer um loop, mas considerando o erro de previsão do modelo a partir da matriz chapéu. Para mais detalhes ver Hastie et al. (2009).
+A maior vantagem do $k$-dobras para o LOO é o tempo compuational. Tomando $k=10$, por exemplo, serão estimados 10 modelos, enquanto a validação via LOO estimará $N$, o que pode implicar em alto tempo computacional para tamanhos amostrais grandes, especialmente para métodos de aprendizado mais complexos (GARETH et al., 2013). Para métodos de origem na estatística, como os modelos de regressão por mínimos quadrados, é possível estimar o erro via LOO sem necessariamente fazer um loop, mas considerando o erro de previsão do modelo a partir da matriz chapéu. Para mais detalhes ver Hastie et al. (2009).
+
+### Grid search
+
+Grid search consiste em uma busca dos níveis adequados dos hiperparâmetros considerando por exemplo um grid ou uma malha de combinações possíveis dos níveis de interesse dos hiperparâmetros em questão. Dependendo do método de aprendizado utilizado a busca torna-se mais difícil e custosa computacionalmente, devido ao número de hiperparâmetros a serem otimizados.
+
+Por exemplo, no caso do aprendizado utilizando regressão por vetores de suporte, deve-se definir o melhor kernel, além dos níveis ótimos da constante de regularização, $C$, e do erro máximo da função perda insensitiva $\varepsilon$. Dependendo do tipo de kernel utilizado, outros hiperparâmetros devem ser otimizados.
+
+Seja o caso onde supostamente sabe-se que o kernel polinomial é o mais adequado e deseja-se otimizar o custo e o grau do polinômio. Um possível grid regular de hiperparâmetros a serem testados neste caso é plotado a seguir. 
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(tidymodels)
+
+svm_linear_spec <- svm_poly(degree = 1) %>%
+  set_mode("classification") %>%
+  set_engine("kernlab", scaled = FALSE)
+
+
+svm_linear_wf <- workflow() |>
+  add_model(svm_linear_spec |> 
+              set_args(cost = tune(),
+                       degree = tune()))
+
+param_grid <- grid_regular(cost(c(10^-3,10)), degree(c(1,5)), levels = 5)
+
+ggplot(param_grid, aes(x=log(cost), y=degree)) + 
+  geom_point() + theme_bw()
+```
+
+O grid search deve ser usado junto com a validação cruzada. Por exemplo, ao se usar a validação cruzada via k dobras, uma busca exaustiva testará cada combinação dos níveis de interesse dos hiperparâmetros em cada dobra.
 
 ### Exemplo: Validação cruzada por $k$-dobras para seleção do hiperparâmetro de encolhimento em regressão rígida
 
