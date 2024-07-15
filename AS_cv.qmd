@@ -64,7 +64,7 @@ Grid search consiste em uma busca dos níveis adequados dos hiperparâmetros con
 
 Por exemplo, no caso do aprendizado utilizando regressão por vetores de suporte, deve-se definir o melhor kernel, além dos níveis ótimos da constante de regularização, $C$, e do erro máximo da função perda insensitiva $\varepsilon$. Dependendo do tipo de kernel utilizado, outros hiperparâmetros devem ser otimizados.
 
-Seja o caso onde supostamente sabe-se que o kernel polinomial é o mais adequado e deseja-se otimizar o custo e o grau do polinômio. Um possível grid regular de hiperparâmetros a serem testados neste caso é plotado a seguir. 
+Seja o caso onde supostamente sabe-se que o kernel polinomial é o mais adequado e deseja-se otimizar $C$ e o grau do polinômio. Um possível grid regular de hiperparâmetros a serem testados neste caso é plotado a seguir. 
 
 
 ```{r}
@@ -88,6 +88,10 @@ param_grid <- grid_regular(cost(c(10^-3,10)), degree(c(1,5)), levels = 5)
 ggplot(param_grid, aes(x=log(cost), y=degree)) + 
   geom_point() + theme_bw()
 ```
+
+Pode-se constatar que o grid regular consiste em um planejamento fatorial. Existem também outros tipos de grid irregulares, especialmente parahiperparâmetros em escala real, sendo empregados planejamentos de preenchimento de espaço viavel, tais como amostragem por hipercubo latino.
+
+Existem diversas técnicas para realizar o grid search de forma mais eficiente, evitando a busca em regiões que tendem a apresentar baixo desempenho dos modelos.  Há pacotes computacionais que viabilizam a aplicação de tais técnicas.
 
 O grid search deve ser usado junto com a validação cruzada. Por exemplo, ao se usar a validação cruzada via k dobras, uma busca exaustiva testará cada combinação dos níveis de interesse dos hiperparâmetros em cada dobra.
 

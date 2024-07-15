@@ -116,12 +116,14 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="grid-search">Grid search</h3>
 <p>Grid search consiste em uma busca dos níveis adequados dos hiperparâmetros considerando por exemplo um grid ou uma malha de combinações possíveis dos níveis de interesse dos hiperparâmetros em questão. Dependendo do método de aprendizado utilizado a busca torna-se mais difícil e custosa computacionalmente, devido ao número de hiperparâmetros a serem otimizados.</p>
 <p>Por exemplo, no caso do aprendizado utilizando regressão por vetores de suporte, deve-se definir o melhor kernel, além dos níveis ótimos da constante de regularização, <span class="math inline">\(C\)</span>, e do erro máximo da função perda insensitiva <span class="math inline">\(\varepsilon\)</span>. Dependendo do tipo de kernel utilizado, outros hiperparâmetros devem ser otimizados.</p>
-<p>Seja o caso onde supostamente sabe-se que o kernel polinomial é o mais adequado e deseja-se otimizar o custo e o grau do polinômio. Um possível grid regular de hiperparâmetros a serem testados neste caso é plotado a seguir.</p>
+<p>Seja o caso onde supostamente sabe-se que o kernel polinomial é o mais adequado e deseja-se otimizar <span class="math inline">\(C\)</span> e o grau do polinômio. Um possível grid regular de hiperparâmetros a serem testados neste caso é plotado a seguir.</p>
 <div class="cell">
 <div class="cell-output-display">
 <p><img src="AS_cv_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
+<p>Pode-se constatar que o grid regular consiste em um planejamento fatorial. Existem também outros tipos de grid irregulares, especialmente parahiperparâmetros em escala real, sendo empregados planejamentos de preenchimento de espaço viavel, tais como amostragem por hipercubo latino.</p>
+<p>Existem diversas técnicas para realizar o grid search de forma mais eficiente, evitando a busca em regiões que tendem a apresentar baixo desempenho dos modelos. Há pacotes computacionais que viabilizam a aplicação de tais técnicas.</p>
 <p>O grid search deve ser usado junto com a validação cruzada. Por exemplo, ao se usar a validação cruzada via k dobras, uma busca exaustiva testará cada combinação dos níveis de interesse dos hiperparâmetros em cada dobra.</p>
 </section>
 <section id="exemplo-validação-cruzada-por-k-dobras-para-seleção-do-hiperparâmetro-de-encolhimento-em-regressão-rígida" class="level3">
@@ -131,23 +133,23 @@ ul.task-list li input[type="checkbox"] {
 <div class="cell">
 <div class="cell-output-display">
 
-<div id="kjrllyfoud" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#kjrllyfoud table {
+<div id="xobwucqiuw" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#xobwucqiuw table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#kjrllyfoud thead, #kjrllyfoud tbody, #kjrllyfoud tfoot, #kjrllyfoud tr, #kjrllyfoud td, #kjrllyfoud th {
+#xobwucqiuw thead, #xobwucqiuw tbody, #xobwucqiuw tfoot, #xobwucqiuw tr, #xobwucqiuw td, #xobwucqiuw th {
   border-style: none;
 }
 
-#kjrllyfoud p {
+#xobwucqiuw p {
   margin: 0;
   padding: 0;
 }
 
-#kjrllyfoud .gt_table {
+#xobwucqiuw .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -173,12 +175,12 @@ ul.task-list li input[type="checkbox"] {
   border-left-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_caption {
+#xobwucqiuw .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#kjrllyfoud .gt_title {
+#xobwucqiuw .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -190,7 +192,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-width: 0;
 }
 
-#kjrllyfoud .gt_subtitle {
+#xobwucqiuw .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -202,7 +204,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-width: 0;
 }
 
-#kjrllyfoud .gt_heading {
+#xobwucqiuw .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -214,13 +216,13 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_bottom_border {
+#xobwucqiuw .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_col_headings {
+#xobwucqiuw .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -235,7 +237,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_col_heading {
+#xobwucqiuw .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -255,7 +257,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#kjrllyfoud .gt_column_spanner_outer {
+#xobwucqiuw .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -267,15 +269,15 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 4px;
 }
 
-#kjrllyfoud .gt_column_spanner_outer:first-child {
+#xobwucqiuw .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#kjrllyfoud .gt_column_spanner_outer:last-child {
+#xobwucqiuw .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#kjrllyfoud .gt_column_spanner {
+#xobwucqiuw .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -287,11 +289,11 @@ ul.task-list li input[type="checkbox"] {
   width: 100%;
 }
 
-#kjrllyfoud .gt_spanner_row {
+#xobwucqiuw .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#kjrllyfoud .gt_group_heading {
+#xobwucqiuw .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -317,7 +319,7 @@ ul.task-list li input[type="checkbox"] {
   text-align: left;
 }
 
-#kjrllyfoud .gt_empty_group_heading {
+#xobwucqiuw .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -332,15 +334,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: middle;
 }
 
-#kjrllyfoud .gt_from_md > :first-child {
+#xobwucqiuw .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#kjrllyfoud .gt_from_md > :last-child {
+#xobwucqiuw .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#kjrllyfoud .gt_row {
+#xobwucqiuw .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -359,7 +361,7 @@ ul.task-list li input[type="checkbox"] {
   overflow-x: hidden;
 }
 
-#kjrllyfoud .gt_stub {
+#xobwucqiuw .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -372,7 +374,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#kjrllyfoud .gt_stub_row_group {
+#xobwucqiuw .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -386,15 +388,15 @@ ul.task-list li input[type="checkbox"] {
   vertical-align: top;
 }
 
-#kjrllyfoud .gt_row_group_first td {
+#xobwucqiuw .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#kjrllyfoud .gt_row_group_first th {
+#xobwucqiuw .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#kjrllyfoud .gt_summary_row {
+#xobwucqiuw .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -404,16 +406,16 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#kjrllyfoud .gt_first_summary_row {
+#xobwucqiuw .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_first_summary_row.thick {
+#xobwucqiuw .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#kjrllyfoud .gt_last_summary_row {
+#xobwucqiuw .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -423,7 +425,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_grand_summary_row {
+#xobwucqiuw .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -433,7 +435,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#kjrllyfoud .gt_first_grand_summary_row {
+#xobwucqiuw .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -443,7 +445,7 @@ ul.task-list li input[type="checkbox"] {
   border-top-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_last_grand_summary_row_top {
+#xobwucqiuw .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -453,11 +455,11 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_striped {
+#xobwucqiuw .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#kjrllyfoud .gt_table_body {
+#xobwucqiuw .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -466,7 +468,7 @@ ul.task-list li input[type="checkbox"] {
   border-bottom-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_footnotes {
+#xobwucqiuw .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -480,7 +482,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_footnote {
+#xobwucqiuw .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -489,7 +491,7 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#kjrllyfoud .gt_sourcenotes {
+#xobwucqiuw .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -503,7 +505,7 @@ ul.task-list li input[type="checkbox"] {
   border-right-color: #D3D3D3;
 }
 
-#kjrllyfoud .gt_sourcenote {
+#xobwucqiuw .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -511,63 +513,63 @@ ul.task-list li input[type="checkbox"] {
   padding-right: 5px;
 }
 
-#kjrllyfoud .gt_left {
+#xobwucqiuw .gt_left {
   text-align: left;
 }
 
-#kjrllyfoud .gt_center {
+#xobwucqiuw .gt_center {
   text-align: center;
 }
 
-#kjrllyfoud .gt_right {
+#xobwucqiuw .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#kjrllyfoud .gt_font_normal {
+#xobwucqiuw .gt_font_normal {
   font-weight: normal;
 }
 
-#kjrllyfoud .gt_font_bold {
+#xobwucqiuw .gt_font_bold {
   font-weight: bold;
 }
 
-#kjrllyfoud .gt_font_italic {
+#xobwucqiuw .gt_font_italic {
   font-style: italic;
 }
 
-#kjrllyfoud .gt_super {
+#xobwucqiuw .gt_super {
   font-size: 65%;
 }
 
-#kjrllyfoud .gt_footnote_marks {
+#xobwucqiuw .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#kjrllyfoud .gt_asterisk {
+#xobwucqiuw .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#kjrllyfoud .gt_indent_1 {
+#xobwucqiuw .gt_indent_1 {
   text-indent: 5px;
 }
 
-#kjrllyfoud .gt_indent_2 {
+#xobwucqiuw .gt_indent_2 {
   text-indent: 10px;
 }
 
-#kjrllyfoud .gt_indent_3 {
+#xobwucqiuw .gt_indent_3 {
   text-indent: 15px;
 }
 
-#kjrllyfoud .gt_indent_4 {
+#xobwucqiuw .gt_indent_4 {
   text-indent: 20px;
 }
 
-#kjrllyfoud .gt_indent_5 {
+#xobwucqiuw .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
