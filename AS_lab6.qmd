@@ -1,0 +1,231 @@
+---
+title: "Laboratório 6"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Laboratório 6 - Regressão por máquinas de reforço de gradiente e regressão por vetores de suporte
+
+### Máquinas de reforço de gradiente
+
+Carregando pacotes.
+
+```{r}
+#| message: false
+#| warning: false
+library(gt)
+library(AER)
+library(gbm)
+library(tree)
+library(GGally)
+library(modelsummary)
+library(tidyverse)
+library(kernlab)
+```
+
+Entendendo as máquinas de reforço de gradiente com um exemplo arbitrário com 10 observações de treino, duas variáveis independentes, $x_1$ e $x_2$, e uma dependente contínua, $y$.
+
+```{r}
+set.seed(8)
+x1 <- rnorm(10)
+x2 <- rnorm(10, 2)
+y <- 0.3*x1+sqrt(x2)+rnorm(10,1,0.2)
+
+dat <- round(data.frame(x1,x2,y),2)
+
+dat |> gt()
+```
+
+Seja a taxa de aprendizagem $\lambda$ = 0.5 e $M = 4$ árvores ou iterações. A previsão inicial é nula e os resíduos recebem os valores observados da resposta:
+
+```{r}
+dat$f <- 0
+dat$e <- dat$y
+
+lambda <- 0.5
+
+dat |> gt()
+```
+
+Estimanado a primeira árvore para os resíduos.
+
+```{r}
+#| message: false
+#| warning: false
+tree1 <- tree(e ~ x1+x2, dat)
+tree1
+```
+
+Atualizando os valores previstos e os resíduos.
+
+```{r}
+#| message: false
+#| warning: false
+
+pred1 <- predict(tree1, dat)
+
+dat$f <- dat$f + lambda*pred1
+
+dat$e <- dat$e -lambda*pred1
+
+dat |> gt()
+```
+
+Na segunda iteração, repete-se o processo, obtendo-se uma nova árvore para os resíduos e atualizando as previsões e os resíduos. Pode-se constatar que a cada iteração vamos melhorando os valores previstos e, portanto, diminuindo os valores residuais.
+
+```{r}
+#| message: false
+#| warning: false
+tree2 <- tree(e ~ x1+x2, dat)
+tree2
+```
+
+```{r}
+#| message: false
+#| warning: false
+pred2 <- predict(tree2, dat)
+
+dat$f <- dat$f + lambda*pred2
+
+dat$e <- dat$e -lambda*pred2
+
+dat |> gt()
+```
+
+Na terceira iteração, tem-se:
+
+```{r}
+#| message: false
+#| warning: false
+tree3 <- tree(e ~ x1+x2, dat)
+tree3
+```
+
+```{r}
+#| message: false
+#| warning: false
+pred3 <- predict(tree3, dat)
+
+dat$f <- dat$f + lambda*pred3
+
+dat$e <- dat$e -lambda*pred3
+
+dat |> gt()
+```
+
+Finalmente, na quara e última iteração, obtém-se o modelo "reforçado" final que consiste na soma ponderada pela taxa de aprendizagem de todos os modelos.
+
+```{r}
+#| message: false
+#| warning: false
+tree4 <- tree(e ~ x1+x2, dat)
+tree4
+```
+
+```{r}
+#| message: false
+#| warning: false
+pred4 <- predict(tree4, dat)
+
+dat$f <- dat$f + lambda*pred4
+
+dat$e <- dat$e -lambda*pred4
+
+dat |> gt()
+```
+
+Seja um conjunto de dados para prever o rendimento de indivíduos considerando anos de experiência, ocupação, se ele trabalha ou não na indústria, escolaridade, além de fatores sócio-geográficos. 
+
+```{r}
+#| message: false
+#| warning: false
+data(PSID7682)
+# ?PSID7682
+dados <- PSID7682
+dados <- dados[,-c(13:14)]
+
+datasummary_skim(dados)
+```
+
+Separando metade das observações para treino do modelo.
+
+```{r}
+set.seed(78)
+tr <- round(0.5*nrow(dados))
+treino <- sample(nrow(dados), tr, replace = F)
+```
+
+Obtendo um modelo via GBM com 8000 árvores e $\lambda = 0,1$.
+
+```{r}
+#| message: false
+#| warning: false
+boost1 <- gbm(wage~., data = dados, distribution = "gaussian", 
+              n.trees = 8000, bag.fraction = 0.7, 
+              interaction.depth =  2, shrinkage = 0.1)
+summary(boost1)
+```
+
+```{r}
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Testando o modelo.
+
+```{r}
+pred1 <- predict(boost1, dados[-treino,])
+
+metrics(dados$wage[-treino],pred1)
+```
+
+### Regressão por vetores de suporte
+
+Seja um modelo de SVR aplicado aos dados da liga maior americana de Baseball para as temporadas de 1986 e 1987.
+
+```{r}
+#| message: false
+#| warning: false
+data(Hitters, package = "ISLR")
+dados2 <- na.omit(Hitters)
+
+datasummary_skim(dados2)
+```
+
+Separando dados para treino.
+
+```{r}
+set.seed(1)
+tr <- round(0.5*nrow(dados2))
+treino <- sample(1:nrow(dados2), tr, replace = F)
+```
+
+Treinando um modelo considerando todas as variáveis regressoras.
+
+```{r}
+svr1 <- ksvm(Salary ~ ., dados2[treino,], C=10,  epsilon = .001,
+             kernel = "rbfdot")
+svr1
+```
+
+Testando o modelo.
+
+```{r}
+pred2 <- predict(svr1, dados2[-treino,])
+metrics(dados2$Salary[-treino],pred2)
+```
+

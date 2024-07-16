@@ -323,7 +323,7 @@ ggplot(perf, aes(x=grid,y=RMSE_)) +
   theme_bw()
 ```
 
-Observação: A escolha de hiperparâmetros em alguns métodos, sobretudo os de origem estatística, pode ser baseada também em critérios de informação, como o AIC. Entretanto, neste curso, dar-se-á ênfase em validação cruzada uma vez que está técnica é útil tanto para os métodos de origem na estatística quanto para os de origem na computação, além de ser simples de implementar.
+Observação: A escolha de hiperparâmetros em alguns métodos, sobretudo os de origem estatística, pode ser baseada também em critérios de informação, como o AIC. Entretanto, neste curso, dar-se-á ênfase em validação cruzada uma vez que esta técnica é útil tanto para os métodos de origem na estatística quanto para os de origem na computação, além de ser simples de implementar.
 
 É importante recordar que após a realização da validação cruzada e otimização dos hiperparâmetros geralmente recomenda-se estimar o modelo com os hiperparâmetros otimizados em todo o conjunto de dados.
 
