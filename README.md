@@ -54,6 +54,10 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_boosting.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_SVR.html
 
+### Laboratório 6
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab6.html
+
 ## Validação cruzada e grid search
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_cv.html
