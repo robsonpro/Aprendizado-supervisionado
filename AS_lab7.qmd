@@ -1,0 +1,343 @@
+---
+title: "Laboratório 7"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Laboratório 7 - Validação cruzada e grid search
+
+### Validação cruzada por $k$-dobras para seleção do hiperparâmetro de encolhimento em regressão rígida
+
+Dados de medições de massa de órgãos de 30 focas mortas não intencionalmente em consequência da pesca comercial.
+
+```{r}
+#| message: false
+#| warning: false
+library(gt)
+library(dplyr)
+library(DAAG)
+library(GGally)
+library(modelsummary)
+library(glmnet)
+library(ggplot2)
+library(plyr)
+library(e1071)
+library(rsm)
+```
+
+Removendo variáveis que tenham valores `NA`.
+
+```{r}
+dados <- cfseal[colSums(is.na(cfseal))==0]
+
+head(dados) |> 
+  gt()
+```
+
+Visualizando correlações aos pares.
+
+```{r}
+#| message: false
+#| warning: false
+ggpairs(dados) + theme_bw()
+```
+
+Estatísticas descritivas distribuições.
+
+```{r}
+datasummary_skim(dados)
+```
+
+Sorteando as dobras (*folds*) para realizar a validação cruzada.
+
+```{r}
+set.seed(7)
+dados_ <- dados
+fold <- sample(rep(1:10,3), replace = F)
+
+dados_$fold <- fold
+```
+
+Visualizando as observações ordenadas e com cores segundo as dobras ou partições.
+
+```{r}
+dados_ |> 
+  arrange(fold) |> 
+  gt() |> 
+  data_color(
+    columns = fold,
+    target_column = everything(),
+    method = "numeric")
+```
+
+Separando variáveis independentes e respostas.
+
+```{r}
+X <- data.frame(model.matrix(age ~ ., dados_)[,-1])
+y <- data.frame(age = dados_$age,
+                fold = dados_$fold)
+```
+
+Definindo o grid de valores para a constante de encolhimento da regressão rígida.
+
+```{r}
+grid <- 10^seq(10, -2, length = 100)
+```
+
+Função de métricas de desempenho dos modelos.
+
+```{r}
+metrics <- function(obs, pred) {
+  
+  RSE <- sum((obs - pred)^2)
+  SST <- sum((obs - mean(obs))^2)
+  R2 <- 1 - RSE/SST 
+  
+  MAE <-  mean(abs(obs - pred))
+  
+  RMSE <- sqrt(mean((obs - pred)^2))
+  
+  return(
+    data.frame(RMSE = RMSE,
+               MAE = MAE,
+               R2 = R2))
+}
+```
+
+Loop de validação cruzada via k-fold com *grid search* para definir o valor ideal da constante de encolhimento.
+
+```{r}
+for (i in 1:10){
+  rig <- glmnet(x = as.matrix(X |>
+                            filter(fold != i) |>
+                            select(weight, heart,
+                                   liver, stomach,
+                                   kidney)), 
+                y = (y |> 
+                 filter(fold != i))$age, 
+                alpha = 0, 
+                lambda = grid)
+  
+  assign(paste0("rid.", i), rig)
+  
+  pred <- predict(rig,
+                  s = grid,
+                  newx = as.matrix(X |>                                      filter(fold == i) |>
+                                     select(-fold)))
+  
+  perf <- rbind(apply(pred, 2, metrics, 
+                      obs = (y|> filter(fold == i))$age))
+  
+  perf <- data.frame(matrix(unlist(perf), 
+                            nrow=length(perf), 
+                            byrow=TRUE))
+  
+  colnames(perf) <- c("RMSE","MAE","R2")
+  perf$grid <- grid
+  
+  assign(paste0("perf.", i), perf)
+  
+  # print(p)
+}
+```
+
+Agregando resultados de desempenho.
+
+```{r}
+perf <-
+  rbind.fill(list(perf.1,perf.2,perf.3,perf.4,
+                  perf.5,perf.6,perf.7,perf.8,
+                  perf.9,perf.10))
+
+perf$fold <- rep(1:10,each=100)
+```
+
+Plotando o RMSE versus a constante de encolhimento para cada dobra ou partição dos dados.
+
+```{r}
+ggplot(perf, aes(x=grid,
+                 y=RMSE,
+                 col=as.factor(fold))) +
+  geom_point() + 
+  # facet_grid(vars(fold)) +
+  scale_x_log10() +
+  labs(x="log(lambda)") + # , col="fold") +
+  theme_bw() #+
+  # theme(legend.position = "none")
+```
+
+Plotando IC para RMSE.
+
+```{r}
+perf <- perf |>
+  group_by(grid) |>
+  dplyr::summarize(RMSE_ = mean(RMSE),
+                   SDRMSE_ = sd(RMSE),
+                   MAE_ = mean(MAE),
+                   SDMAE_ = sd(MAE),
+                   R2_ = mean(R2),
+                   SDR2_ = sd(R2))
+```
+
+```{r}
+ggplot(perf, aes(x=grid,y=RMSE_)) +
+  geom_errorbar(aes(ymin=RMSE_-1.96*SDRMSE_/sqrt(10), 
+                    ymax=RMSE_+1.96*SDRMSE_/sqrt(10)), col="grey") +
+  geom_point() + 
+  scale_x_log10() +
+  labs(x="lambda",y="RMSE") +
+  theme_bw()
+```
+
+Selecionando o melhor valor da penalização de encolhimento.
+
+```{r}
+perf[which.min(perf$RMSE_),]$grid
+```
+
+### Repetindo o exemplo para o caso LASSO
+
+Para fazer regressão via LASSO com o comando `glmnet` basta definir `alpha=1`.
+
+```{r}
+for (i in 1:10){
+  rig <- glmnet(x = as.matrix(X |>
+                            filter(fold != i) |>
+                            select(weight, heart,
+                                   liver, stomach,
+                                   kidney)), 
+                y = (y |> 
+                 filter(fold != i))$age, 
+                alpha = 1, 
+                lambda = grid)
+  
+  assign(paste0("rid.", i), rig)
+  
+  pred <- predict(rig,
+                  s = grid,
+                  newx = as.matrix(X |>                                      filter(fold == i) |>
+                                     select(-fold)))
+  
+  perf <- rbind(apply(pred, 2, metrics, 
+                      obs = (y|> filter(fold == i))$age))
+  
+  perf <- data.frame(matrix(unlist(perf), 
+                            nrow=length(perf), 
+                            byrow=TRUE))
+  
+  colnames(perf) <- c("RMSE","MAE","R2")
+  perf$grid <- grid
+  
+  assign(paste0("perf.", i), perf)
+  
+  # print(p)
+}
+```
+
+Agregando resultados de desempenho.
+
+```{r}
+perf <-
+  rbind.fill(list(perf.1,perf.2,perf.3,perf.4,
+                  perf.5,perf.6,perf.7,perf.8,
+                  perf.9,perf.10))
+
+perf$fold <- rep(1:10,each=100)
+```
+
+Plotando o RMSE versus a constant de encolhimento para cada dobra ou partição dos dados.
+
+```{r}
+ggplot(perf, aes(x=grid,
+                 y=RMSE,
+                 col=as.factor(fold))) +
+  geom_point() + 
+  # facet_grid(vars(fold)) +
+  scale_x_log10() +
+  labs(x="log(lambda)") + # , col="fold") +
+  theme_bw() #+
+  # theme(legend.position = "none")
+```
+
+Plotando IC para RMSE.
+
+```{r}
+perf <- perf |>
+  group_by(grid) |>
+  dplyr::summarize(RMSE_ = mean(RMSE),
+                   SDRMSE_ = sd(RMSE),
+                   MAE_ = mean(MAE),
+                   SDMAE_ = sd(MAE),
+                   R2_ = mean(R2),
+                   SDR2_ = sd(R2))
+```
+
+```{r}
+ggplot(perf, aes(x=grid,y=RMSE_)) +
+  geom_errorbar(aes(ymin=RMSE_-1.96*SDRMSE_/sqrt(10), 
+                    ymax=RMSE_+1.96*SDRMSE_/sqrt(10)), col="grey") +
+  geom_point() + 
+  scale_x_log10() +
+  labs(x="lambda",y="RMSE") +
+  theme_bw()
+```
+
+### Grid search para SVR via pacote `e1071`
+
+Dados de um estudo de fresameno helicoidal de furos em liga de Ti-6Al-7Nb para modelar a rugosidade dos furos em função dos parâmeros do processo (fza, fzt e vc). Link para o artigo: https://rdcu.be/c3sbP.
+
+Planejamento experimental para obtenção de dados. Foi usado um planejamento composto central (*cental composite design* - CCD). A rugosidade média (Ra) foi medida após a realização dos experimentos e consiste na resposta a ser modelada.
+
+```{r}
+plan <- ccd(~x1+x2+x3, 
+             n0 = c(0,4), 
+             alpha = "rotatable",
+             randomize = FALSE, 
+             oneblock=TRUE, 
+             coding = list(x1 ~ (fza - .03)/.01, 
+                           x2 ~ (fzt - 3)/1, 
+                           x3 ~ (vc - 60)/10))
+plan$Ra <- c(0.1783333, 0.3041667, 0.1891667, 0.1450000, 0.1175000, 0.2900000, 0.2008333, 0.1700000, 0.1875000, 0.1966667, 0.3508333, 0.1083333, 0.1316667, 0.1575000, 0.1400000, 0.1241667, 0.1316667, 0.1216667)
+```
+
+*Grid search* com k-fold usando função `tune`. Deve-se definir o método, fórmula e os níveis dos hiperparâmetros a serem testados. O erro é estimado via k-fold considerando como métrica o MSE.
+
+```{r}
+set.seed(1)
+tune.out <- tune(svm, Ra ~ x1+x2+x3, data = plan, 
+                 ranges = 
+                   list(cost=c(0.001, 0.01, 0.1, 1, 5, 10),
+                        gamma = c(0, 0.5, 1, 2),
+                        kernel = c("linear", "radial", "polynomial")))
+tune.out$best.parameters
+```
+
+Refazendo a busca com grid mais amplo para $C$ e $\gamma$ com o kernel radial.
+
+```{r}
+tune.out2 <- tune(svm, Ra ~ x1+x2+x3, 
+                  data = plan, 
+                  kernel = "radial",
+                  ranges = 
+                    list(cost = seq(0.001, 10, length=50),
+                         gamma = seq(0, 2, length=50)))
+tune.out2$best.parameters
+```
+
+Plotando o RMSE em função dos hiperparâmetros.
+
+```{r}
+tune_res <- data.frame(tune.out2$performances)
+
+error_svm <- ggplot(data = tune_res,
+                  mapping = aes(x = cost, y = gamma, 
+                                z = sqrt(error), 
+                                fill = sqrt(error))) +
+  geom_tile() +
+  labs(fill = "RMSE") +
+  scale_fill_distiller(palette = "Spectral",
+                       direction = -1) +
+  theme_bw()
+error_svm
+```

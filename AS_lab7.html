@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.353">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Robson Bruno Dutra Pereira">
+
+<title>Laboratório 7</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="AS_lab7_files/libs/clipboard/clipboard.min.js"></script>
+<script src="AS_lab7_files/libs/quarto-html/quarto.js"></script>
+<script src="AS_lab7_files/libs/quarto-html/popper.min.js"></script>
+<script src="AS_lab7_files/libs/quarto-html/tippy.umd.min.js"></script>
+<script src="AS_lab7_files/libs/quarto-html/anchor.min.js"></script>
+<link href="AS_lab7_files/libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="AS_lab7_files/libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="AS_lab7_files/libs/bootstrap/bootstrap.min.js"></script>
+<link href="AS_lab7_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="AS_lab7_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+</head>
+
+<body class="fullcontent">
+
+<div id="quarto-content" class="page-columns page-rows-contents page-layout-article">
+
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Laboratório 7</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Robson Bruno Dutra Pereira </p>
+          </div>
+  </div>
+    
+  
+    
+  </div>
+  
+
+</header>
+
+<section id="laboratório-7---validação-cruzada-e-grid-search" class="level2">
+<h2 class="anchored" data-anchor-id="laboratório-7---validação-cruzada-e-grid-search">Laboratório 7 - Validação cruzada e grid search</h2>
+<section id="validação-cruzada-por-k-dobras-para-seleção-do-hiperparâmetro-de-encolhimento-em-regressão-rígida" class="level3">
+<h3 class="anchored" data-anchor-id="validação-cruzada-por-k-dobras-para-seleção-do-hiperparâmetro-de-encolhimento-em-regressão-rígida">Validação cruzada por <span class="math inline">\(k\)</span>-dobras para seleção do hiperparâmetro de encolhimento em regressão rígida</h3>
+<p>Dados de medições de massa de órgãos de 30 focas mortas não intencionalmente em consequência da pesca comercial.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DAAG)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelsummary)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(plyr)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(e1071)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsm)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Removendo variáveis que tenham valores <code>NA</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>dados <span class="ot">&lt;-</span> cfseal[<span class="fu">colSums</span>(<span class="fu">is.na</span>(cfseal))<span class="sc">==</span><span class="dv">0</span>]</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(dados) <span class="sc">|&gt;</span> </span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="uahobylofh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#uahobylofh table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#uahobylofh thead, #uahobylofh tbody, #uahobylofh tfoot, #uahobylofh tr, #uahobylofh td, #uahobylofh th {
+  border-style: none;
+}
+
+#uahobylofh p {
+  margin: 0;
+  padding: 0;
+}
+
+#uahobylofh .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#uahobylofh .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#uahobylofh .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#uahobylofh .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#uahobylofh .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uahobylofh .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uahobylofh .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#uahobylofh .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#uahobylofh .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#uahobylofh .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#uahobylofh .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#uahobylofh .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#uahobylofh .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#uahobylofh .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#uahobylofh .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#uahobylofh .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#uahobylofh .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#uahobylofh .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#uahobylofh .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uahobylofh .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#uahobylofh .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#uahobylofh .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#uahobylofh .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uahobylofh .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#uahobylofh .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#uahobylofh .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uahobylofh .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uahobylofh .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#uahobylofh .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uahobylofh .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#uahobylofh .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#uahobylofh .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uahobylofh .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uahobylofh .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#uahobylofh .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#uahobylofh .gt_left {
+  text-align: left;
+}
+
+#uahobylofh .gt_center {
+  text-align: center;
+}
+
+#uahobylofh .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#uahobylofh .gt_font_normal {
+  font-weight: normal;
+}
+
+#uahobylofh .gt_font_bold {
+  font-weight: bold;
+}
+
+#uahobylofh .gt_font_italic {
+  font-style: italic;
+}
+
+#uahobylofh .gt_super {
+  font-size: 65%;
+}
+
+#uahobylofh .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#uahobylofh .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#uahobylofh .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#uahobylofh .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#uahobylofh .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#uahobylofh .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#uahobylofh .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="age">age</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="weight">weight</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="heart">heart</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="liver">liver</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="stomach">stomach</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="kidney">kidney</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="age" class="gt_row gt_right">33</td>
+<td headers="weight" class="gt_row gt_right">27.5</td>
+<td headers="heart" class="gt_row gt_right">127.7</td>
+<td headers="liver" class="gt_row gt_right">855.0</td>
+<td headers="stomach" class="gt_row gt_right">338.2</td>
+<td headers="kidney" class="gt_row gt_right">215</td></tr>
+    <tr><td headers="age" class="gt_row gt_right">10</td>
+<td headers="weight" class="gt_row gt_right">24.3</td>
+<td headers="heart" class="gt_row gt_right">93.2</td>
+<td headers="liver" class="gt_row gt_right">435.4</td>
+<td headers="stomach" class="gt_row gt_right">120.4</td>
+<td headers="kidney" class="gt_row gt_right">127</td></tr>
+    <tr><td headers="age" class="gt_row gt_right">10</td>
+<td headers="weight" class="gt_row gt_right">22.0</td>
+<td headers="heart" class="gt_row gt_right">84.5</td>
+<td headers="liver" class="gt_row gt_right">530.0</td>
+<td headers="stomach" class="gt_row gt_right">237.6</td>
+<td headers="kidney" class="gt_row gt_right">112</td></tr>
+    <tr><td headers="age" class="gt_row gt_right">10</td>
+<td headers="weight" class="gt_row gt_right">18.5</td>
+<td headers="heart" class="gt_row gt_right">85.4</td>
+<td headers="liver" class="gt_row gt_right">542.0</td>
+<td headers="stomach" class="gt_row gt_right">193.1</td>
+<td headers="kidney" class="gt_row gt_right">139</td></tr>
+    <tr><td headers="age" class="gt_row gt_right">12</td>
+<td headers="weight" class="gt_row gt_right">28.0</td>
+<td headers="heart" class="gt_row gt_right">182.0</td>
+<td headers="liver" class="gt_row gt_right">949.0</td>
+<td headers="stomach" class="gt_row gt_right">400.0</td>
+<td headers="kidney" class="gt_row gt_right">238</td></tr>
+    <tr><td headers="age" class="gt_row gt_right">18</td>
+<td headers="weight" class="gt_row gt_right">23.8</td>
+<td headers="heart" class="gt_row gt_right">130.0</td>
+<td headers="liver" class="gt_row gt_right">1100.0</td>
+<td headers="stomach" class="gt_row gt_right">443.2</td>
+<td headers="kidney" class="gt_row gt_right">293</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Visualizando correlações aos pares.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(dados) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab7_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Estatísticas descritivas distribuições.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">datasummary_skim</span>(dados)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+ 
+
+  
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>tinytable_uqhqulhrxnckq5qhcs9u</title>
+    <style>
+.table td.tinytable_css_qvuggdnzb0s61e26rbbj, .table th.tinytable_css_qvuggdnzb0s61e26rbbj {    border-bottom: solid 0.1em #d3d8dc; }
+.table td.tinytable_css_ekwdnz5pr3lambj53i6d, .table th.tinytable_css_ekwdnz5pr3lambj53i6d {    text-align: left; }
+.table td.tinytable_css_15t7ixsnmw2hc8ibdnyr, .table th.tinytable_css_15t7ixsnmw2hc8ibdnyr {    text-align: left; }
+.table td.tinytable_css_h69yuav6kfveeuuj5zmk, .table th.tinytable_css_h69yuav6kfveeuuj5zmk {    text-align: left; }
+.table td.tinytable_css_c4hbb88nhkkjq9hmk5yr, .table th.tinytable_css_c4hbb88nhkkjq9hmk5yr {    text-align: left; }
+.table td.tinytable_css_khx8otfxhjshc7zudfsu, .table th.tinytable_css_khx8otfxhjshc7zudfsu {    text-align: left; }
+.table td.tinytable_css_ptldrdy6awge7eql42j0, .table th.tinytable_css_ptldrdy6awge7eql42j0 {    text-align: left; }
+.table td.tinytable_css_4crxiebbvff8xajrvw2y, .table th.tinytable_css_4crxiebbvff8xajrvw2y {    text-align: left; }
+.table td.tinytable_css_969zp4mcgkqs90vc6fp0, .table th.tinytable_css_969zp4mcgkqs90vc6fp0 {    text-align: left; }
+.table td.tinytable_css_l1ygz93001ue4pww76am, .table th.tinytable_css_l1ygz93001ue4pww76am {    text-align: left; }
+    </style>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+    MathJax = {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      },
+      svg: {
+        fontCache: 'global'
+      }
+    };
+    </script>
+  
+
+  
+    <div class="container">
+      <table class="table table-borderless" id="tinytable_uqhqulhrxnckq5qhcs9u" style="width: auto; margin-left: auto; margin-right: auto;" data-quarto-disable-processing="true">
+        <thead>
+        
+              <tr>
+                <th scope="col"> </th>
+                <th scope="col">Unique</th>
+                <th scope="col">Missing Pct.</th>
+                <th scope="col">Mean</th>
+                <th scope="col">SD</th>
+                <th scope="col">Min</th>
+                <th scope="col">Median</th>
+                <th scope="col">Max</th>
+                <th scope="col">Histogram</th>
+              </tr>
+        </thead>
+        
+        <tbody>
+                <tr>
+                  <td>age</td>
+                  <td>23</td>
+                  <td>0</td>
+                  <td>56.2</td>
+                  <td>33.0</td>
+                  <td>10.0</td>
+                  <td>54.5</td>
+                  <td>120.0</td>
+                  <td><img src="./tinytable_assets/id180isl990niqo9epnzgx.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>weight</td>
+                  <td>29</td>
+                  <td>0</td>
+                  <td>54.8</td>
+                  <td>36.7</td>
+                  <td>18.0</td>
+                  <td>46.2</td>
+                  <td>179.0</td>
+                  <td><img src="./tinytable_assets/id6k9stqp0wgtzrkici1cy.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>heart</td>
+                  <td>29</td>
+                  <td>0</td>
+                  <td>316.1</td>
+                  <td>250.1</td>
+                  <td>84.5</td>
+                  <td>230.0</td>
+                  <td>1075.0</td>
+                  <td><img src="./tinytable_assets/idoagll93fvy7gfzwr8zsf.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>liver</td>
+                  <td>30</td>
+                  <td>0</td>
+                  <td>2211.7</td>
+                  <td>1713.2</td>
+                  <td>435.4</td>
+                  <td>1820.0</td>
+                  <td>8309.0</td>
+                  <td><img src="./tinytable_assets/idnbapzxzacb577l7fxzy9.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>stomach</td>
+                  <td>30</td>
+                  <td>0</td>
+                  <td>782.0</td>
+                  <td>538.9</td>
+                  <td>120.4</td>
+                  <td>640.0</td>
+                  <td>2500.0</td>
+                  <td><img src="./tinytable_assets/idpo3pwxl5h03j2mw1ye1y.png" style="height: 1em;"></td>
+                </tr>
+                <tr>
+                  <td>kidney</td>
+                  <td>30</td>
+                  <td>0</td>
+                  <td>440.6</td>
+                  <td>285.2</td>
+                  <td>112.0</td>
+                  <td>373.5</td>
+                  <td>1410.0</td>
+                  <td><img src="./tinytable_assets/idsxa8a15ukac4jm3tw4xn.png" style="height: 1em;"></td>
+                </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <script>
+      function styleCell_tinytable_557dwga8563zilqc85vq(i, j, css_id) {
+        var table = document.getElementById("tinytable_uqhqulhrxnckq5qhcs9u");
+        table.rows[i].cells[j].classList.add(css_id);
+      }
+      function insertSpanRow(i, colspan, content) {
+        var table = document.getElementById('tinytable_uqhqulhrxnckq5qhcs9u');
+        var newRow = table.insertRow(i);
+        var newCell = newRow.insertCell(0);
+        newCell.setAttribute("colspan", colspan);
+        // newCell.innerText = content;
+        // this may be unsafe, but innerText does not interpret <br>
+        newCell.innerHTML = content;
+      }
+      function spanCell_tinytable_557dwga8563zilqc85vq(i, j, rowspan, colspan) {
+        var table = document.getElementById("tinytable_uqhqulhrxnckq5qhcs9u");
+        const targetRow = table.rows[i];
+        const targetCell = targetRow.cells[j];
+        for (let r = 0; r < rowspan; r++) {
+          // Only start deleting cells to the right for the first row (r == 0)
+          if (r === 0) {
+            // Delete cells to the right of the target cell in the first row
+            for (let c = colspan - 1; c > 0; c--) {
+              if (table.rows[i + r].cells[j + c]) {
+                table.rows[i + r].deleteCell(j + c);
+              }
+            }
+          }
+          // For rows below the first, delete starting from the target column
+          if (r > 0) {
+            for (let c = colspan - 1; c >= 0; c--) {
+              if (table.rows[i + r] && table.rows[i + r].cells[j]) {
+                table.rows[i + r].deleteCell(j);
+              }
+            }
+          }
+        }
+        // Set rowspan and colspan of the target cell
+        targetCell.rowSpan = rowspan;
+        targetCell.colSpan = colspan;
+      }
+
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 0, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 1, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 2, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 3, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 4, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 5, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 6, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 7, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 8, 'tinytable_css_qvuggdnzb0s61e26rbbj') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 0, 'tinytable_css_ekwdnz5pr3lambj53i6d') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 1, 'tinytable_css_15t7ixsnmw2hc8ibdnyr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 2, 'tinytable_css_h69yuav6kfveeuuj5zmk') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 3, 'tinytable_css_c4hbb88nhkkjq9hmk5yr') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 4, 'tinytable_css_khx8otfxhjshc7zudfsu') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 5, 'tinytable_css_ptldrdy6awge7eql42j0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 6, 'tinytable_css_4crxiebbvff8xajrvw2y') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 7, 'tinytable_css_969zp4mcgkqs90vc6fp0') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(0, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(1, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(2, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(3, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(4, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(5, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+window.addEventListener('load', function () { styleCell_tinytable_557dwga8563zilqc85vq(6, 8, 'tinytable_css_l1ygz93001ue4pww76am') })
+    </script>
+
+  
+
+
+</div>
+</div>
+<p>Sorteando as dobras (<em>folds</em>) para realizar a validação cruzada.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">7</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>dados_ <span class="ot">&lt;-</span> dados</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>fold <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="dv">3</span>), <span class="at">replace =</span> F)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>dados_<span class="sc">$</span>fold <span class="ot">&lt;-</span> fold</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Visualizando as observações ordenadas e com cores segundo as dobras ou partições.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>dados_ <span class="sc">|&gt;</span> </span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(fold) <span class="sc">|&gt;</span> </span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">gt</span>() <span class="sc">|&gt;</span> </span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">data_color</span>(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">columns =</span> fold,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">target_column =</span> <span class="fu">everything</span>(),</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">method =</span> <span class="st">"numeric"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="qndycmuxiu" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#qndycmuxiu table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#qndycmuxiu thead, #qndycmuxiu tbody, #qndycmuxiu tfoot, #qndycmuxiu tr, #qndycmuxiu td, #qndycmuxiu th {
+  border-style: none;
+}
+
+#qndycmuxiu p {
+  margin: 0;
+  padding: 0;
+}
+
+#qndycmuxiu .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#qndycmuxiu .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#qndycmuxiu .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#qndycmuxiu .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#qndycmuxiu .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#qndycmuxiu .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#qndycmuxiu .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#qndycmuxiu .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#qndycmuxiu .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#qndycmuxiu .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#qndycmuxiu .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#qndycmuxiu .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#qndycmuxiu .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#qndycmuxiu .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#qndycmuxiu .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qndycmuxiu .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#qndycmuxiu .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#qndycmuxiu .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#qndycmuxiu .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qndycmuxiu .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#qndycmuxiu .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qndycmuxiu .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#qndycmuxiu .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qndycmuxiu .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#qndycmuxiu .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#qndycmuxiu .gt_left {
+  text-align: left;
+}
+
+#qndycmuxiu .gt_center {
+  text-align: center;
+}
+
+#qndycmuxiu .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#qndycmuxiu .gt_font_normal {
+  font-weight: normal;
+}
+
+#qndycmuxiu .gt_font_bold {
+  font-weight: bold;
+}
+
+#qndycmuxiu .gt_font_italic {
+  font-style: italic;
+}
+
+#qndycmuxiu .gt_super {
+  font-size: 65%;
+}
+
+#qndycmuxiu .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#qndycmuxiu .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#qndycmuxiu .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#qndycmuxiu .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#qndycmuxiu .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#qndycmuxiu .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#qndycmuxiu .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="age">age</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="weight">weight</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="heart">heart</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="liver">liver</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="stomach">stomach</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="kidney">kidney</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="fold">fold</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">46</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">30.3</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">140.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1210.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">360.3</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">232</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">68</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">67.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">465.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">2990.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">865.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">530</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">120</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">179.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1075.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">8309.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">2500.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1410</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #000000; color: #FFFFFF;">1</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">12</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">28.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">182.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">949.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">400.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">238</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">2</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">19</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">18.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">98.8</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">627.2</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">265.9</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">181</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">2</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">46</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">33.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">168.1</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">1195.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">384.9</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">249</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #A94253; color: #FFFFFF;">2</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">31</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">34.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">180.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">1040.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">425.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">245</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">3</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">33</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">28.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">150.4</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">1047.1</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">476.2</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">248</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">3</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">73</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">54.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">282.5</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">2795.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">919.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">541</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #ACA25E; color: #FFFFFF;">3</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">66</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">57.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">370.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">2195.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">720.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">450</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">4</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">72</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">73.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">449.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">2715.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">1044.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">605</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">4</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">108</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">128.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">1012.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">5172.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">1734.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">888</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #66BC87; color: #000000;">4</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">18</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">23.8</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">130.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">1100.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">443.2</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">293</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">5</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">44</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">35.8</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">145.5</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">1525.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">475.6</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">332</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">5</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">68</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">53.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">332.8</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">2124.2</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">730.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">457</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #279FE6; color: #FFFFFF;">5</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">50</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">37.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">205.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">1099.8</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">543.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">274</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">6</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">59</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">50.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">255.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">2115.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">850.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">415</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">6</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">73</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">68.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">355.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">3875.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">1390.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">625</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #2CD9E5; color: #000000;">6</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">10</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">18.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">85.4</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">542.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">193.1</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">139</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">7</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">80</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">74.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">310.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">3130.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">985.8</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">585</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">7</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">84</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">68.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">532.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">2937.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">1209.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">620</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #B877CA; color: #FFFFFF;">7</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">10</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">22.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">84.5</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">530.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">237.6</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">112</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">8</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">23</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">18.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">117.3</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">632.9</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">280.8</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">172</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">8</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">118</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">95.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">505.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">3720.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">1245.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">785</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #E87685; color: #FFFFFF;">8</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">10</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">24.3</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">93.2</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">435.4</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">120.4</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">127</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">9</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">50</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">42.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">205.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">1415.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">560.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">305</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">9</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">106</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">101.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">440.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">3580.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">1260.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">760</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #E5BD45; color: #000000;">9</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">33</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">27.5</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">127.7</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">855.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">338.2</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">215</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">10</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">60</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">55.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">320.9</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">2250.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">961.8</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">427</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">10</td></tr>
+    <tr><td headers="age" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">96</td>
+<td headers="weight" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">97.0</td>
+<td headers="heart" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">667.0</td>
+<td headers="liver" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">4241.0</td>
+<td headers="stomach" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">1542.0</td>
+<td headers="kidney" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">757</td>
+<td headers="fold" class="gt_row gt_right" style="background-color: #9E9E9E; color: #FFFFFF;">10</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Separando variáveis independentes e respostas.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>X <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">model.matrix</span>(age <span class="sc">~</span> ., dados_)[,<span class="sc">-</span><span class="dv">1</span>])</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>y <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">age =</span> dados_<span class="sc">$</span>age,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">fold =</span> dados_<span class="sc">$</span>fold)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Definindo o grid de valores para a constante de encolhimento da regressão rígida.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>grid <span class="ot">&lt;-</span> <span class="dv">10</span><span class="sc">^</span><span class="fu">seq</span>(<span class="dv">10</span>, <span class="sc">-</span><span class="dv">2</span>, <span class="at">length =</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Função de métricas de desempenho dos modelos.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>metrics <span class="ot">&lt;-</span> <span class="cf">function</span>(obs, pred) {</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  RSE <span class="ot">&lt;-</span> <span class="fu">sum</span>((obs <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  SST <span class="ot">&lt;-</span> <span class="fu">sum</span>((obs <span class="sc">-</span> <span class="fu">mean</span>(obs))<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  R2 <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> RSE<span class="sc">/</span>SST </span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  MAE <span class="ot">&lt;-</span>  <span class="fu">mean</span>(<span class="fu">abs</span>(obs <span class="sc">-</span> pred))</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>  RMSE <span class="ot">&lt;-</span> <span class="fu">sqrt</span>(<span class="fu">mean</span>((obs <span class="sc">-</span> pred)<span class="sc">^</span><span class="dv">2</span>))</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="fu">data.frame</span>(<span class="at">RMSE =</span> RMSE,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>               <span class="at">MAE =</span> MAE,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>               <span class="at">R2 =</span> R2))</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Loop de validação cruzada via k-fold com <em>grid search</em> para definir o valor ideal da constante de encolhimento.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  rig <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(X <span class="sc">|&gt;</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">filter</span>(fold <span class="sc">!=</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">select</span>(weight, heart,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>                                   liver, stomach,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>                                   kidney)), </span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> (y <span class="sc">|&gt;</span> </span>
+<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">filter</span>(fold <span class="sc">!=</span> i))<span class="sc">$</span>age, </span>
+<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="dv">0</span>, </span>
+<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">lambda =</span> grid)</span>
+<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"rid."</span>, i), rig)</span>
+<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>  pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rig,</span>
+<span id="cb10-15"><a href="#cb10-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">s =</span> grid,</span>
+<span id="cb10-16"><a href="#cb10-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">newx =</span> <span class="fu">as.matrix</span>(X <span class="sc">|&gt;</span>                                      <span class="fu">filter</span>(fold <span class="sc">==</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb10-17"><a href="#cb10-17" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">select</span>(<span class="sc">-</span>fold)))</span>
+<span id="cb10-18"><a href="#cb10-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-19"><a href="#cb10-19" aria-hidden="true" tabindex="-1"></a>  perf <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">apply</span>(pred, <span class="dv">2</span>, metrics, </span>
+<span id="cb10-20"><a href="#cb10-20" aria-hidden="true" tabindex="-1"></a>                      <span class="at">obs =</span> (y<span class="sc">|&gt;</span> <span class="fu">filter</span>(fold <span class="sc">==</span> i))<span class="sc">$</span>age))</span>
+<span id="cb10-21"><a href="#cb10-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-22"><a href="#cb10-22" aria-hidden="true" tabindex="-1"></a>  perf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="fu">unlist</span>(perf), </span>
+<span id="cb10-23"><a href="#cb10-23" aria-hidden="true" tabindex="-1"></a>                            <span class="at">nrow=</span><span class="fu">length</span>(perf), </span>
+<span id="cb10-24"><a href="#cb10-24" aria-hidden="true" tabindex="-1"></a>                            <span class="at">byrow=</span><span class="cn">TRUE</span>))</span>
+<span id="cb10-25"><a href="#cb10-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-26"><a href="#cb10-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(perf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RMSE"</span>,<span class="st">"MAE"</span>,<span class="st">"R2"</span>)</span>
+<span id="cb10-27"><a href="#cb10-27" aria-hidden="true" tabindex="-1"></a>  perf<span class="sc">$</span>grid <span class="ot">&lt;-</span> grid</span>
+<span id="cb10-28"><a href="#cb10-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-29"><a href="#cb10-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"perf."</span>, i), perf)</span>
+<span id="cb10-30"><a href="#cb10-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb10-31"><a href="#cb10-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># print(p)</span></span>
+<span id="cb10-32"><a href="#cb10-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Agregando resultados de desempenho.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind.fill</span>(<span class="fu">list</span>(perf<span class="fl">.1</span>,perf<span class="fl">.2</span>,perf<span class="fl">.3</span>,perf<span class="fl">.4</span>,</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>                  perf<span class="fl">.5</span>,perf<span class="fl">.6</span>,perf<span class="fl">.7</span>,perf<span class="fl">.8</span>,</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>                  perf<span class="fl">.9</span>,perf<span class="fl">.10</span>))</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>perf<span class="sc">$</span>fold <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">each=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plotando o RMSE versus a constante de encolhimento para cada dobra ou partição dos dados.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(perf, <span class="fu">aes</span>(<span class="at">x=</span>grid,</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y=</span>RMSE,</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col=</span><span class="fu">as.factor</span>(fold))) <span class="sc">+</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># facet_grid(vars(fold)) +</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"log(lambda)"</span>) <span class="sc">+</span> <span class="co"># , col="fold") +</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="co">#+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab7_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># theme(legend.position = "none")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plotando IC para RMSE.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span> perf <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(grid) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">RMSE_ =</span> <span class="fu">mean</span>(RMSE),</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">SDRMSE_ =</span> <span class="fu">sd</span>(RMSE),</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">MAE_ =</span> <span class="fu">mean</span>(MAE),</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">SDMAE_ =</span> <span class="fu">sd</span>(MAE),</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">R2_ =</span> <span class="fu">mean</span>(R2),</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">SDR2_ =</span> <span class="fu">sd</span>(R2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(perf, <span class="fu">aes</span>(<span class="at">x=</span>grid,<span class="at">y=</span>RMSE_)) <span class="sc">+</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>RMSE_<span class="fl">-1.96</span><span class="sc">*</span>SDRMSE_<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">10</span>), </span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax=</span>RMSE_<span class="fl">+1.96</span><span class="sc">*</span>SDRMSE_<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">10</span>)), <span class="at">col=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"lambda"</span>,<span class="at">y=</span><span class="st">"RMSE"</span>) <span class="sc">+</span></span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab7_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Selecionando o melhor valor da penalização de encolhimento.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>perf[<span class="fu">which.min</span>(perf<span class="sc">$</span>RMSE_),]<span class="sc">$</span>grid</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.1629751</code></pre>
+</div>
+</div>
+</section>
+<section id="repetindo-o-exemplo-para-o-caso-lasso" class="level3">
+<h3 class="anchored" data-anchor-id="repetindo-o-exemplo-para-o-caso-lasso">Repetindo o exemplo para o caso LASSO</h3>
+<p>Para fazer regressão via LASSO com o comando <code>glmnet</code> basta definir <code>alpha=1</code>.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>){</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>  rig <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(<span class="at">x =</span> <span class="fu">as.matrix</span>(X <span class="sc">|&gt;</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">filter</span>(fold <span class="sc">!=</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">select</span>(weight, heart,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>                                   liver, stomach,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>                                   kidney)), </span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">y =</span> (y <span class="sc">|&gt;</span> </span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>                 <span class="fu">filter</span>(fold <span class="sc">!=</span> i))<span class="sc">$</span>age, </span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>                <span class="at">alpha =</span> <span class="dv">1</span>, </span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">lambda =</span> grid)</span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"rid."</span>, i), rig)</span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-14"><a href="#cb18-14" aria-hidden="true" tabindex="-1"></a>  pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(rig,</span>
+<span id="cb18-15"><a href="#cb18-15" aria-hidden="true" tabindex="-1"></a>                  <span class="at">s =</span> grid,</span>
+<span id="cb18-16"><a href="#cb18-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">newx =</span> <span class="fu">as.matrix</span>(X <span class="sc">|&gt;</span>                                      <span class="fu">filter</span>(fold <span class="sc">==</span> i) <span class="sc">|&gt;</span></span>
+<span id="cb18-17"><a href="#cb18-17" aria-hidden="true" tabindex="-1"></a>                                     <span class="fu">select</span>(<span class="sc">-</span>fold)))</span>
+<span id="cb18-18"><a href="#cb18-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-19"><a href="#cb18-19" aria-hidden="true" tabindex="-1"></a>  perf <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="fu">apply</span>(pred, <span class="dv">2</span>, metrics, </span>
+<span id="cb18-20"><a href="#cb18-20" aria-hidden="true" tabindex="-1"></a>                      <span class="at">obs =</span> (y<span class="sc">|&gt;</span> <span class="fu">filter</span>(fold <span class="sc">==</span> i))<span class="sc">$</span>age))</span>
+<span id="cb18-21"><a href="#cb18-21" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-22"><a href="#cb18-22" aria-hidden="true" tabindex="-1"></a>  perf <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">matrix</span>(<span class="fu">unlist</span>(perf), </span>
+<span id="cb18-23"><a href="#cb18-23" aria-hidden="true" tabindex="-1"></a>                            <span class="at">nrow=</span><span class="fu">length</span>(perf), </span>
+<span id="cb18-24"><a href="#cb18-24" aria-hidden="true" tabindex="-1"></a>                            <span class="at">byrow=</span><span class="cn">TRUE</span>))</span>
+<span id="cb18-25"><a href="#cb18-25" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-26"><a href="#cb18-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">colnames</span>(perf) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"RMSE"</span>,<span class="st">"MAE"</span>,<span class="st">"R2"</span>)</span>
+<span id="cb18-27"><a href="#cb18-27" aria-hidden="true" tabindex="-1"></a>  perf<span class="sc">$</span>grid <span class="ot">&lt;-</span> grid</span>
+<span id="cb18-28"><a href="#cb18-28" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-29"><a href="#cb18-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">assign</span>(<span class="fu">paste0</span>(<span class="st">"perf."</span>, i), perf)</span>
+<span id="cb18-30"><a href="#cb18-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb18-31"><a href="#cb18-31" aria-hidden="true" tabindex="-1"></a>  <span class="co"># print(p)</span></span>
+<span id="cb18-32"><a href="#cb18-32" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Agregando resultados de desempenho.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rbind.fill</span>(<span class="fu">list</span>(perf<span class="fl">.1</span>,perf<span class="fl">.2</span>,perf<span class="fl">.3</span>,perf<span class="fl">.4</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>                  perf<span class="fl">.5</span>,perf<span class="fl">.6</span>,perf<span class="fl">.7</span>,perf<span class="fl">.8</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>                  perf<span class="fl">.9</span>,perf<span class="fl">.10</span>))</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>perf<span class="sc">$</span>fold <span class="ot">&lt;-</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">10</span>,<span class="at">each=</span><span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plotando o RMSE versus a constant de encolhimento para cada dobra ou partição dos dados.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(perf, <span class="fu">aes</span>(<span class="at">x=</span>grid,</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>                 <span class="at">y=</span>RMSE,</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">col=</span><span class="fu">as.factor</span>(fold))) <span class="sc">+</span></span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>  <span class="co"># facet_grid(vars(fold)) +</span></span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"log(lambda)"</span>) <span class="sc">+</span> <span class="co"># , col="fold") +</span></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>() <span class="co">#+</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab7_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid" width="672"></p>
+</div>
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>  <span class="co"># theme(legend.position = "none")</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Plotando IC para RMSE.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a>perf <span class="ot">&lt;-</span> perf <span class="sc">|&gt;</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(grid) <span class="sc">|&gt;</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  dplyr<span class="sc">::</span><span class="fu">summarize</span>(<span class="at">RMSE_ =</span> <span class="fu">mean</span>(RMSE),</span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>                   <span class="at">SDRMSE_ =</span> <span class="fu">sd</span>(RMSE),</span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>                   <span class="at">MAE_ =</span> <span class="fu">mean</span>(MAE),</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>                   <span class="at">SDMAE_ =</span> <span class="fu">sd</span>(MAE),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>                   <span class="at">R2_ =</span> <span class="fu">mean</span>(R2),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>                   <span class="at">SDR2_ =</span> <span class="fu">sd</span>(R2))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(perf, <span class="fu">aes</span>(<span class="at">x=</span>grid,<span class="at">y=</span>RMSE_)) <span class="sc">+</span></span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_errorbar</span>(<span class="fu">aes</span>(<span class="at">ymin=</span>RMSE_<span class="fl">-1.96</span><span class="sc">*</span>SDRMSE_<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">10</span>), </span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>                    <span class="at">ymax=</span>RMSE_<span class="fl">+1.96</span><span class="sc">*</span>SDRMSE_<span class="sc">/</span><span class="fu">sqrt</span>(<span class="dv">10</span>)), <span class="at">col=</span><span class="st">"grey"</span>) <span class="sc">+</span></span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>() <span class="sc">+</span> </span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_log10</span>() <span class="sc">+</span></span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x=</span><span class="st">"lambda"</span>,<span class="at">y=</span><span class="st">"RMSE"</span>) <span class="sc">+</span></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab7_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+<section id="grid-search-para-svr-via-pacote-e1071" class="level3">
+<h3 class="anchored" data-anchor-id="grid-search-para-svr-via-pacote-e1071">Grid search para SVR via pacote <code>e1071</code></h3>
+<p>Dados de um estudo de fresameno helicoidal de furos em liga de Ti-6Al-7Nb para modelar a rugosidade dos furos em função dos parâmeros do processo (fza, fzt e vc). Link para o artigo: https://rdcu.be/c3sbP.</p>
+<p>Planejamento experimental para obtenção de dados. Foi usado um planejamento composto central (<em>cental composite design</em> - CCD). A rugosidade média (Ra) foi medida após a realização dos experimentos e consiste na resposta a ser modelada.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a>plan <span class="ot">&lt;-</span> <span class="fu">ccd</span>(<span class="sc">~</span>x1<span class="sc">+</span>x2<span class="sc">+</span>x3, </span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a>             <span class="at">n0 =</span> <span class="fu">c</span>(<span class="dv">0</span>,<span class="dv">4</span>), </span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>             <span class="at">alpha =</span> <span class="st">"rotatable"</span>,</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a>             <span class="at">randomize =</span> <span class="cn">FALSE</span>, </span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a>             <span class="at">oneblock=</span><span class="cn">TRUE</span>, </span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a>             <span class="at">coding =</span> <span class="fu">list</span>(x1 <span class="sc">~</span> (fza <span class="sc">-</span> .<span class="dv">03</span>)<span class="sc">/</span>.<span class="dv">01</span>, </span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a>                           x2 <span class="sc">~</span> (fzt <span class="sc">-</span> <span class="dv">3</span>)<span class="sc">/</span><span class="dv">1</span>, </span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>                           x3 <span class="sc">~</span> (vc <span class="sc">-</span> <span class="dv">60</span>)<span class="sc">/</span><span class="dv">10</span>))</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>plan<span class="sc">$</span>Ra <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">0.1783333</span>, <span class="fl">0.3041667</span>, <span class="fl">0.1891667</span>, <span class="fl">0.1450000</span>, <span class="fl">0.1175000</span>, <span class="fl">0.2900000</span>, <span class="fl">0.2008333</span>, <span class="fl">0.1700000</span>, <span class="fl">0.1875000</span>, <span class="fl">0.1966667</span>, <span class="fl">0.3508333</span>, <span class="fl">0.1083333</span>, <span class="fl">0.1316667</span>, <span class="fl">0.1575000</span>, <span class="fl">0.1400000</span>, <span class="fl">0.1241667</span>, <span class="fl">0.1316667</span>, <span class="fl">0.1216667</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><em>Grid search</em> com k-fold usando função <code>tune</code>. Deve-se definir o método, fórmula e os níveis dos hiperparâmetros a serem testados. O erro é estimado via k-fold considerando como métrica o MSE.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a>tune.out <span class="ot">&lt;-</span> <span class="fu">tune</span>(svm, Ra <span class="sc">~</span> x1<span class="sc">+</span>x2<span class="sc">+</span>x3, <span class="at">data =</span> plan, </span>
+<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ranges =</span> </span>
+<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>                   <span class="fu">list</span>(<span class="at">cost=</span><span class="fu">c</span>(<span class="fl">0.001</span>, <span class="fl">0.01</span>, <span class="fl">0.1</span>, <span class="dv">1</span>, <span class="dv">5</span>, <span class="dv">10</span>),</span>
+<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>                        <span class="at">gamma =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.5</span>, <span class="dv">1</span>, <span class="dv">2</span>),</span>
+<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>                        <span class="at">kernel =</span> <span class="fu">c</span>(<span class="st">"linear"</span>, <span class="st">"radial"</span>, <span class="st">"polynomial"</span>)))</span>
+<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>tune.out<span class="sc">$</span>best.parameters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   cost gamma kernel
+35    5   0.5 radial</code></pre>
+</div>
+</div>
+<p>Refazendo a busca com grid mais amplo para <span class="math inline">\(C\)</span> e <span class="math inline">\(\gamma\)</span> com o kernel radial.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>tune.out2 <span class="ot">&lt;-</span> <span class="fu">tune</span>(svm, Ra <span class="sc">~</span> x1<span class="sc">+</span>x2<span class="sc">+</span>x3, </span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>                  <span class="at">data =</span> plan, </span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>                  <span class="at">kernel =</span> <span class="st">"radial"</span>,</span>
+<span id="cb27-4"><a href="#cb27-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">ranges =</span> </span>
+<span id="cb27-5"><a href="#cb27-5" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">list</span>(<span class="at">cost =</span> <span class="fu">seq</span>(<span class="fl">0.001</span>, <span class="dv">10</span>, <span class="at">length=</span><span class="dv">50</span>),</span>
+<span id="cb27-6"><a href="#cb27-6" aria-hidden="true" tabindex="-1"></a>                         <span class="at">gamma =</span> <span class="fu">seq</span>(<span class="dv">0</span>, <span class="dv">2</span>, <span class="at">length=</span><span class="dv">50</span>)))</span>
+<span id="cb27-7"><a href="#cb27-7" aria-hidden="true" tabindex="-1"></a>tune.out2<span class="sc">$</span>best.parameters</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        cost     gamma
+241 8.163449 0.1632653</code></pre>
+</div>
+</div>
+<p>Plotando o RMSE em função dos hiperparâmetros.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>tune_res <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(tune.out2<span class="sc">$</span>performances)</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>error_svm <span class="ot">&lt;-</span> <span class="fu">ggplot</span>(<span class="at">data =</span> tune_res,</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>                  <span class="at">mapping =</span> <span class="fu">aes</span>(<span class="at">x =</span> cost, <span class="at">y =</span> gamma, </span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>                                <span class="at">z =</span> <span class="fu">sqrt</span>(error), </span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a>                                <span class="at">fill =</span> <span class="fu">sqrt</span>(error))) <span class="sc">+</span></span>
+<span id="cb29-7"><a href="#cb29-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_tile</span>() <span class="sc">+</span></span>
+<span id="cb29-8"><a href="#cb29-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">fill =</span> <span class="st">"RMSE"</span>) <span class="sc">+</span></span>
+<span id="cb29-9"><a href="#cb29-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_distiller</span>(<span class="at">palette =</span> <span class="st">"Spectral"</span>,</span>
+<span id="cb29-10"><a href="#cb29-10" aria-hidden="true" tabindex="-1"></a>                       <span class="at">direction =</span> <span class="sc">-</span><span class="dv">1</span>) <span class="sc">+</span></span>
+<span id="cb29-11"><a href="#cb29-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_bw</span>()</span>
+<span id="cb29-12"><a href="#cb29-12" aria-hidden="true" tabindex="-1"></a>error_svm</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab7_files/figure-html/unnamed-chunk-24-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+</section>
+</section>
+
+</main>
+<!-- /main column -->
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>
