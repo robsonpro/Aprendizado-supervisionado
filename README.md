@@ -62,6 +62,11 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab6.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_cv.html
 
+### Laboratório 7
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab7.html
+
+
 ## Regressão por Modelos aditivos generalizados
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_GAM.html
