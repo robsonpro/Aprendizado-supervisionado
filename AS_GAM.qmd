@@ -7,7 +7,7 @@ editor: visual
 
 ## Regressão por splines
 
-Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores se comparados aos paramétricos dada sua alta  flexibilidade. Dentre estes destacam-se os modelos aditivos generalizados (*generalized aditive models* - GAM). O GAM foi introduzido por Hastie et al. (1987) e consiste em uma extensão dos modelos lineares generalizados (*Generalized Linear Models* - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear. Para falar sobre modelos aditivos generalizados é necessário primeiro introduzir a regressão por funções de passo, os polinômios por partes e a regressão por *splines*.
+Os métodos de regressão não-paramétrica ou semi-paramétrica, são geralmente superiores se comparados aos paramétricos dada sua alta flexibilidade. Dentre estes destacam-se os modelos aditivos generalizados (*generalized aditive models* - GAM). O GAM foi introduzido por Hastie et al. (1987) e consiste em uma extensão dos modelos lineares generalizados (*Generalized Linear Models* - GLM), com preditores lineares somados de funções de suavização não paramétricas dos preditores, geralmente de forma não-linear. Para falar sobre modelos aditivos generalizados é necessário primeiro introduzir a regressão por funções de passo, os polinômios por partes e a regressão por *splines*.
 
 ### Regressão por funções de passo ou escada
 
@@ -319,16 +319,12 @@ tr <- round(0.8*nrow(dados))
 treino <- sample(nrow(dados), tr, replace = F)
 
 library(gam)
-gam2 <- gam(price~s(gravity,5) + s(sulphur,5), family = gaussian, dados[treino,])
+gam2 <- gam(price~s(gravity) + s(sulphur), family = gaussian, dados[treino,])
 ```
 
 Considerando um GAM a partir de *splines* naturais em função dos dois parâmetros, pode-se um modelo para preço do barril do Petróleo.
 
 ```{r}
-#| message: false
-#| warning: false
-#| echo: false
-
 par(mfrow = c(1,2))
 plot(gam2, se=TRUE, col ="red", lwd = 2)
 ```
