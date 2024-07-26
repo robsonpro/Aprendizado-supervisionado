@@ -267,4 +267,4 @@ points(obs, col = "red", pch = 16)
 segments(obs$x, obs$y, pred$x, pred$y)
 ```
 
-O desempenho dos modelos não foi calculado para os dados de teste. Sugere-se fazê-lo de forma similar ao realizado para os modelos anteriores.
+O desempenho dos modelos não foi calculado para os dados de teste. Sugere-se fazê-lo de forma similar ao realizado nos capítulos anteriores.
