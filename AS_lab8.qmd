@@ -60,8 +60,6 @@ Modelo de regressão via função de passo ou escada (*step function*), consider
 #| warning: false
 #| echo: false
 lm_pas <- lm(GAG ~ 1 + I(1*(Age<6)) + (1*I(Age>= 6 & Age<12)) +  I(1*(Age>=12)), dados.treino)
-
-summary(lm_pas)
 ```
 Visualizando o modelo obtido.
 
@@ -269,3 +267,4 @@ points(obs, col = "red", pch = 16)
 segments(obs$x, obs$y, pred$x, pred$y)
 ```
 
+O desempenho dos modelos não foi calculado para os dados de teste. Sugere-se fazê-lo de forma similar ao realizado para os modelos anteriores.
