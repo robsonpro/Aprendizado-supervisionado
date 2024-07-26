@@ -71,6 +71,10 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab7.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_GAM.html
 
+### Laboratório 8
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab8.html
+
 ## Redes neurais para regressão
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_nnet.html
