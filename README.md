@@ -79,6 +79,10 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab8.html
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_nnet.html
 
+### Laboratório 9
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab9.html
+
 # Classificação
 
 ## Introdução a classificação
