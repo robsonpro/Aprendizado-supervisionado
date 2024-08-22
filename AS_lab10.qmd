@@ -1,0 +1,337 @@
+---
+title: "Laboratório 10 - Classificação via regressão logística"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+### Previsão se a pessoa tem ou não diabetes dado o nível de glicose: regressão logística simples
+
+Carregando pacotes.
+
+```{r}
+#| message: false
+#| warning: false
+library(gt)
+library(mlbench)
+library(dplyr)
+library(ggplot2)
+library(glmnet)
+library(plotROC)
+```
+
+Lendo os dados.
+
+```{r}
+data(PimaIndiansDiabetes2)
+# head(PimaIndiansDiabetes2)
+
+data <- PimaIndiansDiabetes2 |>
+  select(glucose,diabetes)
+
+head(data) |> gt()
+```
+
+Filtrar dados para remover valores `NA`.
+
+```{r}
+#| message: false
+#| warning: false
+
+data <- data %>% filter(!is.na(glucose), !is.na(diabetes))
+```
+
+Codificando a resposta em 0 e 1.
+
+```{r}
+data$diabetes <- ifelse(data$diabetes == "pos", 1, 0)
+```
+
+Dividindo dados para treinamento e teste.
+
+```{r}
+set.seed(7)
+treino <- sample(nrow(data), 0.75*nrow(data))
+dados_treino <- data[treino,]
+dados_test <- data[-treino,]
+```
+
+Modelo de regressão logística multinomial simples.
+
+```{r}
+model1 <- glm(diabetes ~ glucose, data = dados_treino, family = binomial)
+summary(model1)
+```
+
+Visualizando modelo.
+
+```{r}
+ggplot(dados_treino, aes(glucose, diabetes)) +
+  geom_point(aes(color = as.factor(diabetes)), alpha = 0.1) +
+  geom_smooth(method = "glm", 
+              method.args = list(family = "binomial"), 
+              se = F) +
+  labs(x = "Concentracao de glicose", 
+       y = "Probabilidade de ter diabetes",
+       color = "diabetes?") +
+  theme_bw()
+```
+
+Previsão e avaliação do modelo.
+
+```{r}
+prob_pred <- predict(model1, type = 'response', newdata = dados_test)
+y_pred <- ifelse(prob_pred > 0.5, 1, 0)
+head(y_pred)
+```
+
+Matriz de confusão.
+
+```{r}
+cm <- table(y = dados_test$diabetes, pred = y_pred)
+cm
+```
+
+Acuracidade.
+
+```{r}
+sum(cm[1,1],cm[2,2])/sum(cm)
+```
+
+### Previsão se a pessoa tem ou não diabetes em função do nível de glicose no sangue e da idade: regressão logística múltipla
+
+Leitura dos dados.
+
+```{r}
+#| message: false
+#| warning: false
+data2 <- PimaIndiansDiabetes2 |>
+  select(glucose,diabetes, age)
+
+head(data2) |> gt()
+```
+
+Pré-processamento inicial.
+
+```{r}
+#| message: false
+#| warning: false
+
+data2 <- data2 %>% filter(!is.na(glucose), !is.na(diabetes))
+
+data2$diabetes <- ifelse(data2$diabetes == "pos", 1, 0)
+
+set.seed(7)
+treino <- sample(nrow(data2), 0.75*nrow(data2))
+
+dados_treino2 <- data2[treino,]
+dados_test2 <- data2[-treino,]
+```
+
+Modelagem.
+
+```{r}
+#| message: false
+#| warning: false
+model2 <- glm(diabetes ~ scale(glucose) + scale(age), data = dados_treino2, family = binomial)
+summary(model2)
+```
+
+Plotando o modelo.
+
+```{r}
+grid <- expand.grid(glucose = seq(min(dados_test2$glucose), 
+                                max(dados_test2$glucose), length=200),
+                    age = seq(min(dados_test2$age), 
+                                  max(dados_test2$age), length=200))
+
+prob_grid <- predict(model2, type = 'response', newdata = grid)
+y_pred_grid <- ifelse(prob_grid > 0.5, 1, 0)
+
+grid$diabetes <- as.factor(y_pred_grid)
+
+ggplot() + 
+  geom_raster(aes(x = grid$glucose, y = grid$age, fill = grid$diabetes), 
+              alpha = .5) +
+  geom_point(aes(x = dados_test2$glucose, y = dados_test2$age, 
+                 color = as.factor(dados_test2$diabetes)), size = 2) + 
+  labs(x = "Nivel de glicose", y = "Idade", 
+       fill = "Diabetes", col = "Diabetes") + theme_bw()
+```
+
+Previsão e avaliação do modelo.
+
+```{r}
+prob_pred2 <- predict(model2, type = 'response', newdata = dados_test2)
+y_pred2 <- ifelse(prob_pred2 > 0.5, 1, 0)
+head(y_pred2)
+```
+
+Matriz de confusão.
+
+```{r}
+cm2 <- table(y = dados_test2$diabetes, pred = y_pred2)
+cm2
+```
+
+Acuracidade.
+
+```{r}
+sum(cm2[1,1],cm2[2,2])/sum(cm2)
+```
+
+Curva ROC comparando os dois modelos.
+
+```{r}
+data_roc <- data.frame(y=c(dados_test$diabetes,
+                           dados_test$diabetes),
+                       prob=c(prob_pred,prob_pred2),
+                       label=c(rep("model1",
+                                   nrow(dados_test)),
+                               rep("model2",
+                                   nrow(dados_test))))
+```
+
+```{r}
+
+ggplot(data_roc, 
+       aes(d = y,
+           m = prob,
+           color=label)) + geom_roc(n.cuts = 0) + theme_bw()
+```
+
+### Previsão se a pessoa tem ou não diabetes em função de diversas variáveis de saúde do indivíduo: Regressão logística múltipla com mais variáveis
+
+Leitura dos dados.
+
+```{r}
+#| message: false
+#| warning: false
+data3 <- PimaIndiansDiabetes2
+
+data3 <- na.omit(data3)
+
+head(data3) |> gt()
+```
+
+Normalizando dados.
+
+```{r}
+data3_sum <- data3[,-9] |>
+  summarise(across(everything(), 
+                       list(mean, sd)))
+data3_sum |> gt()
+
+data3[,1:8] <- scale(data3[,1:8])
+```
+
+Pré-processamento inicial.
+
+```{r}
+#| message: false
+#| warning: false
+
+data3$diabetes <- ifelse(data3$diabetes == "pos", 1, 0)
+
+set.seed(7)
+treino <- sample(nrow(data3), 0.75*nrow(data3))
+dados_treino3 <- data3[treino,]
+dados_test3 <- data3[-treino,]
+```
+
+Modelagem.
+
+```{r}
+#| message: false
+#| warning: false
+model3 <- glm(diabetes ~., data = dados_treino3, family = binomial)
+summary(model3)
+```
+
+Previsão e avaliação do modelo.
+
+```{r}
+prob_pred3 <- predict(model3, type = 'response', newdata = dados_test3)
+y_pred3 <- ifelse(prob_pred3 > 0.5, 1, 0)
+head(y_pred3)
+```
+
+Matriz de confusão.
+
+```{r}
+cm3 <- table(y = dados_test3$diabetes, pred = y_pred3)
+cm3
+```
+
+Acuracidade.
+
+```{r}
+sum(cm3[1,1],cm3[2,2])/sum(cm3)
+```
+
+### Regressão logística rígida para o exemplo anterior
+
+Pré-processamento inicial.
+
+```{r}
+X <- model.matrix(glucose ~ ., data3)[,-1]
+y <- data3$diabetes
+
+X.treino <- X[treino,]
+y.treino <- y[treino]
+```
+
+Grid para lambda.
+
+```{r}
+grid <- 10^seq(10, -2, length = 100)
+```
+
+Regressão rígida.
+
+```{r}
+rid1 <- glmnet(X.treino, y.treino, 
+               family = "binomial",
+               alpha = 0, 
+               lambda = grid)
+```
+
+Plotando coeficientes versus lambda.
+
+```{r}
+plot(rid1, xvar = "lambda", col = 1:8, ylim=c(0,1))
+legend("topright", lwd = 1, col = 1:8, 
+       legend = colnames(X.treino), cex = .7)
+```
+
+Obtendo lambda ótimo via cv e *grid search*.
+
+```{r}
+rid.cv <- cv.glmnet(X.treino, y.treino, alpha = 0)
+bestlam <- rid.cv$lambda.min # selecionando lambda otimo
+bestlam
+```
+
+Previsão para teste e matriz de confusão.
+
+```{r}
+prob_pred4 <- predict(rid1, s = bestlam, 
+                     type = 'response',
+                     newx = X[-treino,])
+
+rid1.pred <- ifelse(prob_pred4 > 0.5, 1, 0)
+
+table(y=y[-treino], pred=rid1.pred)
+```
+
+Curva ROC.
+
+```{r}
+test_res <- data.frame(y = y[-treino],
+                       pred = rid1.pred[,1], 
+                       prob = prob_pred4[,1])
+
+ggplot(test_res, 
+       aes(d = y,
+           m = prob)) + geom_roc(n.cuts = 0) + theme_bw()
+```
