@@ -92,3 +92,11 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_class.html
 ## Regressão logística
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_logreg.html
+
+### Laboratório 10
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab10.html
+
+## Análise discriminante linear
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lda.html
