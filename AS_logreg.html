@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -121,7 +121,7 @@ p(y=0|x)=\frac{e^{-(\beta_0+\beta_1x)}}{1 + e^{-(\beta_0+\beta_1x)}} \\
 <p><span class="math display">\[
 \frac{p(y=1|x)}{1-p(y=1|x)} = e^{\beta_0+\beta_1x}
 \]</span></p>
-<p>Tal razão tem domínio entre 0 e <span class="math inline">\(\infty\)</span>, com uma razão unitária indicando chance igual de ocorrência de ambos grupos, uma razão maior que 1 indicando maior chance de ocorrência do grupo 1 e uma razão menor que 1 indicando maior probabilidade de ocorrência do grupo 0. Aplicando logaritmo em ambos os lados do último resultado, verifica-se que o modelo de regressão logística (entenda-se aqui log como o logaritmo neperiano), obtido a partir da aplicação da função logit, pode ser concebido como um modelo de regressão linear simples para o log da razão de chance. O lado esquerdo da relação é chamado de <em>log-odds</em> ou logit, que viabiliza a obtenção da subtração das probabilidades em escala log, <span class="math inline">\(\text{log }\frac{p}{(1-p)} = \text{log } p - \text{log }(1-p)\)</span>.</p>
+<p>Tal razão tem domínio entre 0 e <span class="math inline">\(\infty\)</span>, com uma razão unitária indicando chance igual de ocorrência de ambos grupos, uma razão maior que 1 indicando maior chance de ocorrência do grupo 1 e uma razão menor que 1 indicando maior probabilidade de ocorrência do grupo 0. Aplicando logaritmo em ambos os lados do último resultado, verifica-se que o modelo de regressão logística (entenda-se aqui log como o logaritmo neperiano), obtido a partir da aplicação da função logit, pode ser concebido como um modelo de regressão linear simples para o log da razão de chance. O lado esquerdo da relação é chamado de <em>log-odds</em> ou logit, que viabiliza a obtenção da subtração das probabilidades em escala log, <span class="math inline">\(\text{log }\frac{p}{(1-p)} = \text{log } p - \text{log }(1-p)\)</span>. Ademais, o logit permite converter a probabilidade que tem dom+inio de 0 a 1 para uma resposta que tem domínio em <span class="math inline">\((-\infty,+\infty)\)</span>.</p>
 <p><span class="math display">\[
 \text{log } \biggl(\frac{p(y=1|x)}{1-p(y=1|x)}\biggr) = \beta_0+\beta_1x
 \]</span></p>
@@ -610,6 +610,7 @@ l(\beta) = \sum_{i=1}^N y_i(\beta^T\mathbf{x}_i) - \text{log } \bigl( 1+ e^{(\be
 </style>
 <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <thead>
+    
     <tr class="gt_col_headings">
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="glucose">glucose</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="diabetes">diabetes</th>
@@ -1132,6 +1133,7 @@ p(y=1|x) = \frac{1}{1 + e^{-(\beta_0+\beta_1x_1+\beta_2x_2+\ldots+\beta_kx_k)}}
 </style>
 <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <thead>
+    
     <tr class="gt_col_headings">
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="glucose">glucose</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="diabetes">diabetes</th>
@@ -2130,6 +2132,7 @@ Acc = \frac{TP+TN}{TP+TN+FP+FN} = \frac{\sum I(\hat{y}=y)}{n}
 </style>
 <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <thead>
+    
     <tr class="gt_col_headings">
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="pregnant">pregnant</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="glucose">glucose</th>

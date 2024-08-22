@@ -39,12 +39,11 @@ ggplot(iphone, aes(x,y, group=compra)) +
   theme_bw()
 ```
 
-Inicialmente alguém poderia pensar em estimar uma reta via mínimos quadrados para prever a probabilidade do indivíduo comprar o iphone segundo o seu salário, isto é: 
+Inicialmente alguém poderia pensar em estimar uma reta via mínimos quadrados para prever a probabilidade do indivíduo comprar o iphone segundo o seu salário, isto é:
 
 $$
 p(y=1|x) =\beta_0+\beta_1x
-$$ 
-Tal procedimento resultaria na regressão plotada abaixo. O problema é que a reta obtida prevê probabilidades negativas para salários menores que R\$3200 reais e probabilidades maiores que 1 para salários maiores que R\$19300. Tais previsões são irreais, uma vez que $p(y) \in [0,1]$.
+$$ Tal procedimento resultaria na regressão plotada abaixo. O problema é que a reta obtida prevê probabilidades negativas para salários menores que R\$3200 reais e probabilidades maiores que 1 para salários maiores que R\$19300. Tais previsões são irreais, uma vez que $p(y) \in [0,1]$.
 
 ```{r}
 #| message: false
@@ -79,7 +78,6 @@ ggplot(data, aes(z,p)) +
   geom_line(size=1) +
   theme_bw()
 ```
-
 
 Aplicando um modelo linear em função da variável independente em tal função, isto é, fazendo $z=\beta_0+\beta_1x$, obtém-se o modelo de regressão logística, conforme segue.
 
@@ -119,8 +117,7 @@ $$
 \frac{p(y=1|x)}{1-p(y=1|x)} = e^{\beta_0+\beta_1x}
 $$
 
-Tal razão tem domínio entre 0 e $\infty$, com uma razão unitária indicando chance igual de ocorrência de ambos grupos, uma razão maior que 1 indicando maior chance de ocorrência do grupo 1 e uma razão menor que 1 indicando maior probabilidade de ocorrência do grupo 0. 
-Aplicando logaritmo em ambos os lados do último resultado, verifica-se que o modelo de regressão logística (entenda-se aqui log como o logaritmo neperiano), obtido a partir da aplicação da função logit, pode ser concebido como um modelo de regressão linear simples para o log da razão de chance. O lado esquerdo da relação é chamado de *log-odds* ou logit, que viabiliza a obtenção da subtração das probabilidades em escala log, $\text{log }\frac{p}{(1-p)} = \text{log } p - \text{log }(1-p)$.
+Tal razão tem domínio entre 0 e $\infty$, com uma razão unitária indicando chance igual de ocorrência de ambos grupos, uma razão maior que 1 indicando maior chance de ocorrência do grupo 1 e uma razão menor que 1 indicando maior probabilidade de ocorrência do grupo 0. Aplicando logaritmo em ambos os lados do último resultado, verifica-se que o modelo de regressão logística (entenda-se aqui log como o logaritmo neperiano), obtido a partir da aplicação da função logit, pode ser concebido como um modelo de regressão linear simples para o log da razão de chance. O lado esquerdo da relação é chamado de *log-odds* ou logit, que viabiliza a obtenção da subtração das probabilidades em escala log, $\text{log }\frac{p}{(1-p)} = \text{log } p - \text{log }(1-p)$. Ademais, o logit permite converter a probabilidade que tem dom+inio de 0 a 1 para uma resposta que tem domínio em $(-\infty,+\infty)$.
 
 $$
 \text{log } \biggl(\frac{p(y=1|x)}{1-p(y=1|x)}\biggr) = \beta_0+\beta_1x
@@ -211,7 +208,7 @@ dados_treino <- data[treino,]
 dados_test <- data[-treino,]
 ```
 
-Seja um modelo de regressão logística para tal caso considerando como observações de treino 75\% das observações disponíveis tomadas aleatoriamente.
+Seja um modelo de regressão logística para tal caso considerando como observações de treino 75% das observações disponíveis tomadas aleatoriamente.
 
 ```{r}
 #| message: false
@@ -220,6 +217,7 @@ Seja um modelo de regressão logística para tal caso considerando como observa�
 model1 <- glm(diabetes ~ glucose, data = dados_treino, family = binomial)
 summary(model1)
 ```
+
 O coeficiente relacionado ao nível de glicose apresenta significância estatística. No caso da regressão logística os coeficientes do modelo não podem ser diretamente interpretados considerando a probabilidade prevista, mas sim o log da razão de chance, de forma que neste caso apresentam interpretação similar aos coeficientes de regressão linear simples. Tal modelo pode ser plotado, conforme segue.
 
 ```{r}
@@ -236,7 +234,6 @@ ggplot(dados_treino, aes(glucose, diabetes)) +
        color = "diabetes?") +
   theme_bw()
 ```
-
 
 ```{r}
 #| message: false
@@ -351,7 +348,7 @@ $$
 
 ### Regressão logística binária múltipla
 
-Seja o caso onde deseja-se estudar a probabilidade de sucesso de uma variável de resposta categórica binária em função de múltiplos preditores, $x_1,x_2,\ldots,x_k$, $p(y=1|x_1,x_2,\ldots,x_k)$. 
+Seja o caso onde deseja-se estudar a probabilidade de sucesso de uma variável de resposta categórica binária em função de múltiplos preditores, $x_1,x_2,\ldots,x_k$, $p(y=1|x_1,x_2,\ldots,x_k)$.
 
 Um modelo de regressão logística múltipla pode ser escrito conforme segue.
 
@@ -363,8 +360,7 @@ Seja a matrix de observações das variáveis preditoras $\mathbf{X}_{[N\times (
 
 $$
 \frac{\partial l(\beta)}{\partial \beta} = \mathbf{X}^T(\mathbf{y}-\mathbf{p}) \\
-$$
-$$
+$$ $$
 \frac{\partial^2 l(\beta)}{\partial \beta \partial\beta^T} = -\mathbf{X}^T\mathbf{W}\mathbf{X}
 $$
 
@@ -374,7 +370,7 @@ $$
 \beta_{t+1}=\beta_t - (\mathbf{X}^T\mathbf{W}\mathbf{X})^{-1}\mathbf{X}^T(\mathbf{y}-\mathbf{p})
 $$
 
-Considerando ainda o caso onde deseja-se prever se a pessoa tem ou não diabetes, porém, não apenas em função do nível de glicose no sangue, mas também em função da idade. 
+Considerando ainda o caso onde deseja-se prever se a pessoa tem ou não diabetes, porém, não apenas em função do nível de glicose no sangue, mas também em função da idade.
 
 ```{r}
 #| message: false
@@ -404,7 +400,7 @@ dados_treino <- data[treino,]
 dados_test <- data[-treino,]
 ```
 
-Seja um modelo de regressão logística para tal caso, tomando novamente 75\% das observações disponíveis parta treino. No caso múltiplo é importante padronizar as variáveis.
+Seja um modelo de regressão logística para tal caso, tomando novamente 75% das observações disponíveis parta treino. No caso múltiplo é importante padronizar as variáveis.
 
 ```{r}
 #| message: false
@@ -414,13 +410,13 @@ model2 <- glm(diabetes ~ scale(glucose) + scale(age), data = dados_treino, famil
 summary(model2)
 ```
 
-Pode-se observar que o coeficiente para a idade é significativo, porém não tanto quanto o coeficiente do nível de glicose. 
+Pode-se observar que o coeficiente para a idade é significativo, porém não tanto quanto o coeficiente do nível de glicose.
 
 O modelo de regressão logística apresenta pressuposiçoes similares ao modelo de regressão linear, tais como: independência das observações, linearidade dos dados, homogeneidade dos erros, independência dos erros e ausência de multicolinearidade. Entretanto, como este curso é mais voltado para previsão e menos para inferência, será dada mais ênfase nas métricas de previsão para avaliar a capacidade de generalização do modelo.
 
 ### Avaliação da capacidade de previsão do modelo de regressão
 
-Conforme já discutido, o modelo de regressão logística é útil para prever a probabilidade de ocorrência de uma classe de interesse. No entanto,em aprendizado deseja-se classificar observações futuras. Para usar um modelo de regressão logística para tal fim deve-se discretizar a probabilidade considerando um valor de corte de interesse, geralmente $p=0,5$. 
+Conforme já discutido, o modelo de regressão logística é útil para prever a probabilidade de ocorrência de uma classe de interesse. No entanto,em aprendizado deseja-se classificar observações futuras. Para usar um modelo de regressão logística para tal fim deve-se discretizar a probabilidade considerando um valor de corte de interesse, geralmente $p=0,5$.
 
 $$
 \biggl\{
@@ -444,8 +440,7 @@ confmat |> gt() |>
   tab_options(column_labels.hidden = TRUE)
 ```
 
-
-A matriz de confusão a seguir apresenta os resultados do modelo de regressão logística aplicados aos 25\% dos dados separados para teste para o exemplo de classificação de diabéticos. Pode-se observar que de 120 pessoas sem diabetes, $y=0$, o modelo classifica corretamente 105 pessoas, resultando em 15 falsos positivos, enquanto de 71 pessoas com diabetes, o modelo classifica corretamente 36 e resulta em 35 falsos negativos. 
+A matriz de confusão a seguir apresenta os resultados do modelo de regressão logística aplicados aos 25% dos dados separados para teste para o exemplo de classificação de diabéticos. Pode-se observar que de 120 pessoas sem diabetes, $y=0$, o modelo classifica corretamente 105 pessoas, resultando em 15 falsos positivos, enquanto de 71 pessoas com diabetes, o modelo classifica corretamente 36 e resulta em 35 falsos negativos.
 
 ```{r}
 #| message: false
@@ -459,7 +454,7 @@ cm2 <- table(y = dados_test$diabetes, pred = y_pred2)
 cm2
 ```
 
-A partir da matriz de confusão é possível calcular a acuracidade do modelo. De forma geral a acuracidade do modelo pode ser expressa considerando a proporção de acerto, conforme segue, onde TP é o número de verdadeiros positivos (*true positive*), TN é o número de verdadeiros negativos (*true negative*), FP é o número de falsos positivos (*false positive*), FN é o número de false negativos (*false negative*). De forma geral $I(\hat{y}=y)$ é uma função indicativa que retorna 1, se veraddeira, sendo que a soma $\sum I(\hat{y}=y)$ considera o total de classificações corretas, $TP+TN$, sendo n o total de observações de teste. Para o exemplo a acuracidade é de 73,82\%.
+A partir da matriz de confusão é possível calcular a acuracidade do modelo. De forma geral a acuracidade do modelo pode ser expressa considerando a proporção de acerto, conforme segue, onde TP é o número de verdadeiros positivos (*true positive*), TN é o número de verdadeiros negativos (*true negative*), FP é o número de falsos positivos (*false positive*), FN é o número de false negativos (*false negative*). De forma geral $I(\hat{y}=y)$ é uma função indicativa que retorna 1, se veraddeira, sendo que a soma $\sum I(\hat{y}=y)$ considera o total de classificações corretas, $TP+TN$, sendo n o total de observações de teste. Para o exemplo a acuracidade é de 73,82%.
 
 $$
 Acc = \frac{TP+TN}{TP+TN+FP+FN} = \frac{\sum I(\hat{y}=y)}{n}
@@ -531,7 +526,7 @@ model3 <- step(model3, trace=F)
 summary(model3)
 ```
 
-A matriz de confusão obtida é apresentada a seguir. A acuracidade para este modelo é de 82,65\%. 
+A matriz de confusão obtida é apresentada a seguir. A acuracidade para este modelo é de 82,65%.
 
 ```{r}
 #| message: false
@@ -544,7 +539,7 @@ cm3 <- table(y = dados_test$diabetes, pred = y_pred3)
 cm3
 ```
 
-Em problemas de classificação da área de saúde a sensitividade a especificidade são usadas, sendo a primeira  a probabilidade de prever a doença dado que a pessoa é de fato doente, enquanto a especificidade consiste na probabilidade de prever como não doente dado que a pessoa de fato não o é. Para o exemplo estudado, considerando o último modelo obtido, tem-se uma sensibilidade igual a 62,5\% e uma especificidade igual a 92,42\%.
+Em problemas de classificação da área de saúde a sensitividade a especificidade são usadas, sendo a primeira a probabilidade de prever a doença dado que a pessoa é de fato doente, enquanto a especificidade consiste na probabilidade de prever como não doente dado que a pessoa de fato não o é. Para o exemplo estudado, considerando o último modelo obtido, tem-se uma sensibilidade igual a 62,5% e uma especificidade igual a 92,42%.
 
 $$
 \biggl\{
@@ -554,17 +549,20 @@ Spec = \frac{TN}{TN+FP}
 \end{matrix}
 $$
 
-A curva ROC (*receiver operating characteristics*) mede graficamente a relação entre tais medidas e é plotada para o exemplo a seguir. Pode-se observar que para obter uma especificidade igual a 92\% tem-se 62.5\% de sensitividade.
+A curva ROC (*receiver operating characteristics*) mede graficamente a relação entre tais medidas e é plotada para o exemplo a seguir. Pode-se observar que para obter uma especificidade igual a 92% tem-se 62.5% de sensitividade.
 
 ```{r}
 #| message: false
 #| warning: false
 #| echo: false
 
-library(pROC)
+library(plotROC)
 
-rocobj <- roc(dados_test$diabetes, y_pred3)
-ggroc(rocobj) + theme_bw()
+rocobj <- data.frame(y= dados_test$diabetes, 
+              prob = y_pred3)
+ggplot(rocobj, 
+       aes(d = y,
+           m = prob)) + geom_roc(n.cuts = 0) + theme_bw()
 ```
 
 A área abaixo da curva ROC também é utilizada como métrica de capacidade de previsão. Para o exemplo a curva apresentada tem área igual a 0,775 abaixo dela.
