@@ -93,7 +93,7 @@ Se o log da razão de chance for maior que 0, então classifica-se $y$ como pert
 $$
 \begin{align}
 \hat{\mu}_c & = \frac{1}{n_c}\sum_{i:y_i=c}x_i \\
-\hat{\sigma}^2 &=\frac{1}{n-C}\sum_{c=1}^C\sum_{i:y_i=c}(x_i-\hat{\mu}_i)^2
+\hat{\sigma}^2 &=\frac{1}{n-C}\sum_{c=1}^C\sum_{i:y_i=c}(x_i-\hat{\mu}_i)^2 \\
 \end{align}
 $$
 
@@ -149,7 +149,7 @@ Tomando novamente o logaritmo da razão de chance, os coeficientes de regressão
 $$
 \begin{align}
 \beta_0 &= \frac{\mu_2^2-\mu_1^2}{2\sigma^2} \\
-\beta_1 &= \frac{\mu_1-\mu_2}{\sigma^2}
+\beta_1 &= \frac{\mu_1-\mu_2}{\sigma^2} \\
 \end{align}
 $$
 
@@ -216,7 +216,7 @@ $$
 \text{log } \biggl(\frac{p(y=1|\mathbf{x})}{p(y=2|\mathbf{x})}\biggr) = (\mu_1-\mu_2)^T\Sigma^{-1}\mathbf{x} - \frac{1}{2}(\mu_1-\mu_2)^T\Sigma^{-1}(\mu_1+\mu_2)
 $$
 
-A seguir o exemplo plotado anteriormente é novamente exibido em curvas de contorno com a fronteira obtida para discriminar as classes.
+A seguir o exemplo plotado anteriormente é novamente exibido em curvas de contorno com a fronteira obtida para discriminar as classes, além dos dados amostrais considerados.
 
 ```{r}
 #| message: false
@@ -224,23 +224,22 @@ A seguir o exemplo plotado anteriormente é novamente exibido em curvas de conto
 #| echo: false
 m1 <- c(0, 0)
 S1 <- matrix(c(1, -0.7, -0.7, 1), 2)
-d1 <- mvrnorm(100,m1,S1)
 
 m2 <- c(2, 2)
 S2 <- S1
-d2 <- mvrnorm(100,m2,S2)
-
-d <- data.frame(rbind(d1,d2))
-d$y <- c(rep("1", 100),rep("2", 100))
 
 xs <- seq(-3, 5, length = 100)
 ys <- seq(-3, 5, length = 100)
 xys <- expand.grid(x1 = xs, x2 = ys)
 
 xys_matrix <- as.matrix(xys)
-
 xys$z1 <- dmvnorm(xys_matrix, mean = m1, sigma = S1)
 xys$z2 <- dmvnorm(xys_matrix, mean = m2, sigma = S2)
+
+d1 <- rmvnorm(100,m1,S1)
+d2 <- rmvnorm(100,m2,S2)
+data <- data.frame(rbind(d1,d2))
+data$classe = c(rep("1", 100), rep("2", 100))
 
 Sigma <- S1
 inv_Sigma <- solve(Sigma)
@@ -256,12 +255,12 @@ contour_data <- function(x) {
 line_data <- contour_data(xs)
 
 ggplot() +
-  geom_contour(data = xys, aes(x = x1, y = x2, z = z1, color = after_stat(level)), bins = 5) +
-  geom_contour(data = xys, aes(x = x1, y = x2, z = z2, color = after_stat(level)), bins = 5, linetype = "dashed") +
-  geom_point(data = d, aes(X1,X2,pch=y),alpha=0.3) +
-  geom_line(data = line_data, aes(x = x, y = y), col="gold", lty=2,lwd=1) +
-  scale_color_gradient(low = "seagreen", high = "mediumvioletred") +
-  labs(x = "x1", y = "x2") +
+  geom_contour(data = xys, aes(x = x1, y = x2, z = z1, color = ..level..), bins = 10) +
+  geom_contour(data = xys, aes(x = x1, y = x2, z = z2, color = ..level..), bins = 10, linetype = "dashed") +
+  geom_point(data=data, aes(x=X1,y=X2,pch=classe), alpha=.5) +
+  geom_line(data = line_data, aes(x = x, y = y), color = "black", size = 1) +
+  scale_color_gradient(low = "blue", high = "red") +
+  labs(x = "x1", y = "x2", col = "prob") +
   theme_bw()
 ```
 
@@ -292,3 +291,56 @@ u(\mathbf{x}) & = -\frac{1}{2}(\mathbf{x}-\mu_c)^T|\Sigma|^{-1}(\mathbf{x}-\mu_c
 u(\mathbf{x}) & = \mathbf{x}^T\Sigma^{-1}\mu_c-\frac{1}{2}\mu_c^T\Sigma^{-1}\mu_c \\
 \end{align}
 $$
+
+Considere o famoso conjunto de dados `Iris`, comumente atribuído a Fisher, o qual contém medições em centímetros do comprimento e largura de pétalas e sépalas de três distintas espécies de orquídeas. A seguir são observadas as primeiras linhas de tal conjunto de dados.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(datasets)
+data(iris)
+data <- iris
+
+library(gt)
+head(iris) |> gt()
+```
+
+Pode-se plotar aos pares tais variáveis considerando também as distribuições individuais e correlações separadas por espécies. 
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(GGally)
+ggpairs(iris, aes(col=Species, alpha=.5)) + theme_bw()
+```
+
+Tomando aleatoriamente 75% das observações para treino, um modelo obtido via LDA é obtido conforme segue.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+set.seed(1)
+
+tr <- round(0.75*nrow(data))
+treino <- sample(nrow(data), tr, replace = F)
+
+data.treino <- data[treino,]
+data.teste <- data[-treino,]
+
+library(MASS)
+fit.lda1 <- lda(Species ~ ., data.treino)
+fit.lda1
+
+lda.pred1 <- predict(fit.lda1, newdata=data.teste)
+```
+
+Aplicando tal modelo aos dados de teste, obtém-se a seguinte matriz de confusão. Pode-se observar que o modelo acertou 100% das classificações de teste.
+
+```{r}
+cm1 <- table(y=data.teste$Species, pred=lda.pred1$class)
+cm1
+```
