@@ -307,7 +307,7 @@ library(gt)
 head(iris) |> gt()
 ```
 
-Pode-se plotar aos pares tais variáveis considerando também as distribuições individuais e correlações separadas por espécies. 
+Pode-se plotar aos pares tais variáveis considerando também as distribuições individuais e correlações separadas por espécies.
 
 ```{r}
 #| message: false
@@ -341,6 +341,9 @@ lda.pred1 <- predict(fit.lda1, newdata=data.teste)
 Aplicando tal modelo aos dados de teste, obtém-se a seguinte matriz de confusão. Pode-se observar que o modelo acertou 100% das classificações de teste.
 
 ```{r}
+#| message: false
+#| warning: false
+#| echo: false
 cm1 <- table(y=data.teste$Species, pred=lda.pred1$class)
 cm1
 ```
