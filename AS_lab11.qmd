@@ -1,0 +1,67 @@
+---
+title: "Laboratório 11 - Classificação via Análise Discriminante Linear"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Classificação de dois tipos de orquídeas em função dalargura da pétala: LDA binária simples
+
+Carregando pacotes.
+
+```{r}
+#| message: false
+#| warning: false
+library(datasets)
+library(gt)
+library(dplyr)
+library(MASS)
+library(ggplot2)
+```
+
+Leitura dos dados.
+
+```{r}
+data(iris)
+data <- iris |>
+  filter(Species!= "setosa") |>
+  dplyr::select(Petal.Width, Species)
+
+head(data) |> gt()
+```
+
+Visualizando dados.
+
+```{r}
+ggplot(data, aes(x = Petal.Width, col = Species)) +
+  geom_density() +
+  geom_point(aes(y=0, shape = Species), alpha=0.3) +
+  xlim(.5,3) +
+  theme_bw()
+```
+
+
+Dividindo os dados para treino e teste.
+
+```{r}
+set.seed(7)
+treino <- sample(nrow(data), 0.75*nrow(data))
+dados_treino <- data[treino,]
+dados_teste <- data[-treino,]
+```
+
+Treinamento e teste do modelo.
+
+```{r}
+fit.lda1 <- lda(Species ~ Petal.Width, dados_treino)
+fit.lda1
+```
+
+```{r}
+lda.pred1 <- predict(fit.lda1, newdata=dados_teste)
+
+cm1 <- table(y=dados_teste$Species, pred=lda.pred1$class)
+cm1
+```
+
+
