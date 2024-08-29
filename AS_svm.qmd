@@ -7,10 +7,9 @@ editor: visual
 
 ## Máquinas de vetores de suporte
 
-
 ### Classificador de máxima margem
 
-Seja um problema de classificação binário, $y=\{-1,1\}$ em função de duas variáveis regressores, $\mathbf{x}=[x_1,x_2]^T$, conforme ilustrado abaixo.
+Seja um problema de classificação binária, $y=\{-1,1\}$ em função de duas variáveis regressoras, $\mathbf{x}=[x_1,x_2]^T$, conforme ilustrado abaixo.
 
 ```{r}
 #| message: false
@@ -66,8 +65,7 @@ ggplot(data, aes(x = x1, y = x2, color = classe, pch = classe)) +
   theme_bw()
 ```
 
-A regra de classificação usando um hiperplano que faz a classificação perfeita é descrita a seguir:
-$$
+A regra de classificação usando um hiperplano que faz a classificação sem erros é descrita a seguir: $$
 \begin{align}
 \text{Se: } b+w_1x_1+w_2x_2>0 \text{, Então: } y=+1 \\
 \text{Se: } b+w_1x_1+w_2x_2<0 \text{, Então: } y=-1 \\
@@ -77,7 +75,6 @@ $$
 Logo, pode-se garantir que, para qualquer observação $y_i$ de interesse $y_i(b+w_1x_1+w_2x_2)>0$, de forma que sempre seja realizada a classificação correta.
 
 Para garantir a obtenção deste hiperplano, usa-se o conceito de máxima margem. O separador de máxima margem é ilustrado em linha contínua a seguir. A distância entre ele e as linhas tracejadas paralelas é o que se denomina de margem. Os pontos que se distanciam do hiperplano com distância igual à margem são os vetores de suporte, sendo destacados com quadrado azul. Considerando a margem com comprimento unitário, $M=1$, pode-se dizer que $b+w_1x_1+w_2x_2 = 1$, para os pontos que coincidem com a margem superior, enquanto $b+w_1x_1+w_2x_2 = -1$, para os pontos que interceptam a margem inferior.
-
 
 ```{r}
 #| message: false
@@ -108,16 +105,17 @@ ggplot(data, aes(x = x1, y = x2, color = classe, pch = classe)) +
   xlim(0,max(data$x1)) +
   theme_bw()
 ```
-Logo, para casos perfeitamente separáveis não sequer um ponto que satisfaça $b+w_1x_1+w_2x_2=0$, porém todos os pontos satisfazem a seguinte condição:
+
+Logo, para casos perfeitamente separáveis não há sequer um ponto que satisfaça $b+w_1x_1+w_2x_2=0$, porém todos os pontos satisfazem: 
 $$
 \begin{align}
 \text{Se: } b+w_1x_1+w_2x_2\geq 1 \text{, Então: } y=+1 \\
 \text{Se: } b+w_1x_1+w_2x_2\leq-1 \text{, Então: } y=-1, \\
 \end{align}
-$$
-de forma que $y_i(b+w_1x_1+w_2x_2)\geq1$. 
+$$ 
+de forma que $y_i(b+w_1x_1+w_2x_2)\geq1$.
 
-Para encontrar tal hiperplano, busca-se maximizar a margem. Para tal maximização, pode-se considerar a diferença da projeção dos vetores de suporte, no vetor dos coeficientes, $(\mathbf{w}^T\mathbf{x}_a - \mathbf{w}^T\mathbf{x}_b)/||\mathbf{w}|| = 2/||\mathbf{w}||$, onde $||\mathbf{w}||$ é o comprimento vetorial ou norma de $\mathbf{w}$, $||\mathbf{w}||=\sqrt{w_1^2+w_2^2}$. Logo o problema a ser resolvido pode ser formulado como segue.
+Para encontrar tal hiperplano, busca-se maximizar a margem. Para tal maximização, pode-se considerar a diferença da projeção dos vetores de suporte, no vetor dos coeficientes, $(\mathbf{w}^T\mathbf{x}_a - \mathbf{w}^T\mathbf{x}_b)/||\mathbf{w}|| = 2/||\mathbf{w}||$, onde $||\mathbf{w}||$ é o comprimento vetorial ou norma de $\mathbf{w}$, $||\mathbf{w}||=\sqrt{w_1^2+w_2^2}$. Logo, o problema a ser resolvido pode ser formulado como segue.
 
 ```{r}
 #| message: false
@@ -151,7 +149,6 @@ Para encontrar tal hiperplano, busca-se maximizar a margem. Para tal maximizaç�
 #   theme_bw()
 ```
 
-
 $$
 \begin{aligned}
     \text{Max } & \begin{Bmatrix}
@@ -164,7 +161,7 @@ $$
 \end{aligned}
 $$
 
-Tal problema é análogo à seguinte formulação. O quadrado da norma facilita a otimização, transformando a função a ser minimizada em convexa.
+Tal problema é análogo à seguinte formulação. O quadrado da norma facilita a otimização, garanindo a convexidade da função a ser minimizada. 
 $$
 \begin{aligned}
     \text{Min } & \begin{Bmatrix}
@@ -179,7 +176,7 @@ $$
 
 ### Classificador de vetores de suporte
 
-Para casos não perfeitamente separáveis, pode-se permitir que a restrição que até então garantia a classificação perfeita seja violada. Abaixo ilustra-se um caso não perfeitamente separável, já com o classificador de vetores de suporteplotado. Pode-se observar que para a classe +1 todos os pontos foram classificados de forma correta, porém ao menos um deles ficou dentro da margem. Já para a classe -1, dois pontos foram classficados incorretamente, sendo um dentro e outro para além da margem oposta.
+Para casos não perfeitamente separáveis, pode-se permitir que a restrição que até então garantia a classificação perfeita seja violada. Abaixo ilustra-se um caso não perfeitamente separável, já com o classificador de vetores de suporte plotado. Pode-se observar que para a classe +1 todos os pontos foram classificados de forma correta, porém ao menos um deles ficou dentro da margem. Já para a classe -1, dois pontos foram classficados incorretamente, sendo um dentro e outro para além da margem oposta.
 
 ```{r}
 #| message: false
@@ -276,11 +273,11 @@ ggplot(dados, aes(x = x1, y = x2, group = y)) +
   labs(col = "classe", pch = "classe") + theme_bw()
 ```
 
-Para construir tal classificador, seja a função lagrangeana correspondente à formulação do classificador de vetores de suporte, a qual comporta objetivos e restrições em uma única função.
+Para construir tal classificador, seja a função lagrangeana correspondente à formulação do classificador de vetores de suporte, a qual comporta objetivos e restrições em uma única função. 
 $$
 L=\frac{||\mathbf{w}||^2}{2} + C\sum_i\xi_i - \sum_i\alpha_i(y_i(\mathbf{w}^T\mathbf{x}_i + b) - 1 + \xi_i) -\sum_i\beta_i\xi_i\text{ ,}
-$$
-onde $\alpha_i$ e $\beta_i$ são os multiplicadores de Lagrange, $\alpha_i \geq0$ e $\beta_i\geq0$ , $i=1,...,N$. Para resolver tal problema deve-se derivar tal função em relação aos parâmetros do modelo e igualar a zero, isto é:
+$$ 
+onde $\alpha_i$ e $\beta_i$ são os multiplicadores de Lagrange, $\alpha_i \geq0$ e $\beta_i\geq0$ , $i=1,...,N$. Para resolver tal problema deve-se derivar tal função em relação aos parâmetros do modelo e igualar a zero, isto é: 
 $$
 \begin{align}
 \frac{\partial L}{\partial \mathbf{w}} &= \mathbf{w} - \sum_i\alpha_iy_i\mathbf{x}_i = 0 \\ 
@@ -289,7 +286,7 @@ $$
 \end{align}
 $$
 
-Logo:
+Logo: 
 $$
 \begin{align}
 \mathbf{w} &=  \sum_i\alpha_iy_i\mathbf{x}_i \\ 
@@ -298,7 +295,7 @@ $$
 \end{align}
 $$
 
-Substituindo tais resultados na função lagrandgeana, pode-se formular o problema dual, conforme segue.
+Substituindo tais resultados na função lagrangeana, pode-se formular o problema dual, conforme segue. 
 $$
 \begin{aligned}
     \text{Max } & \begin{Bmatrix}
@@ -312,12 +309,12 @@ $$
 \end{aligned}
 $$
 
-A resolução do problema dual em si apenas facilita a otimização dos parâmetros do modelo. Entretanto, é necessário algo mais para obtenção de classificadores que se adaptem a dados não lineares. Para tal, usa-se o chamado truque de kernel. O modelo apresentado inicialmente, $b+\mathbf{w}^T\mathbf{x}=0$ mpode ser escrito considerando os multiplicadores de lagrange conforme segue:
+A resolução do problema dual em si apenas facilita a otimização dos parâmetros do modelo. Entretanto, é necessário algo mais para obtenção de classificadores que se adaptem a dados não lineares. Para tal, usa-se o chamado truque de *kernel*. O modelo apresentado inicialmente, $b+\mathbf{w}^T\mathbf{x}=0$ pode ser escrito considerando os multiplicadores de lagrange conforme segue: 
 $$
 \sum_i\alpha_iy_i\mathbf{x}_i^T\mathbf{x} + b
 $$
 
-Para obter modelos mais flexíveis pode-se substituir a função linear dos vetores de suporte, $\mathbf{x}_i^T\mathbf{x}$ por uma função mais complexa ou kernel, $k(\mathbf{x}_i,\mathbf{x})$. A seguir são apresentadas algumas opções de kernel. 
+Para obter modelos mais flexíveis pode-se substituir a função linear dos vetores de suporte, $\mathbf{x}_i^T\mathbf{x}$ por uma função mais complexa ou kernel, $k(\mathbf{x}_i,\mathbf{x})$. A seguir são apresentadas algumas opções de kernel.
 
 $$
 \begin{align}
@@ -327,7 +324,7 @@ $$
 \end{align}
 $$
 
-Obviamente é importante considerar o kernel já na otimização, de forma que os hiperparâmetros específicos destes também sejam selecionados adequadamente aos dados. Para o exemplo plotado anteriormente, utilizando um kernel polinomial e metade das observações para treino, obtém-se o classificador plotado a seguir com os dados remanescentes.
+Obviamente é importante considerar o kernel já na otimização, de forma que os hiperparâmetros específicos destes também sejam selecionados adequadamente segundo os dados. Para o exemplo plotado anteriormente, utilizando um kernel polinomial e metade das observações para treino, obtém-se o classificador plotado a seguir com os dados remanescentes.
 
 ```{r}
 #| message: false
