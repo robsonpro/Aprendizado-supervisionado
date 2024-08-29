@@ -100,3 +100,11 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab10.html
 ## Análise discriminante linear
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_lda.html
+
+### Laboratório 11
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab11.html
+
+## Máquinas de vetores de suporte
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_svm.html
