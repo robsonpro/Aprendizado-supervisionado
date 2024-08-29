@@ -1,0 +1,432 @@
+---
+title: "Máquinas de vetores de suporte"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Máquinas de vetores de suporte
+
+
+### Classificador de máxima margem
+
+Seja um problema de classificação binário, $y=\{-1,1\}$ em função de duas variáveis regressores, $\mathbf{x}=[x_1,x_2]^T$, conforme ilustrado abaixo.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(ggplot2)
+
+set.seed(100)
+n <- 100
+
+x1 <- matrix(rnorm(n * 2, mean = 7.5), ncol = 2)
+y1 <- rep(1, n)
+
+x2 <- matrix(rnorm(n * 2, mean = 2.5), ncol = 2)
+y2 <- rep(-1, n)
+
+x <- rbind(x1, x2)
+y <- c(y1, y2)
+data <- data.frame(x1 = x[, 1], x2 = x[, 2], classe = as.factor(y))
+
+
+ggplot(data, aes(x = x1, y = x2, color = classe, pch = classe)) +
+  geom_point(size = 3, alpha = 0.5) +
+  labs(x = "x1", y = "x2") +
+  theme_bw()
+
+```
+
+Deseja-se encontrar um classificador, ou hiperplano, que separe tais observações de forma perfeita. Tal hiperplano pode ser representado matematicamente por $b+\mathbf{w}^T\mathbf{x}=0$. Para $k=2$, o separador consiste em uma linha, $b+w_1x_1+w_2x_2 = 0$. Existem infinitas soluções para o problema ilustrado, no qual as classes são ditas perfeitamente separáveis, conforme ilustrado a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+model <- glm(classe ~ x1 + x2, data = data, family=binomial)
+
+coef <- coef(model)
+slope <- -coef[2] / coef[3]
+intercept <- -coef[1] / coef[3]
+
+n_lines <- 10
+intercepts <- seq(intercept - .5, intercept + .5, length.out = n_lines)
+slopes <- seq(slope - .1, slope + .1, length.out = n_lines)
+
+ggplot(data, aes(x = x1, y = x2, color = classe, pch = classe)) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_abline(aes(slope = slope, intercept = intercepts), 
+              data = data.frame(slope = slopes, 
+                                intercept = intercept),
+              color = "gray50", linetype = "solid", alpha = 0.5) +
+  labs(x = "x1", y = "x2") +
+  theme_bw()
+```
+
+A regra de classificação usando um hiperplano que faz a classificação perfeita é descrita a seguir:
+$$
+\begin{align}
+\text{Se: } b+w_1x_1+w_2x_2>0 \text{, Então: } y=+1 \\
+\text{Se: } b+w_1x_1+w_2x_2<0 \text{, Então: } y=-1 \\
+\end{align}
+$$
+
+Logo, pode-se garantir que, para qualquer observação $y_i$ de interesse $y_i(b+w_1x_1+w_2x_2)>0$, de forma que sempre seja realizada a classificação correta.
+
+Para garantir a obtenção deste hiperplano, usa-se o conceito de máxima margem. O separador de máxima margem é ilustrado em linha contínua a seguir. A distância entre ele e as linhas tracejadas paralelas é o que se denomina de margem. Os pontos que se distanciam do hiperplano com distância igual à margem são os vetores de suporte, sendo destacados com quadrado azul. Considerando a margem com comprimento unitário, $M=1$, pode-se dizer que $b+w_1x_1+w_2x_2 = 1$, para os pontos que coincidem com a margem superior, enquanto $b+w_1x_1+w_2x_2 = -1$, para os pontos que interceptam a margem inferior.
+
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+library(e1071)
+svm_model <- svm(classe ~ x1 + x2, data = data, kernel = "linear", scale = F, cost = 5)
+
+coefs <- coef(svm_model)
+intercept <- -coefs[1]/coefs[3]
+slope <- -coefs[2]/coefs[3]
+
+# Calcular a margem
+margin <- 1 / coefs[3]
+
+ggplot(data, aes(x = x1, y = x2, color = classe, pch = classe)) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_point(data=data[svm_model$index,], 
+             mapping=aes(x = x1, y = x2, color = classe), 
+             pch=0, col = "navy", size = 3) +
+  geom_abline(slope = slope, intercept = intercept, color = "black", linetype = "solid", size = 1.2) +  # Linha separadora
+  geom_abline(slope = slope, intercept = intercept+margin, color = "gray50", linetype = "dashed", size = 1) +  # Margem superior
+  geom_abline(slope = slope, intercept = intercept-margin, color = "gray50", linetype = "dashed", size = 1) +  # Margem inferior
+  labs(x = "x1",
+       y = "x2") +
+  ylim(0,max(data$x2)) +
+  xlim(0,max(data$x1)) +
+  theme_bw()
+```
+Logo, para casos perfeitamente separáveis não sequer um ponto que satisfaça $b+w_1x_1+w_2x_2=0$, porém todos os pontos satisfazem a seguinte condição:
+$$
+\begin{align}
+\text{Se: } b+w_1x_1+w_2x_2\geq 1 \text{, Então: } y=+1 \\
+\text{Se: } b+w_1x_1+w_2x_2\leq-1 \text{, Então: } y=-1, \\
+\end{align}
+$$
+de forma que $y_i(b+w_1x_1+w_2x_2)\geq1$. 
+
+Para encontrar tal hiperplano, busca-se maximizar a margem. Para tal maximização, pode-se considerar a diferença da projeção dos vetores de suporte, no vetor dos coeficientes, $(\mathbf{w}^T\mathbf{x}_a - \mathbf{w}^T\mathbf{x}_b)/||\mathbf{w}|| = 2/||\mathbf{w}||$, onde $||\mathbf{w}||$ é o comprimento vetorial ou norma de $\mathbf{w}$, $||\mathbf{w}||=\sqrt{w_1^2+w_2^2}$. Logo o problema a ser resolvido pode ser formulado como segue.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# ggplot(data, aes(x = x1, y = x2, color = classe)) +
+#   geom_point(size = 3, alpha = 0.5) +
+#   geom_point(data=data[svm_model$index,], 
+#              mapping=aes(x = x1, y = x2, color = classe), 
+#              pch=0, col = "navy", size = 3) +
+#   geom_abline(slope = slope, intercept = intercept, color = "black", linetype = "solid", size = 1.2) +  # Linha separadora
+#   geom_abline(slope = slope, intercept = intercept+margin, color = "gray50", linetype = "dashed", size = 1) +  # Margem superior
+#   geom_abline(slope = slope, intercept = intercept-margin, color = "gray50", linetype = "dashed", size = 1) +  # Margem inferior
+#   labs(x = "x1",
+#        y = "x2") +
+#   ylim(0,max(data$x2)) +
+#   xlim(0,max(data$x1)) +
+#   geom_segment(aes(x = 0, y = 0, 
+#                    xend = data[svm_model$index,][1,1], 
+#                    yend = data[svm_model$index,][1,2]), 
+#                col = "grey50",
+#                lty=2,
+#                arrow = arrow(length = unit(0.1, "inches"))) +
+#   geom_segment(aes(x = 0, y = 0, 
+#                    xend = data[svm_model$index,][3,1], 
+#                    yend = data[svm_model$index,][3,2]), 
+#                col = "grey50",
+#                lty=2,
+#                arrow = arrow(length = unit(0.1, "inches"))) +
+#   theme_bw()
+```
+
+
+$$
+\begin{aligned}
+    \text{Max } & \begin{Bmatrix}
+        \frac{2}{||\mathbf{w}||}
+                 \end{Bmatrix} \\
+    \textrm{s.t.: } &
+  \begin{matrix} 
+  y_i(\mathbf{w}^T\mathbf{x}_i + b) \geq 1, \forall i=1,...,N\\
+  \end{matrix} 
+\end{aligned}
+$$
+
+Tal problema é análogo à seguinte formulação. O quadrado da norma facilita a otimização, transformando a função a ser minimizada em convexa.
+$$
+\begin{aligned}
+    \text{Min } & \begin{Bmatrix}
+        \frac{||\mathbf{w}||^2}{2}
+                 \end{Bmatrix} \\
+    \textrm{s.t.: } &
+  \begin{matrix} 
+  y_i(\mathbf{w}^T\mathbf{x}_i + b) \geq 1, \forall i=1,...,N\\
+  \end{matrix} 
+\end{aligned}
+$$
+
+### Classificador de vetores de suporte
+
+Para casos não perfeitamente separáveis, pode-se permitir que a restrição que até então garantia a classificação perfeita seja violada. Abaixo ilustra-se um caso não perfeitamente separável, já com o classificador de vetores de suporteplotado. Pode-se observar que para a classe +1 todos os pontos foram classificados de forma correta, porém ao menos um deles ficou dentro da margem. Já para a classe -1, dois pontos foram classficados incorretamente, sendo um dentro e outro para além da margem oposta.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+library(ggplot2)
+
+set.seed(100)
+n <- 100
+
+x1 <- matrix(rnorm(n * 2, mean = 7.5,sd=1.7), ncol = 2)
+y1 <- rep(1, n)
+
+x2 <- matrix(rnorm(n * 2, mean = 2.5,sd=1.7), ncol = 2)
+y2 <- rep(-1, n)
+
+x <- rbind(x1, x2)
+y <- c(y1, y2)
+data <- data.frame(x1 = x[, 1], x2 = x[, 2], classe = as.factor(y))
+
+library(e1071)
+svm_model <- svm(classe ~ x1 + x2, data = data, kernel = "linear", scale = F, cost = 5)
+
+coefs <- coef(svm_model)
+intercept <- -coefs[1]/coefs[3]
+slope <- -coefs[2]/coefs[3]
+
+# Calcular a margem
+margin <- 1 / coefs[3]
+
+ggplot(data, aes(x = x1, y = x2, color = classe, pch = classe)) +
+  geom_point(size = 3, alpha = 0.5) +
+  geom_point(data=data[svm_model$index,], 
+             mapping=aes(x = x1, y = x2, color = classe), 
+             pch=0, col = "navy", size = 3) +
+  geom_abline(slope = slope, intercept = intercept, color = "black", linetype = "solid", size = 1.2) +  # Linha separadora
+  geom_abline(slope = slope, intercept = intercept+margin, color = "gray50", linetype = "dashed", size = 1) +  # Margem superior
+  geom_abline(slope = slope, intercept = intercept-margin, color = "gray50", linetype = "dashed", size = 1) +  # Margem inferior
+  labs(x = "x1",
+       y = "x2") +
+  ylim(0,max(data$x2)) +
+  xlim(0,max(data$x1)) +
+  theme_bw()
+```
+
+Para resolver o problema de classificação de forma a obter tal classificador de vetores de suporte, resolve-se o problema a seguir, onde $\xi_i$ consiste em variáveis de folga que permitem violar a margem e também a classificação correta, de forma que se $\xi_i = 0$, os pontos são classificados corretamente, se $\xi_i \leq 1$, a observação está dentro da margem, porém se $\xi_i > 1$ o ponto está além da margem e classificado erroneamente. Pode-se observar que foi somado um termo na função objetivo o qual viabiliza minimizar a soma dos termos que violam as margens, $\sum_i\xi_i$. O parâmetro $C$ determina o equilíbrio entre a maximização da margem e a minimização dos erros de classificação.
+
+$$
+\begin{aligned}
+    \text{Min } & \begin{Bmatrix}
+        \frac{||\mathbf{w}||^2}{2} + C\sum_i\xi_i
+                 \end{Bmatrix} \\
+    \textrm{s.t.: } & \bigg\{
+  \begin{matrix} 
+  y_i(\mathbf{w}^T\mathbf{x}_i + b) \geq 1 - \xi_i, \forall i=1,...,N\\
+  \xi_i \geq0
+  \end{matrix} 
+\end{aligned}
+$$
+
+### Máquinas de vetores de suporte
+
+Imagine um caso de classificação onde uma fronteira linear acarretará em baixo desempenho, conforme o ilustrado à seguir. Neste caso, a não lineariedade dos dados exige a aplicação de um separador mais flexível.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+# Parametros para simular dados
+library(mvtnorm)
+set.seed(14)
+m = c(0,0) # vetor de medias
+S = matrix(c(1, 0.2, 0.2, 1), 2) # matriz de covariancia
+
+# Simulando dados
+dados <- rmvnorm(1000,  mean = m, sigma = S)
+
+# funcao para separar classes
+f2 <- function(x1,x2) -2*x1^2 + 6*x2^2 - 1
+
+# transformando em data.frame
+dados <-  data.frame(dados)
+colnames(dados) <- c("x1","x2")
+
+# definindo coluna com classes
+dados$y <- ifelse(f2(dados$x1,dados$x2) + rnorm(nrow(dados), sd = 0.4) > 0, 1, -1)
+dados$y <- as.factor(dados$y)
+
+# plotando dados
+library(ggplot2)
+ggplot(dados, aes(x = x1, y = x2, group = y)) +
+  geom_point(aes(color = y,pch=y), size = 3, alpha = 0.5) + 
+  labs(col = "classe", pch = "classe") + theme_bw()
+```
+
+Para construir tal classificador, seja a função lagrangeana correspondente à formulação do classificador de vetores de suporte, a qual comporta objetivos e restrições em uma única função.
+$$
+L=\frac{||\mathbf{w}||^2}{2} + C\sum_i\xi_i - \sum_i\alpha_i(y_i(\mathbf{w}^T\mathbf{x}_i + b) - 1 + \xi_i) -\sum_i\beta_i\xi_i\text{ ,}
+$$
+onde $\alpha_i$ e $\beta_i$ são os multiplicadores de Lagrange, $\alpha_i \geq0$ e $\beta_i\geq0$ , $i=1,...,N$. Para resolver tal problema deve-se derivar tal função em relação aos parâmetros do modelo e igualar a zero, isto é:
+$$
+\begin{align}
+\frac{\partial L}{\partial \mathbf{w}} &= \mathbf{w} - \sum_i\alpha_iy_i\mathbf{x}_i = 0 \\ 
+\frac{\partial L}{\partial b} &= \sum_i\alpha_iy_i =0 \\ 
+\frac{\partial L}{\partial \xi_i} &=C- \alpha_i - \beta_i= 0 \text{, } \forall i=1,...,N \\ 
+\end{align}
+$$
+
+Logo:
+$$
+\begin{align}
+\mathbf{w} &=  \sum_i\alpha_iy_i\mathbf{x}_i \\ 
+\sum_i\alpha_iy_i &=0 \\ 
+\alpha_i + \beta_i&=C \text{, } \forall i=1,...,N \\ 
+\end{align}
+$$
+
+Substituindo tais resultados na função lagrandgeana, pode-se formular o problema dual, conforme segue.
+$$
+\begin{aligned}
+    \text{Max } & \begin{Bmatrix}
+        \sum_i\alpha_i -\frac{1}{2}\alpha_i\alpha_jy_iy_j\mathbf{x}_i^T\mathbf{x}_j
+                 \end{Bmatrix} \\
+    \textrm{s.t.: } & \bigg\{
+  \begin{matrix} 
+  \sum_iy_i\alpha_i=0\\
+  0\leq\alpha_i\leq C \text{, } \forall i=1,...,N 
+  \end{matrix} 
+\end{aligned}
+$$
+
+A resolução do problema dual em si apenas facilita a otimização dos parâmetros do modelo. Entretanto, é necessário algo mais para obtenção de classificadores que se adaptem a dados não lineares. Para tal, usa-se o chamado truque de kernel. O modelo apresentado inicialmente, $b+\mathbf{w}^T\mathbf{x}=0$ mpode ser escrito considerando os multiplicadores de lagrange conforme segue:
+$$
+\sum_i\alpha_iy_i\mathbf{x}_i^T\mathbf{x} + b
+$$
+
+Para obter modelos mais flexíveis pode-se substituir a função linear dos vetores de suporte, $\mathbf{x}_i^T\mathbf{x}$ por uma função mais complexa ou kernel, $k(\mathbf{x}_i,\mathbf{x})$. A seguir são apresentadas algumas opções de kernel. 
+
+$$
+\begin{align}
+\text{linear} &: k(\mathbf{x}_i,\mathbf{x}) = \mathbf{x}_i^T\mathbf{x} \\
+\text{polinomial} &: k(\mathbf{x}_i,\mathbf{x}) = (\mathbf{x}_i^T\mathbf{x}+1)^d \\
+\text{radial} &: k(\mathbf{x}_i,\mathbf{x}) = exp(-\gamma||\mathbf{x}-\mathbf{x}_i||^2)
+\end{align}
+$$
+
+Obviamente é importante considerar o kernel já na otimização, de forma que os hiperparâmetros específicos destes também sejam selecionados adequadamente aos dados. Para o exemplo plotado anteriormente, utilizando um kernel polinomial e metade das observações para treino, obtém-se o classificador plotado a seguir com os dados remanescentes.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+### Separando dados de treino e teste
+set.seed(1)
+
+tr <- round(0.5*nrow(dados))
+treino <- sample(nrow(dados), tr, replace = F)
+
+dados.treino <- dados[treino,]
+dados.teste <- dados[-treino,]
+
+#################################################################################################
+# SVM com kernel polinomial de grau 2
+library(e1071)
+svm1 <- svm(y~., data = dados.treino, kernel = "polynomial", cost = 10, degree = 2, scale = FALSE)
+
+# validacao cruzada para definir C
+set.seed(1)
+tune.out <- tune(svm, y~., data = dados.treino, kernel = "polynomial", degree = 2,
+                 ranges = list(cost=c(0.001, 0.01, 0.1, 1, 5,10, 100)))
+
+# modelo com C otimo
+svm1 <- svm(y~., data = dados.treino, kernel = "polynomial", cost = 100,  degree = 2, scale = FALSE)
+
+#################
+
+### visualizacao
+grid <- expand.grid(x1 = seq(min(c(dados.treino$x1, dados.teste$x1)), 
+                             max(c(dados.treino$x1, dados.teste$x1)), length = 200),
+                    x2 = seq(min(c(dados.treino$x2, dados.teste$x2)), 
+                             max(c(dados.treino$x2, dados.teste$x2)), length = 200))
+
+grid$class <- predict(svm1, grid)
+
+## Teste
+ggplot() + 
+  geom_raster(aes(x = grid$x1, y = grid$x2, fill = grid$class), 
+              alpha = 0.3, interpolate = T) +
+  geom_point(aes(x = dados.teste$x1, y = dados.teste$x2, 
+                 color = dados.teste$y,
+                 shape = dados.teste$y), size = 3, alpha=.5) + 
+  labs(x = "x1", y = "x2", col = "classe", 
+       shape = "classe", fill = "classe") + theme_bw()
+```
+
+Para o mesmo exemplo, o kernel radial resulta no classificador plotado a seguir.
+
+```{r}
+#| message: false
+#| warning: false
+#| echo: false
+
+### Separando dados de treino e teste
+set.seed(1)
+
+tr <- round(0.5*nrow(dados))
+treino <- sample(nrow(dados), tr, replace = F)
+
+dados.treino <- dados[treino,]
+dados.teste <- dados[-treino,]
+
+#################################################################################################
+# SVM com kernel radial
+
+ctrl <- tune.control(
+  sampling='cross',   # Do cross-validation (the default)
+  cross=10,            # Num folds (default = 10)
+  nrepeat=2)          # Num repeats (default is 1) 
+
+train.grid <- list(cost=2^(-2:5), gamma=2^seq(-1, 1, by=.5))
+
+# validacao cruzada para definir C
+set.seed(1)
+tune.out <- tune(svm, y~., data = dados.treino, kernel = "radial", degree = 2,ranges = train.grid)
+
+# modelo com C otimo
+svm1 <- svm(y~., data = dados.treino, kernel = "radial", cost = 32,  gamma = .5, scale = FALSE)
+
+#################
+
+### visualizacao
+grid <- expand.grid(x1 = seq(min(c(dados.treino$x1, dados.teste$x1)), 
+                             max(c(dados.treino$x1, dados.teste$x1)), length = 200),
+                    x2 = seq(min(c(dados.treino$x2, dados.teste$x2)), 
+                             max(c(dados.treino$x2, dados.teste$x2)), length = 200))
+
+grid$class <- predict(svm1, grid)
+
+## Teste
+ggplot() + 
+  geom_raster(aes(x = grid$x1, y = grid$x2, fill = grid$class), 
+              alpha = 0.3, interpolate = T) +
+  geom_point(aes(x = dados.teste$x1, y = dados.teste$x2, 
+                 color = dados.teste$y,
+                 shape = dados.teste$y), size = 3, alpha=.5) + 
+  labs(x = "x1", y = "x2", col = "classe", 
+       shape = "classe", fill = "classe") + theme_bw()
+```
