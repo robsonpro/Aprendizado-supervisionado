@@ -5,7 +5,7 @@ format: html
 editor: visual
 ---
 
-## Classificação de dois tipos de orquídeas em função dalargura da pétala: LDA binária simples
+## Classificação de dois tipos de orquídeas em função da largura da pétala: LDA binária simples
 
 Carregando pacotes.
 
@@ -17,6 +17,7 @@ library(gt)
 library(dplyr)
 library(MASS)
 library(ggplot2)
+library(GGally)
 ```
 
 Leitura dos dados.
@@ -40,7 +41,6 @@ ggplot(data, aes(x = Petal.Width, col = Species)) +
   theme_bw()
 ```
 
-
 Dividindo os dados para treino e teste.
 
 ```{r}
@@ -53,6 +53,8 @@ dados_teste <- data[-treino,]
 Treinamento e teste do modelo.
 
 ```{r}
+#| message: false
+#| warning: false
 fit.lda1 <- lda(Species ~ Petal.Width, dados_treino)
 fit.lda1
 ```
@@ -61,7 +63,49 @@ fit.lda1
 lda.pred1 <- predict(fit.lda1, newdata=dados_teste)
 
 cm1 <- table(y=dados_teste$Species, pred=lda.pred1$class)
-cm1
+cm1[2:3,2:3]
 ```
 
+## Classificação de três tipos de orquídeas em função das diemsões da pétala e da sépala: LDA multinomial múltipla
 
+Dados.
+
+```{r}
+head(iris) |> gt()
+```
+
+Visualização inicial.
+
+```{r}
+#| message: false
+#| warning: false
+ggpairs(iris, aes(col=Species, alpha=.5)) + theme_bw()
+```
+
+Separando dados de treino e teste
+
+```{r}
+set.seed(1)
+
+tr <- round(0.75*nrow(iris))
+treino <- sample(nrow(iris), tr, replace = F)
+
+data.treino <- iris[treino,]
+data.teste <- iris[-treino,]
+```
+
+Modelagem.
+
+```{r}
+fit.lda2 <- lda(Species ~ ., data.treino)
+fit.lda2
+```
+
+Teste do modelo.
+
+```{r}
+lda.pred2 <- predict(fit.lda2, newdata=data.teste)
+
+cm1 <- table(y=data.teste$Species, pred=lda.pred2$class)
+cm1
+```

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -101,15 +101,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 </header>
 
-<section id="classificação-de-dois-tipos-de-orquídeas-em-função-dalargura-da-pétala-lda-binária-simples" class="level2">
-<h2 class="anchored" data-anchor-id="classificação-de-dois-tipos-de-orquídeas-em-função-dalargura-da-pétala-lda-binária-simples">Classificação de dois tipos de orquídeas em função dalargura da pétala: LDA binária simples</h2>
+<section id="classificação-de-dois-tipos-de-orquídeas-em-função-da-largura-da-pétala-lda-binária-simples" class="level2">
+<h2 class="anchored" data-anchor-id="classificação-de-dois-tipos-de-orquídeas-em-função-da-largura-da-pétala-lda-binária-simples">Classificação de dois tipos de orquídeas em função da largura da pétala: LDA binária simples</h2>
 <p>Carregando pacotes.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(datasets)</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(MASS)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(GGally)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Leitura dos dados.</p>
 <div class="cell">
@@ -121,23 +122,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(data) <span class="sc">|&gt;</span> <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 
-<div id="hpjppeubbz" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#hpjppeubbz table {
+<div id="njmstdmxqm" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#njmstdmxqm table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#hpjppeubbz thead, #hpjppeubbz tbody, #hpjppeubbz tfoot, #hpjppeubbz tr, #hpjppeubbz td, #hpjppeubbz th {
+#njmstdmxqm thead, #njmstdmxqm tbody, #njmstdmxqm tfoot, #njmstdmxqm tr, #njmstdmxqm td, #njmstdmxqm th {
   border-style: none;
 }
 
-#hpjppeubbz p {
+#njmstdmxqm p {
   margin: 0;
   padding: 0;
 }
 
-#hpjppeubbz .gt_table {
+#njmstdmxqm .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -163,12 +164,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-left-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_caption {
+#njmstdmxqm .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#hpjppeubbz .gt_title {
+#njmstdmxqm .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -180,7 +181,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-width: 0;
 }
 
-#hpjppeubbz .gt_subtitle {
+#njmstdmxqm .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -192,7 +193,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-width: 0;
 }
 
-#hpjppeubbz .gt_heading {
+#njmstdmxqm .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -204,13 +205,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_bottom_border {
+#njmstdmxqm .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_col_headings {
+#njmstdmxqm .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -225,7 +226,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_col_heading {
+#njmstdmxqm .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -245,7 +246,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#hpjppeubbz .gt_column_spanner_outer {
+#njmstdmxqm .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -257,15 +258,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 4px;
 }
 
-#hpjppeubbz .gt_column_spanner_outer:first-child {
+#njmstdmxqm .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#hpjppeubbz .gt_column_spanner_outer:last-child {
+#njmstdmxqm .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#hpjppeubbz .gt_column_spanner {
+#njmstdmxqm .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -277,11 +278,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   width: 100%;
 }
 
-#hpjppeubbz .gt_spanner_row {
+#njmstdmxqm .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#hpjppeubbz .gt_group_heading {
+#njmstdmxqm .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -307,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   text-align: left;
 }
 
-#hpjppeubbz .gt_empty_group_heading {
+#njmstdmxqm .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -322,15 +323,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: middle;
 }
 
-#hpjppeubbz .gt_from_md > :first-child {
+#njmstdmxqm .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#hpjppeubbz .gt_from_md > :last-child {
+#njmstdmxqm .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#hpjppeubbz .gt_row {
+#njmstdmxqm .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -349,7 +350,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   overflow-x: hidden;
 }
 
-#hpjppeubbz .gt_stub {
+#njmstdmxqm .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -362,7 +363,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#hpjppeubbz .gt_stub_row_group {
+#njmstdmxqm .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -376,15 +377,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   vertical-align: top;
 }
 
-#hpjppeubbz .gt_row_group_first td {
+#njmstdmxqm .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#hpjppeubbz .gt_row_group_first th {
+#njmstdmxqm .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#hpjppeubbz .gt_summary_row {
+#njmstdmxqm .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -394,16 +395,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#hpjppeubbz .gt_first_summary_row {
+#njmstdmxqm .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_first_summary_row.thick {
+#njmstdmxqm .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#hpjppeubbz .gt_last_summary_row {
+#njmstdmxqm .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -413,7 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_grand_summary_row {
+#njmstdmxqm .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -423,7 +424,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#hpjppeubbz .gt_first_grand_summary_row {
+#njmstdmxqm .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -433,7 +434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-top-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_last_grand_summary_row_top {
+#njmstdmxqm .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -443,11 +444,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_striped {
+#njmstdmxqm .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#hpjppeubbz .gt_table_body {
+#njmstdmxqm .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -456,7 +457,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-bottom-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_footnotes {
+#njmstdmxqm .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -470,7 +471,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_footnote {
+#njmstdmxqm .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -479,7 +480,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#hpjppeubbz .gt_sourcenotes {
+#njmstdmxqm .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -493,7 +494,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   border-right-color: #D3D3D3;
 }
 
-#hpjppeubbz .gt_sourcenote {
+#njmstdmxqm .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -501,68 +502,69 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   padding-right: 5px;
 }
 
-#hpjppeubbz .gt_left {
+#njmstdmxqm .gt_left {
   text-align: left;
 }
 
-#hpjppeubbz .gt_center {
+#njmstdmxqm .gt_center {
   text-align: center;
 }
 
-#hpjppeubbz .gt_right {
+#njmstdmxqm .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#hpjppeubbz .gt_font_normal {
+#njmstdmxqm .gt_font_normal {
   font-weight: normal;
 }
 
-#hpjppeubbz .gt_font_bold {
+#njmstdmxqm .gt_font_bold {
   font-weight: bold;
 }
 
-#hpjppeubbz .gt_font_italic {
+#njmstdmxqm .gt_font_italic {
   font-style: italic;
 }
 
-#hpjppeubbz .gt_super {
+#njmstdmxqm .gt_super {
   font-size: 65%;
 }
 
-#hpjppeubbz .gt_footnote_marks {
+#njmstdmxqm .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#hpjppeubbz .gt_asterisk {
+#njmstdmxqm .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#hpjppeubbz .gt_indent_1 {
+#njmstdmxqm .gt_indent_1 {
   text-indent: 5px;
 }
 
-#hpjppeubbz .gt_indent_2 {
+#njmstdmxqm .gt_indent_2 {
   text-indent: 10px;
 }
 
-#hpjppeubbz .gt_indent_3 {
+#njmstdmxqm .gt_indent_3 {
   text-indent: 15px;
 }
 
-#hpjppeubbz .gt_indent_4 {
+#njmstdmxqm .gt_indent_4 {
   text-indent: 20px;
 }
 
-#hpjppeubbz .gt_indent_5 {
+#njmstdmxqm .gt_indent_5 {
   text-indent: 25px;
 }
 </style>
 <table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
   <thead>
+    
     <tr class="gt_col_headings">
       <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Petal.Width">Petal.Width</th>
       <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="Species">Species</th>
@@ -608,11 +610,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Treinamento e teste do modelo.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fit.lda1 <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species <span class="sc">~</span> Petal.Width, dados_treino)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning in lda.default(x, grouping, ...): group setosa is empty</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>fit.lda1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>fit.lda1 <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species <span class="sc">~</span> Petal.Width, dados_treino)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>fit.lda1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 lda(Species ~ Petal.Width, data = dados_treino)
@@ -632,16 +631,573 @@ Petal.Width 4.075197</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>lda.pred1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit.lda1, <span class="at">newdata=</span>dados_teste)</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>cm1 <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">y=</span>dados_teste<span class="sc">$</span>Species, <span class="at">pred=</span>lda.pred1<span class="sc">$</span>class)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>cm1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>lda.pred1 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit.lda1, <span class="at">newdata=</span>dados_teste)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>cm1 <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">y=</span>dados_teste<span class="sc">$</span>Species, <span class="at">pred=</span>lda.pred1<span class="sc">$</span>class)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>cm1[<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>,<span class="dv">2</span><span class="sc">:</span><span class="dv">3</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            pred
+y            versicolor virginica
+  versicolor         13         0
+  virginica           0        12</code></pre>
+</div>
+</div>
+</section>
+<section id="classificação-de-três-tipos-de-orquídeas-em-função-das-diemsões-da-pétala-e-da-sépala-lda-multinomial-múltipla" class="level2">
+<h2 class="anchored" data-anchor-id="classificação-de-três-tipos-de-orquídeas-em-função-das-diemsões-da-pétala-e-da-sépala-lda-multinomial-múltipla">Classificação de três tipos de orquídeas em função das diemsões da pétala e da sépala: LDA multinomial múltipla</h2>
+<p>Dados.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(iris) <span class="sc">|&gt;</span> <span class="fu">gt</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+
+<div id="lwwraqalkp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#lwwraqalkp table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#lwwraqalkp thead, #lwwraqalkp tbody, #lwwraqalkp tfoot, #lwwraqalkp tr, #lwwraqalkp td, #lwwraqalkp th {
+  border-style: none;
+}
+
+#lwwraqalkp p {
+  margin: 0;
+  padding: 0;
+}
+
+#lwwraqalkp .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#lwwraqalkp .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#lwwraqalkp .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#lwwraqalkp .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#lwwraqalkp .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#lwwraqalkp .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#lwwraqalkp .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#lwwraqalkp .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#lwwraqalkp .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#lwwraqalkp .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#lwwraqalkp .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#lwwraqalkp .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#lwwraqalkp .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#lwwraqalkp .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#lwwraqalkp .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwwraqalkp .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#lwwraqalkp .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#lwwraqalkp .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#lwwraqalkp .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwwraqalkp .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#lwwraqalkp .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwwraqalkp .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#lwwraqalkp .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwwraqalkp .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#lwwraqalkp .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#lwwraqalkp .gt_left {
+  text-align: left;
+}
+
+#lwwraqalkp .gt_center {
+  text-align: center;
+}
+
+#lwwraqalkp .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#lwwraqalkp .gt_font_normal {
+  font-weight: normal;
+}
+
+#lwwraqalkp .gt_font_bold {
+  font-weight: bold;
+}
+
+#lwwraqalkp .gt_font_italic {
+  font-style: italic;
+}
+
+#lwwraqalkp .gt_super {
+  font-size: 65%;
+}
+
+#lwwraqalkp .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#lwwraqalkp .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#lwwraqalkp .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#lwwraqalkp .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#lwwraqalkp .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#lwwraqalkp .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#lwwraqalkp .gt_indent_5 {
+  text-indent: 25px;
+}
+</style>
+<table class="gt_table" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+  <thead>
+    
+    <tr class="gt_col_headings">
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sepal.Length">Sepal.Length</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Sepal.Width">Sepal.Width</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Petal.Length">Petal.Length</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1" scope="col" id="Petal.Width">Petal.Width</th>
+      <th class="gt_col_heading gt_columns_bottom_border gt_center" rowspan="1" colspan="1" scope="col" id="Species">Species</th>
+    </tr>
+  </thead>
+  <tbody class="gt_table_body">
+    <tr><td headers="Sepal.Length" class="gt_row gt_right">5.1</td>
+<td headers="Sepal.Width" class="gt_row gt_right">3.5</td>
+<td headers="Petal.Length" class="gt_row gt_right">1.4</td>
+<td headers="Petal.Width" class="gt_row gt_right">0.2</td>
+<td headers="Species" class="gt_row gt_center">setosa</td></tr>
+    <tr><td headers="Sepal.Length" class="gt_row gt_right">4.9</td>
+<td headers="Sepal.Width" class="gt_row gt_right">3.0</td>
+<td headers="Petal.Length" class="gt_row gt_right">1.4</td>
+<td headers="Petal.Width" class="gt_row gt_right">0.2</td>
+<td headers="Species" class="gt_row gt_center">setosa</td></tr>
+    <tr><td headers="Sepal.Length" class="gt_row gt_right">4.7</td>
+<td headers="Sepal.Width" class="gt_row gt_right">3.2</td>
+<td headers="Petal.Length" class="gt_row gt_right">1.3</td>
+<td headers="Petal.Width" class="gt_row gt_right">0.2</td>
+<td headers="Species" class="gt_row gt_center">setosa</td></tr>
+    <tr><td headers="Sepal.Length" class="gt_row gt_right">4.6</td>
+<td headers="Sepal.Width" class="gt_row gt_right">3.1</td>
+<td headers="Petal.Length" class="gt_row gt_right">1.5</td>
+<td headers="Petal.Width" class="gt_row gt_right">0.2</td>
+<td headers="Species" class="gt_row gt_center">setosa</td></tr>
+    <tr><td headers="Sepal.Length" class="gt_row gt_right">5.0</td>
+<td headers="Sepal.Width" class="gt_row gt_right">3.6</td>
+<td headers="Petal.Length" class="gt_row gt_right">1.4</td>
+<td headers="Petal.Width" class="gt_row gt_right">0.2</td>
+<td headers="Species" class="gt_row gt_center">setosa</td></tr>
+    <tr><td headers="Sepal.Length" class="gt_row gt_right">5.4</td>
+<td headers="Sepal.Width" class="gt_row gt_right">3.9</td>
+<td headers="Petal.Length" class="gt_row gt_right">1.7</td>
+<td headers="Petal.Width" class="gt_row gt_right">0.4</td>
+<td headers="Species" class="gt_row gt_center">setosa</td></tr>
+  </tbody>
+  
+  
+</table>
+</div>
+</div>
+</div>
+<p>Visualização inicial.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggpairs</span>(iris, <span class="fu">aes</span>(<span class="at">col=</span>Species, <span class="at">alpha=</span>.<span class="dv">5</span>)) <span class="sc">+</span> <span class="fu">theme_bw</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<p><img src="AS_lab11_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid" width="672"></p>
+</div>
+</div>
+<p>Separando dados de treino e teste</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">1</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>tr <span class="ot">&lt;-</span> <span class="fu">round</span>(<span class="fl">0.75</span><span class="sc">*</span><span class="fu">nrow</span>(iris))</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>treino <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="fu">nrow</span>(iris), tr, <span class="at">replace =</span> F)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>data.treino <span class="ot">&lt;-</span> iris[treino,]</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>data.teste <span class="ot">&lt;-</span> iris[<span class="sc">-</span>treino,]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Modelagem.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>fit.lda2 <span class="ot">&lt;-</span> <span class="fu">lda</span>(Species <span class="sc">~</span> ., data.treino)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>fit.lda2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Call:
+lda(Species ~ ., data = data.treino)
+
+Prior probabilities of groups:
+    setosa versicolor  virginica 
+ 0.3303571  0.3214286  0.3482143 
+
+Group means:
+           Sepal.Length Sepal.Width Petal.Length Petal.Width
+setosa         5.008108    3.424324     1.459459   0.2486486
+versicolor     5.955556    2.775000     4.313889   1.3277778
+virginica      6.684615    2.984615     5.620513   2.0256410
+
+Coefficients of linear discriminants:
+                    LD1        LD2
+Sepal.Length  0.7777911 -0.3750326
+Sepal.Width   1.6113137 -1.9569617
+Petal.Length -2.1931112  1.0793649
+Petal.Width  -2.6770295 -2.8163545
+
+Proportion of trace:
+   LD1    LD2 
+0.9912 0.0088 </code></pre>
+</div>
+</div>
+<p>Teste do modelo.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>lda.pred2 <span class="ot">&lt;-</span> <span class="fu">predict</span>(fit.lda2, <span class="at">newdata=</span>data.teste)</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>cm1 <span class="ot">&lt;-</span> <span class="fu">table</span>(<span class="at">y=</span>data.teste<span class="sc">$</span>Species, <span class="at">pred=</span>lda.pred2<span class="sc">$</span>class)</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>cm1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>            pred
 y            setosa versicolor virginica
-  setosa          0          0         0
-  versicolor      0         13         0
-  virginica       0          0        12</code></pre>
+  setosa         13          0         0
+  versicolor      0         14         0
+  virginica       0          0        11</code></pre>
 </div>
 </div>
 </section>
