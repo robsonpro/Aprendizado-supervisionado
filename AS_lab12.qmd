@@ -1,0 +1,389 @@
+---
+title: "Classificação via pacote tidymodels"
+author: "Robson Bruno Dutra Pereira"
+format: html
+editor: visual
+---
+
+## Classificação de cancelamento de reservas de hotéis via pacote `tidymodels`
+
+## Bibliotecas
+
+```{r}
+#| warning: false
+#| message: false
+
+library(tidymodels)
+library(readr)
+library(modelsummary)
+library(dplyr)
+library(bonsai)
+library(baguette)
+library(finetune)
+library(vip)
+```
+
+## Leitura dos dados
+
+Dados obtidos em https://www.tidymodels.org/start/case-study/#data.
+
+```{r}
+#| warning: false
+#| message: false
+
+hotels <- 
+  read_csv("https://tidymodels.org/start/case-study/hotels.csv")
+
+dim(hotels)
+#> [1] 50000    23
+```
+
+```{r}
+hotels <- hotels |>
+  mutate(across(where(is.character), as.factor))
+```
+
+```{r}
+head(hotels)
+```
+
+## Visão geral e limpeza dos dados
+
+```{r}
+hotels |> 
+  glimpse()
+```
+
+Contando níveis da resposta.
+
+```{r}
+hotels |>  
+  count(children) |> 
+  mutate(prop = n/sum(n))
+```
+
+Mudando nomes dos níveis da variável.
+
+```{r}
+hotels$children <-  recode_factor(
+  hotels$children,
+  children = "child",
+  none = "no")
+```
+
+```{r}
+hotels |>  
+  count(children) |> 
+  mutate(prop = n/sum(n))
+```
+
+```{r}
+colnames(hotels)
+```
+
+Mudando nomes de algumas variáveis (colunas).
+
+```{r}
+hotels <- hotels |> 
+  rename(n_special_requests = total_of_special_requests,
+         stays_in_weekend = stays_in_weekend_nights,
+         stays_in_week = stays_in_week_nights) 
+hotels |> colnames()
+```
+
+Selecionando apenas um país para modelagem.
+
+```{r}
+hotels |>
+    count(country) |> 
+  mutate(prop = n/sum(n)) |>
+  arrange(desc(n))
+```
+
+```{r}
+hotels_ <- hotels |>
+  filter(country == "BRA")
+```
+
+```{r}
+hotels_ <- hotels_ |> 
+  rename_with(~gsub("total", "n", .x, fixed = TRUE))
+hotels_ |> colnames()
+```
+
+```{r}
+hotels_ <- hotels_ |> 
+  rename_with(~gsub("_type", "", .x, fixed = TRUE))
+hotels_ |> colnames()
+```
+
+Comparando colunas.
+
+```{r}
+hotels_ |>
+  mutate(
+    comparison = if_else(
+   as.character(reserved_room) == as.character(assigned_room), "equal", "different")) |>
+  select(ends_with("_room"), comparison) |> head()
+```
+
+## Resumo dos dados
+
+```{r}
+datasummary_skim(hotels_)
+```
+
+## Separando observações de treino e teste
+
+```{r}
+set.seed(123)
+splits <- initial_split(hotels_, strata = children)
+
+hotel_train <- training(splits)
+hotel_test  <- testing(splits)
+
+set.seed(17)
+dados_folds <- 
+  vfold_cv(v = 10, hotel_train, repeats = 2)
+```
+
+```{r}
+holidays <- c("AllSouls", "AshWednesday",
+              "ChristmasEve", "Easter",
+              "ChristmasDay", "GoodFriday",
+              "NewYearsDay", "PalmSunday")
+
+children_recipe <- 
+  recipe(children ~ ., data = hotel_train) %>% 
+  step_date(arrival_date) %>% 
+  step_holiday(arrival_date, holidays = holidays) %>% 
+  step_rm(arrival_date) %>% 
+  step_dummy(all_nominal_predictors()) %>% 
+  step_zv(all_predictors()) %>% 
+  step_normalize(all_predictors())
+```
+
+Métodos de classificação.
+
+```{r}
+lreg_spec <- 
+  logistic_reg(penalty = tune(), mixture = tune()) |> 
+  set_engine("glmnet")
+
+tree_spec <- decision_tree(tree_depth = tune(), min_n = tune(), cost_complexity = tune()) |> 
+  set_engine("rpart") |> 
+  set_mode("classification")
+
+bag_cart_spec <- 
+   bag_tree(tree_depth = tune(), min_n = tune(), cost_complexity = tune()) |> 
+   set_engine("rpart") |> 
+   set_mode("classification")
+
+rforest_spec <- rand_forest(mtry = tune(), min_n = tune(), trees = tune()) |> 
+  set_engine("ranger") |> 
+  set_mode("classification")
+
+xgb_spec <- # evolution of GBM
+  boost_tree(tree_depth = tune(), learn_rate = tune(), loss_reduction = tune(), 
+             min_n = tune(), sample_size = tune(), trees = tune()) |> 
+  set_engine("xgboost") |> 
+  set_mode("classification")
+
+svm_r_spec <- 
+  svm_rbf(cost = tune(), rbf_sigma = tune()) |> 
+  set_engine("kernlab") |> 
+  set_mode("classification")
+
+svm_p_spec <- 
+  svm_poly(cost = tune(), degree = tune()) |> 
+  set_engine("kernlab") |> 
+  set_mode("classification")
+
+mars_spec <- # method similar to GAM
+   mars(prod_degree = tune()) %>%  
+   set_engine("earth") %>% 
+   set_mode("classification")
+
+nnet_spec <- 
+  mlp(hidden_units = tune(), penalty = tune(), epochs = tune()) |> 
+  set_engine("nnet", MaxNWts = 2600) |> 
+  set_mode("classification")
+
+nnet_param <- 
+  nnet_spec |> 
+  extract_parameter_set_dials() |> 
+  update(hidden_units = hidden_units(c(1, 27)))
+```
+
+Definindo o `worflow`, o qual contém os modelos e a receita.
+
+```{r}
+normalized <- 
+  workflow_set(
+    preproc = list(normalized = children_recipe), 
+    models = list(lreg = lreg_spec,
+                  tree = tree_spec,
+                  bagging = bag_cart_spec,
+                  rforest = rforest_spec,
+                  XGB = xgb_spec,
+                  SVM_radial = svm_r_spec, 
+                  SVM_poly = svm_p_spec,
+                  MARS = mars_spec,
+                  neural_network = nnet_spec)
+  )
+normalized
+```
+
+Fazendo modificação no nome dos modelos para simplificá-los.
+
+```{r}
+all_workflows <- 
+  bind_rows(normalized) |> 
+  # Make the workflow ID's a little more simple: 
+  mutate(wflow_id = gsub("(simple_)|(normalized_)", "", wflow_id))
+all_workflows
+```
+
+*Grid search* e validação cruzada.
+
+```{r}
+race_ctrl <-
+  control_race(
+    save_pred = TRUE,
+    parallel_over = "everything",
+    save_workflow = TRUE
+  )
+
+race_results <-
+  all_workflows |>
+  workflow_map(
+    "tune_race_anova",
+    seed = 1503,
+    resamples = dados_folds,
+    grid = 25,
+    control = race_ctrl
+  )
+```
+
+Extraindo métricas para avaliar os resultados da validação cruzada.
+
+```{r}
+collect_metrics(race_results) |> 
+  filter(.metric == "accuracy") |>
+  arrange(mean)
+```
+
+```{r}
+collect_metrics(race_results) |> 
+  filter(.metric == "roc_auc") |>
+  arrange(desc(mean))
+```
+
+Visualizando desempenho dos métodos.
+
+```{r}
+IC_rmse <- collect_metrics(race_results) |> 
+  filter(.metric == "roc_auc") |> 
+  group_by(wflow_id) |>
+  filter(mean == min(mean)) |>
+  group_by(wflow_id) |> 
+  arrange(desc(mean)) |> 
+  ungroup()
+
+IC_r2 <- collect_metrics(race_results) |> 
+  filter(.metric == "accuracy") |> 
+  group_by(wflow_id) |>
+  filter(mean == max(mean)) |>
+  group_by(wflow_id) |> 
+  arrange(desc(mean)) |> 
+  ungroup() 
+
+IC <- bind_rows(IC_rmse, IC_r2)
+
+ggplot(IC, aes(x = factor(wflow_id, levels = unique(wflow_id)), y = mean)) +
+  facet_wrap(~.metric, scales = "free") +
+  geom_point(stat="identity", aes(color = wflow_id), pch = 1) +
+  geom_errorbar(stat="identity", aes(color = wflow_id, 
+                                     ymin=mean-1.96*std_err,
+                                     ymax=mean+1.96*std_err), width=.2) + 
+  labs(y = "", x = "method") + theme_bw() +
+  theme(legend.position = "none",
+        axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+```
+
+```{r}
+best_roc_auc <- 
+  race_results |> 
+  extract_workflow_set_result("rforest") |> 
+  select_best(metric = "roc_auc")
+best_roc_auc 
+```
+
+Obtendo curva ROC para todos os modelos.
+
+```{r}
+calculate_roc <- function(result, model_name) {
+  best_params <- result %>% select_best(metric = "roc_auc")
+  predictions <- collect_predictions(result, parameters = best_params)
+  roc_curve(predictions, children, .pred_child) %>% mutate(model = model_name)
+}
+
+roc_curves <- bind_rows(
+  calculate_roc(extract_workflow_set_result(race_results, "lreg"), "Logistic Regression"),
+  calculate_roc(extract_workflow_set_result(race_results, "tree"), "Decision Tree"),
+  calculate_roc(extract_workflow_set_result(race_results, "bagging"), "Bagging"),
+  calculate_roc(extract_workflow_set_result(race_results, "rforest"), "Random Forest"),
+  calculate_roc(extract_workflow_set_result(race_results, "XGB"), "XGBoost"),
+  calculate_roc(extract_workflow_set_result(race_results, "SVM_radial"), "SVM Radial"),
+  calculate_roc(extract_workflow_set_result(race_results, "SVM_poly"), "SVM Poly"),
+  calculate_roc(extract_workflow_set_result(race_results, "MARS"), "MARS"),
+  calculate_roc(extract_workflow_set_result(race_results, "neural_network"), "Neural Network")
+)
+```
+
+```{r}
+ggplot(roc_curves, aes(x = 1 - specificity, y = sensitivity, color = model)) +
+  geom_line() +
+  labs(x = "1 - Specificity", y = "Sensitivity") +
+  theme_bw()
+```
+
+Previsão e desempenho para dados de teste.
+
+```{r}
+best_result <- extract_workflow_set_result(race_results, "rforest") |>
+  select_best(metric = "roc_auc")
+best_result
+```
+
+Modelo final.
+
+```{r}
+last_rf_mod <- 
+  rand_forest(mtry = 14, min_n = 5, trees = 1144) |>
+  set_engine("ranger",importance = "impurity") |> set_mode("classification")
+
+last_rf_workflow <- 
+  extract_workflow(all_workflows, "rforest") |> 
+  update_model(last_rf_mod)
+
+set.seed(345)
+last_rf_fit <- 
+  last_rf_workflow |>
+  last_fit(splits)
+
+last_rf_fit
+```
+
+```{r}
+last_rf_fit |>
+  collect_metrics()
+```
+
+Importância das variáveis no modelo.
+
+```{r}
+last_rf_fit |>
+  extract_fit_parsnip() |> 
+  vip(num_features = 20) + theme_bw()
+```
