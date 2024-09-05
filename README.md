@@ -108,3 +108,7 @@ https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab11.html
 ## Máquinas de vetores de suporte
 
 https://robsonpro.github.io/Aprendizado-supervisionado/AS_svm.html
+
+### Laboratório 12
+
+https://robsonpro.github.io/Aprendizado-supervisionado/AS_lab12.html
